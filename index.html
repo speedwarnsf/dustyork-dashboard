@@ -90,10 +90,15 @@
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
+            transition: all 0.2s;
         }
         .refresh-btn:hover, .logout-btn:hover {
             border-color: #555;
             color: #999;
+        }
+        .refresh-btn.loading {
+            color: #555;
+            pointer-events: none;
         }
         .last-updated {
             font-size: 11px;
@@ -236,6 +241,24 @@
             background: #222;
             color: #aaa;
         }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 12px 24px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+        }
         
         @media (max-width: 768px) {
             body { padding: 20px; }
@@ -261,7 +284,7 @@
             <h1>D's Projects</h1>
             <div class="header-actions">
                 <span class="last-updated" id="lastUpdated"></span>
-                <button class="refresh-btn" onclick="refreshData()">Refresh</button>
+                <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">Refresh</button>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </header>
@@ -288,7 +311,11 @@
         <div class="projects-grid" id="projectsGrid"></div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <script>
+        const GITHUB_USER = 'speedwarnsf';
+        
         const projects = [
             {
                 name: "Earth Defender",
@@ -350,6 +377,13 @@
             }
         ];
 
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
         function getDaysSince(dateStr) {
             if (!dateStr) return null;
             const date = new Date(dateStr);
@@ -370,6 +404,45 @@
             if (!dateStr) return 'Never';
             const date = new Date(dateStr);
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        async function fetchGitHubData() {
+            const btn = document.getElementById('refreshBtn');
+            btn.textContent = 'Loading...';
+            btn.classList.add('loading');
+
+            let updated = 0;
+            
+            for (const project of projects) {
+                if (!project.repo) continue;
+                
+                try {
+                    // Fetch latest commit
+                    const commitsRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/commits?per_page=1`);
+                    if (commitsRes.ok) {
+                        const commits = await commitsRes.json();
+                        if (commits.length > 0) {
+                            project.lastCommit = commits[0].commit.author.date;
+                            project.lastMessage = commits[0].commit.message.split('\n')[0];
+                            updated++;
+                        }
+                    }
+
+                    // Fetch open issues count
+                    const repoRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}`);
+                    if (repoRes.ok) {
+                        const repo = await repoRes.json();
+                        project.openIssues = repo.open_issues_count || 0;
+                    }
+                } catch (e) {
+                    console.error(`Failed to fetch ${project.repo}:`, e);
+                }
+            }
+
+            btn.textContent = 'Refresh';
+            btn.classList.remove('loading');
+            
+            return updated;
         }
 
         function renderProjects() {
@@ -430,7 +503,7 @@
 
             document.getElementById('hotProjects').textContent = hot;
             document.getElementById('coldProjects').textContent = cold;
-            document.getElementById('lastUpdated').textContent = 'Data from: ' + new Date().toLocaleTimeString();
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
         }
 
         function resumeProject(name) {
@@ -438,13 +511,14 @@
             const prompt = `I want to work on ${name}. ${project.repo ? `The repo is ${project.url}. Last commit was "${project.lastMessage}" on ${formatDate(project.lastCommit)}.` : 'This project is not on GitHub yet.'} ${project.description}. What should I focus on?`;
             
             navigator.clipboard.writeText(prompt).then(() => {
-                alert('Prompt copied! Paste it into Claude to resume.');
+                showToast('Prompt copied to clipboard');
             });
         }
 
-        function refreshData() {
+        async function refreshData() {
+            const updated = await fetchGitHubData();
             renderProjects();
-            alert('Data refreshed. For live GitHub updates, the dashboard needs a backend or GitHub API token.');
+            showToast(`Updated ${updated} projects from GitHub`);
         }
 
         function logout() {
