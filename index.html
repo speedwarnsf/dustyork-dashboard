@@ -135,6 +135,7 @@
             background: #0a0a0a;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
         .project-preview img {
             width: 100%;
@@ -166,6 +167,18 @@
             text-decoration: none;
         }
         .project-preview .live-overlay:hover { background: rgba(0,180,0,1); }
+        .project-preview .github-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(50,50,50,0.9);
+            color: #ccc;
+            padding: 5px 10px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
         
         .project-info { padding: 15px; }
         .project-header {
@@ -204,7 +217,6 @@
             font-size: 11px;
             color: #666;
         }
-        .project-stats-row span { display: flex; align-items: center; gap: 4px; }
         
         .last-commit {
             font-size: 11px;
@@ -454,12 +466,6 @@
             return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
-        function getScreenshotUrl(url) {
-            if (!url) return null;
-            // Using microlink for screenshots
-            return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
-        }
-
         function resumeInLLM(name, llm) {
             const p = projects.find(x => x.name === name);
             if (!p || !p.repo) return;
@@ -499,7 +505,19 @@
             document.getElementById('refreshBtn').textContent = 'Refresh';
         }
 
-        async function renderProjects() {
+        function getPreviewUrl(p) {
+            // Live site screenshot
+            if (p.liveUrl) {
+                return `https://api.microlink.io/?url=${encodeURIComponent(p.liveUrl)}&screenshot=true&meta=false&embed=screenshot.url`;
+            }
+            // GitHub repo social preview
+            if (p.repo) {
+                return `https://opengraph.githubassets.com/1/${GITHUB_USER}/${p.repo}`;
+            }
+            return null;
+        }
+
+        function renderProjects() {
             const grid = document.getElementById('projectsGrid');
             let hot = 0, cold = 0, llmActive = 0;
 
@@ -518,14 +536,21 @@
                 if (days !== null && days > 30) cold++;
                 if (llm) llmActive++;
 
-                // Screenshot for live sites
+                const previewUrl = getPreviewUrl(p);
                 let previewHtml = '<div class="no-preview">No Preview</div>';
-                if (p.liveUrl) {
+                
+                if (previewUrl) {
+                    const linkUrl = p.liveUrl || p.url;
+                    const overlayClass = p.liveUrl ? 'live-overlay' : 'github-overlay';
+                    const overlayText = p.liveUrl ? '● Live Site' : 'View Repo';
+                    
                     previewHtml = `
-                        <img src="https://api.microlink.io/?url=${encodeURIComponent(p.liveUrl)}&screenshot=true&meta=false&embed=screenshot.url" 
-                             alt="${p.name}" 
-                             onerror="this.parentElement.innerHTML='<div class=no-preview>Preview unavailable</div>'">
-                        <a href="${p.liveUrl}" target="_blank" class="live-overlay">● Live Site</a>
+                        <a href="${linkUrl}" target="_blank">
+                            <img src="${previewUrl}" alt="${p.name}" 
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="no-preview" style="display:none;">Preview unavailable</div>
+                        </a>
+                        <a href="${linkUrl}" target="_blank" class="${overlayClass}">${overlayText}</a>
                     `;
                 }
 
