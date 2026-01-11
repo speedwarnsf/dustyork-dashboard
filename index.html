@@ -168,6 +168,10 @@
             font-size: 16px;
             color: #ccc;
             font-weight: 500;
+            cursor: pointer;
+        }
+        .project-name:hover {
+            color: #fff;
         }
         .project-status {
             font-size: 10px;
@@ -193,6 +197,12 @@
         }
         .project-meta a:hover {
             color: #888;
+        }
+        .live-link {
+            color: #6a6 !important;
+        }
+        .live-link:hover {
+            color: #8c8 !important;
         }
         
         .project-stats {
@@ -252,6 +262,7 @@
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            cursor: pointer;
         }
         .project-actions a:hover {
             background: #222;
@@ -260,6 +271,82 @@
         .project-actions a.disabled {
             opacity: 0.3;
             pointer-events: none;
+        }
+        .project-actions a.live-btn {
+            color: #6a6;
+            border-color: #353;
+        }
+        .project-actions a.live-btn:hover {
+            color: #8c8;
+            background: #1a2a1a;
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #0a0a0a;
+            border: 1px solid #222;
+        }
+        .preview-panel.open {
+            display: block;
+        }
+        .preview-section {
+            margin-bottom: 15px;
+        }
+        .preview-section:last-child {
+            margin-bottom: 0;
+        }
+        .preview-section-title {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .preview-readme {
+            font-size: 12px;
+            color: #777;
+            line-height: 1.6;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .preview-commits {
+            font-size: 11px;
+        }
+        .preview-commit {
+            padding: 8px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .preview-commit:last-child {
+            border-bottom: none;
+        }
+        .preview-commit-msg {
+            color: #888;
+        }
+        .preview-commit-date {
+            color: #555;
+            font-size: 10px;
+        }
+        .preview-files {
+            font-size: 11px;
+            color: #666;
+            font-family: monospace;
+        }
+        .preview-files div {
+            padding: 2px 0;
+        }
+        .preview-toggle {
+            font-size: 9px;
+            color: #555;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        .preview-toggle:hover {
+            color: #888;
         }
 
         .toast {
@@ -339,7 +426,6 @@
         const GITHUB_USER = 'speedwarnsf';
         const SESSION_WINDOW_DAYS = 3;
         
-        // Known LLM email signatures
         const LLM_SIGNATURES = {
             'speedwarnsf@gmail.com': 'claude',
             'DUSTINYORK15@GMAIL.COM': 'chatgpt',
@@ -348,12 +434,46 @@
 
         const projects = [
             {
+                name: "Nudio",
+                repo: "ebaix",
+                url: "https://github.com/speedwarnsf/ebaix",
+                liveUrl: "https://nudio.ai",
+                shopifyUrl: "https://admin.shopify.com/store/nudio-dev/apps/nudio-product-studio",
+                lastCommit: null,
+                lastMessage: null,
+                lastCommitEmail: null,
+                recentCommits: [],
+                readme: null,
+                files: [],
+                openIssues: 0,
+                description: "AI product photography - transforms iPhone photos into studio shots"
+            },
+            {
+                name: "The Forge",
+                repo: "Cforge",
+                url: "https://github.com/speedwarnsf/Cforge",
+                liveUrl: null,
+                domain: "thecforge.com (placeholder)",
+                lastCommit: null,
+                lastMessage: null,
+                lastCommitEmail: null,
+                recentCommits: [],
+                readme: null,
+                files: [],
+                openIssues: 0,
+                description: "AI-powered creative ideation - rhetorical devices database"
+            },
+            {
                 name: "Earth Defender",
                 repo: "earth-defender",
                 url: "https://github.com/speedwarnsf/earth-defender",
-                lastCommit: "2025-10-18T20:49:28Z",
-                lastMessage: "Update print statement to say 'Goodbye World'",
+                liveUrl: null,
+                lastCommit: null,
+                lastMessage: null,
                 lastCommitEmail: null,
+                recentCommits: [],
+                readme: null,
+                files: [],
                 openIssues: 0,
                 description: "Orbital defense game"
             },
@@ -361,42 +481,28 @@
                 name: "Wellth",
                 repo: "wellth-app",
                 url: "https://github.com/speedwarnsf/wellth-app",
-                domain: "goodwellth.com",
-                lastCommit: "2025-09-24T22:23:08Z",
-                lastMessage: "Add files via upload",
+                liveUrl: null,
+                domain: "goodwellth.com (placeholder)",
+                lastCommit: null,
+                lastMessage: null,
                 lastCommitEmail: null,
+                recentCommits: [],
+                readme: null,
+                files: [],
                 openIssues: 0,
                 description: "Wealth & wellness daily tips app"
-            },
-            {
-                name: "eBai / Nudio",
-                repo: "ebaix",
-                url: "https://github.com/speedwarnsf/ebaix",
-                domain: "ebai.me / nudio.ai",
-                lastCommit: "2026-01-11T21:44:16Z",
-                lastMessage: "Relax OAuth state check for reinstalls",
-                lastCommitEmail: null,
-                openIssues: 0,
-                description: "AI product photography tool"
-            },
-            {
-                name: "The Forge",
-                repo: "Cforge",
-                url: "https://github.com/speedwarnsf/Cforge",
-                domain: "thecforge.com",
-                lastCommit: "2025-07-17T20:49:45Z",
-                lastMessage: "Add files via upload",
-                lastCommitEmail: null,
-                openIssues: 0,
-                description: "Rhetorical devices database"
             },
             {
                 name: "Championship Tennis",
                 repo: "championship-tennis",
                 url: "https://github.com/speedwarnsf/championship-tennis",
-                lastCommit: "2026-01-11T21:53:41Z",
-                lastMessage: "Initial commit - Championship Tennis game",
+                liveUrl: null,
+                lastCommit: null,
+                lastMessage: null,
                 lastCommitEmail: null,
+                recentCommits: [],
+                readme: null,
+                files: [],
                 openIssues: 0,
                 description: "Centre Court mobile game"
             },
@@ -404,10 +510,14 @@
                 name: "D York Music",
                 repo: null,
                 url: null,
-                domain: "dyorkmusic.com",
+                liveUrl: null,
+                domain: "dyorkmusic.com (needs website)",
                 lastCommit: null,
                 lastMessage: null,
                 lastCommitEmail: null,
+                recentCommits: [],
+                readme: null,
+                files: [],
                 openIssues: 0,
                 description: "Music portfolio site"
             }
@@ -448,39 +558,30 @@
             const sessions = getSessions();
             const session = sessions[project.repo];
             
-            // Method 1: Email signature detection
             const emailLLM = project.lastCommitEmail ? 
                 LLM_SIGNATURES[project.lastCommitEmail] || LLM_SIGNATURES[project.lastCommitEmail.toLowerCase()] : 
                 null;
             
-            // Method 2: Session + commit congruency
             if (session && project.lastCommit) {
                 const commitDate = new Date(project.lastCommit);
                 const sessionDate = new Date(session.timestamp);
                 const daysDiff = Math.abs(commitDate - sessionDate) / (1000 * 60 * 60 * 24);
                 
                 if (daysDiff <= SESSION_WINDOW_DAYS) {
-                    // Commit is within window of session
-                    // Update session timestamp to extend rolling window
                     if (commitDate > sessionDate) {
                         updateSessionTimestamp(project.repo);
                     }
-                    
-                    // If email matches known LLM, high confidence
                     if (emailLLM) {
                         return { llm: emailLLM, confidence: 'high' };
                     }
-                    // If no email match but session exists, trust session
                     return { llm: session.llm, confidence: 'medium' };
                 }
             }
             
-            // Method 3: Email only (no session, but known signature)
             if (emailLLM && isWithinWindow(project.lastCommit, SESSION_WINDOW_DAYS)) {
                 return { llm: emailLLM, confidence: 'medium' };
             }
             
-            // No confident detection
             return null;
         }
 
@@ -522,17 +623,13 @@
             if (!project || !project.repo) return;
             
             const prompt = buildPrompt(project);
-            
-            // Save session
             saveSession(project.repo, llm);
             
-            // ChatGPT supports URL params
             if (llm === 'chatgpt') {
                 const encoded = encodeURIComponent(prompt);
                 window.open(`https://chat.openai.com/?hints=search&q=${encoded}`, '_blank');
                 showToast('Opening ChatGPT with prompt');
             } else {
-                // Gemini, Grok, Claude - copy and open
                 navigator.clipboard.writeText(prompt).then(() => {
                     const urls = {
                         'claude': 'https://claude.ai',
@@ -542,6 +639,13 @@
                     window.open(urls[llm], '_blank');
                     showToast('Prompt copied - paste in ' + llm.charAt(0).toUpperCase() + llm.slice(1));
                 });
+            }
+        }
+
+        function togglePreview(projectName) {
+            const panel = document.getElementById(`preview-${projectName.replace(/[^a-zA-Z0-9]/g, '')}`);
+            if (panel) {
+                panel.classList.toggle('open');
             }
         }
 
@@ -556,21 +660,44 @@
                 if (!project.repo) continue;
                 
                 try {
-                    const commitsRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/commits?per_page=1`);
+                    // Fetch recent commits
+                    const commitsRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/commits?per_page=5`);
                     if (commitsRes.ok) {
                         const commits = await commitsRes.json();
                         if (commits.length > 0) {
                             project.lastCommit = commits[0].commit.author.date;
                             project.lastMessage = commits[0].commit.message.split('\n')[0];
                             project.lastCommitEmail = commits[0].commit.author.email;
+                            project.recentCommits = commits.map(c => ({
+                                message: c.commit.message.split('\n')[0],
+                                date: c.commit.author.date
+                            }));
                             updated++;
                         }
                     }
 
+                    // Fetch repo info
                     const repoRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}`);
                     if (repoRes.ok) {
                         const repo = await repoRes.json();
                         project.openIssues = repo.open_issues_count || 0;
+                    }
+
+                    // Fetch README
+                    const readmeRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/readme`);
+                    if (readmeRes.ok) {
+                        const readme = await readmeRes.json();
+                        project.readme = atob(readme.content).substring(0, 500);
+                    }
+
+                    // Fetch root files
+                    const contentsRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/contents`);
+                    if (contentsRes.ok) {
+                        const contents = await contentsRes.json();
+                        project.files = contents.slice(0, 10).map(f => ({
+                            name: f.name,
+                            type: f.type
+                        }));
                     }
                 } catch (e) {
                     console.error(`Failed to fetch ${project.repo}:`, e);
@@ -597,6 +724,7 @@
                 const days = getDaysSince(project.lastCommit);
                 const status = getStatus(days);
                 const llmDetection = project.repo ? detectLLM(project) : null;
+                const previewId = project.name.replace(/[^a-zA-Z0-9]/g, '');
                 
                 if (days !== null && days <= 7) hot++;
                 if (days !== null && days > 30) cold++;
@@ -606,17 +734,68 @@
                 const llmBadge = llmDetection ? 
                     `<span class="llm-badge">${llmDetection.llm}</span>` : '';
 
+                // Build meta line with live links
+                let metaHtml = '';
+                if (project.liveUrl) {
+                    metaHtml += `<a href="${project.liveUrl}" target="_blank" class="live-link">● Live</a>`;
+                }
+                if (project.shopifyUrl) {
+                    metaHtml += `${metaHtml ? ' · ' : ''}<a href="${project.shopifyUrl}" target="_blank" class="live-link">Shopify</a>`;
+                }
+                if (project.domain) {
+                    metaHtml += `${metaHtml ? ' · ' : ''}<span>${project.domain}</span>`;
+                }
+                if (project.url) {
+                    metaHtml += `${metaHtml ? ' · ' : ''}<a href="${project.url}" target="_blank">GitHub</a>`;
+                }
+                if (!metaHtml) {
+                    metaHtml = '<span>No repo yet</span>';
+                }
+
+                // Build preview panel
+                let previewHtml = '';
+                if (project.repo) {
+                    previewHtml = `
+                        <div class="preview-panel" id="preview-${previewId}">
+                            ${project.readme ? `
+                                <div class="preview-section">
+                                    <div class="preview-section-title">README</div>
+                                    <div class="preview-readme">${project.readme.replace(/[#*`]/g, '').substring(0, 300)}...</div>
+                                </div>
+                            ` : ''}
+                            ${project.recentCommits.length > 0 ? `
+                                <div class="preview-section">
+                                    <div class="preview-section-title">Recent Commits</div>
+                                    <div class="preview-commits">
+                                        ${project.recentCommits.slice(0, 3).map(c => `
+                                            <div class="preview-commit">
+                                                <div class="preview-commit-msg">${c.message}</div>
+                                                <div class="preview-commit-date">${formatDate(c.date)}</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${project.files.length > 0 ? `
+                                <div class="preview-section">
+                                    <div class="preview-section-title">Files</div>
+                                    <div class="preview-files">
+                                        ${project.files.map(f => `<div>${f.type === 'dir' ? '📁' : '📄'} ${f.name}</div>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
                 return `
                     <div class="project-card ${llmClass}">
                         ${llmBadge}
                         <div class="project-header">
-                            <span class="project-name">${project.name}</span>
+                            <span class="project-name" onclick="togglePreview('${project.name}')">${project.name}</span>
                             <span class="project-status ${status.class}">${status.label}</span>
                         </div>
-                        <div class="project-meta">
-                            ${project.domain ? `<span>${project.domain}</span> · ` : ''}
-                            ${project.url ? `<a href="${project.url}" target="_blank">GitHub</a>` : '<span>No repo yet</span>'}
-                        </div>
+                        <div class="project-meta">${metaHtml}</div>
                         <div class="project-stats">
                             <div class="project-stat">
                                 <div class="project-stat-value">${days !== null ? days : '—'}</div>
@@ -627,8 +806,8 @@
                                 <div class="project-stat-label">Open Issues</div>
                             </div>
                             <div class="project-stat">
-                                <div class="project-stat-value">${project.repo ? '✓' : '—'}</div>
-                                <div class="project-stat-label">On GitHub</div>
+                                <div class="project-stat-value">${project.liveUrl ? '●' : '○'}</div>
+                                <div class="project-stat-label">Live</div>
                             </div>
                         </div>
                         ${project.lastMessage ? `
@@ -639,12 +818,15 @@
                             </div>
                         ` : ''}
                         <div class="project-actions">
-                            ${project.url ? `<a href="${project.url}" target="_blank">GitHub</a>` : '<a class="disabled">GitHub</a>'}
-                            <a href="#" onclick="resumeInLLM('${project.name}', 'claude'); return false;">Claude</a>
-                            <a href="#" onclick="resumeInLLM('${project.name}', 'chatgpt'); return false;">ChatGPT</a>
-                            <a href="#" onclick="resumeInLLM('${project.name}', 'gemini'); return false;">Gemini</a>
-                            <a href="#" onclick="resumeInLLM('${project.name}', 'grok'); return false;">Grok</a>
+                            ${project.liveUrl ? `<a href="${project.liveUrl}" target="_blank" class="live-btn">Live</a>` : ''}
+                            ${project.url ? `<a href="${project.url}" target="_blank">GitHub</a>` : ''}
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'claude'); return false;" class="${!project.repo ? 'disabled' : ''}">Claude</a>
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'chatgpt'); return false;" class="${!project.repo ? 'disabled' : ''}">ChatGPT</a>
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'gemini'); return false;" class="${!project.repo ? 'disabled' : ''}">Gemini</a>
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'grok'); return false;" class="${!project.repo ? 'disabled' : ''}">Grok</a>
                         </div>
+                        ${project.repo ? `<div class="preview-toggle" onclick="togglePreview('${project.name}')">▼ Preview</div>` : ''}
+                        ${previewHtml}
                     </div>
                 `;
             }).join('');
@@ -674,7 +856,7 @@
                 sessionStorage.setItem('authenticated', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
-                renderProjects();
+                refreshData();
             } else {
                 document.getElementById('error').style.display = 'block';
             }
@@ -683,7 +865,7 @@
         if (sessionStorage.getItem('authenticated') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            renderProjects();
+            refreshData();
         }
     </script>
 </body>
