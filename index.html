@@ -140,9 +140,23 @@
             border: 1px solid #222;
             padding: 25px;
             transition: border-color 0.2s;
+            position: relative;
         }
         .project-card:hover {
             border-color: #333;
+        }
+        .project-card.llm-active {
+            border-left: 1px solid #6aa4db;
+        }
+        .llm-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 8px;
+            color: #6aa4db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
         }
         .project-header {
             display: flex;
@@ -223,23 +237,29 @@
         
         .project-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         .project-actions a {
             flex: 1;
-            padding: 10px;
+            min-width: 70px;
+            padding: 8px 6px;
             background: #1a1a1a;
             border: 1px solid #333;
             color: #888;
             text-decoration: none;
             text-align: center;
-            font-size: 11px;
+            font-size: 9px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         .project-actions a:hover {
             background: #222;
             color: #aaa;
+        }
+        .project-actions a.disabled {
+            opacity: 0.3;
+            pointer-events: none;
         }
 
         .toast {
@@ -255,6 +275,8 @@
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            max-width: 90%;
+            text-align: center;
         }
         .toast.show {
             opacity: 1;
@@ -303,8 +325,8 @@
                 <div class="stat-label">Cold (30+ days)</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="totalCommits">0</div>
-                <div class="stat-label">Total Commits</div>
+                <div class="stat-value" id="llmProjects">0</div>
+                <div class="stat-label">LLM Active</div>
             </div>
         </div>
 
@@ -315,7 +337,15 @@
 
     <script>
         const GITHUB_USER = 'speedwarnsf';
+        const SESSION_WINDOW_DAYS = 3;
         
+        // Known LLM email signatures
+        const LLM_SIGNATURES = {
+            'speedwarnsf@gmail.com': 'claude',
+            'DUSTINYORK15@GMAIL.COM': 'chatgpt',
+            'dustinyork15@gmail.com': 'chatgpt'
+        };
+
         const projects = [
             {
                 name: "Earth Defender",
@@ -323,6 +353,7 @@
                 url: "https://github.com/speedwarnsf/earth-defender",
                 lastCommit: "2025-10-18T20:49:28Z",
                 lastMessage: "Update print statement to say 'Goodbye World'",
+                lastCommitEmail: null,
                 openIssues: 0,
                 description: "Orbital defense game"
             },
@@ -333,6 +364,7 @@
                 domain: "goodwellth.com",
                 lastCommit: "2025-09-24T22:23:08Z",
                 lastMessage: "Add files via upload",
+                lastCommitEmail: null,
                 openIssues: 0,
                 description: "Wealth & wellness daily tips app"
             },
@@ -343,6 +375,7 @@
                 domain: "ebai.me / nudio.ai",
                 lastCommit: "2026-01-11T21:44:16Z",
                 lastMessage: "Relax OAuth state check for reinstalls",
+                lastCommitEmail: null,
                 openIssues: 0,
                 description: "AI product photography tool"
             },
@@ -353,6 +386,7 @@
                 domain: "thecforge.com",
                 lastCommit: "2025-07-17T20:49:45Z",
                 lastMessage: "Add files via upload",
+                lastCommitEmail: null,
                 openIssues: 0,
                 description: "Rhetorical devices database"
             },
@@ -362,6 +396,7 @@
                 url: "https://github.com/speedwarnsf/championship-tennis",
                 lastCommit: "2026-01-11T21:53:41Z",
                 lastMessage: "Initial commit - Championship Tennis game",
+                lastCommitEmail: null,
                 openIssues: 0,
                 description: "Centre Court mobile game"
             },
@@ -372,10 +407,82 @@
                 domain: "dyorkmusic.com",
                 lastCommit: null,
                 lastMessage: null,
+                lastCommitEmail: null,
                 openIssues: 0,
                 description: "Music portfolio site"
             }
         ];
+
+        // Session tracking
+        function getSessions() {
+            const stored = localStorage.getItem('llmSessions');
+            return stored ? JSON.parse(stored) : {};
+        }
+
+        function saveSession(repo, llm) {
+            const sessions = getSessions();
+            sessions[repo] = {
+                llm: llm,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('llmSessions', JSON.stringify(sessions));
+        }
+
+        function updateSessionTimestamp(repo) {
+            const sessions = getSessions();
+            if (sessions[repo]) {
+                sessions[repo].timestamp = new Date().toISOString();
+                localStorage.setItem('llmSessions', JSON.stringify(sessions));
+            }
+        }
+
+        function isWithinWindow(dateStr, windowDays) {
+            if (!dateStr) return false;
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffDays = (now - date) / (1000 * 60 * 60 * 24);
+            return diffDays <= windowDays;
+        }
+
+        function detectLLM(project) {
+            const sessions = getSessions();
+            const session = sessions[project.repo];
+            
+            // Method 1: Email signature detection
+            const emailLLM = project.lastCommitEmail ? 
+                LLM_SIGNATURES[project.lastCommitEmail] || LLM_SIGNATURES[project.lastCommitEmail.toLowerCase()] : 
+                null;
+            
+            // Method 2: Session + commit congruency
+            if (session && project.lastCommit) {
+                const commitDate = new Date(project.lastCommit);
+                const sessionDate = new Date(session.timestamp);
+                const daysDiff = Math.abs(commitDate - sessionDate) / (1000 * 60 * 60 * 24);
+                
+                if (daysDiff <= SESSION_WINDOW_DAYS) {
+                    // Commit is within window of session
+                    // Update session timestamp to extend rolling window
+                    if (commitDate > sessionDate) {
+                        updateSessionTimestamp(project.repo);
+                    }
+                    
+                    // If email matches known LLM, high confidence
+                    if (emailLLM) {
+                        return { llm: emailLLM, confidence: 'high' };
+                    }
+                    // If no email match but session exists, trust session
+                    return { llm: session.llm, confidence: 'medium' };
+                }
+            }
+            
+            // Method 3: Email only (no session, but known signature)
+            if (emailLLM && isWithinWindow(project.lastCommit, SESSION_WINDOW_DAYS)) {
+                return { llm: emailLLM, confidence: 'medium' };
+            }
+            
+            // No confident detection
+            return null;
+        }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -406,6 +513,38 @@
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
 
+        function buildPrompt(project) {
+            return `I want to continue working on ${project.name}. The repo is ${project.url}. Last commit was "${project.lastMessage}" on ${formatDate(project.lastCommit)}. ${project.description}. Please review the repo files and be ready to discuss what I should focus on next.`;
+        }
+
+        function resumeInLLM(projectName, llm) {
+            const project = projects.find(p => p.name === projectName);
+            if (!project || !project.repo) return;
+            
+            const prompt = buildPrompt(project);
+            
+            // Save session
+            saveSession(project.repo, llm);
+            
+            // ChatGPT supports URL params
+            if (llm === 'chatgpt') {
+                const encoded = encodeURIComponent(prompt);
+                window.open(`https://chat.openai.com/?hints=search&q=${encoded}`, '_blank');
+                showToast('Opening ChatGPT with prompt');
+            } else {
+                // Gemini, Grok, Claude - copy and open
+                navigator.clipboard.writeText(prompt).then(() => {
+                    const urls = {
+                        'claude': 'https://claude.ai',
+                        'gemini': 'https://gemini.google.com',
+                        'grok': 'https://grok.x.ai'
+                    };
+                    window.open(urls[llm], '_blank');
+                    showToast('Prompt copied - paste in ' + llm.charAt(0).toUpperCase() + llm.slice(1));
+                });
+            }
+        }
+
         async function fetchGitHubData() {
             const btn = document.getElementById('refreshBtn');
             btn.textContent = 'Loading...';
@@ -417,18 +556,17 @@
                 if (!project.repo) continue;
                 
                 try {
-                    // Fetch latest commit
                     const commitsRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/commits?per_page=1`);
                     if (commitsRes.ok) {
                         const commits = await commitsRes.json();
                         if (commits.length > 0) {
                             project.lastCommit = commits[0].commit.author.date;
                             project.lastMessage = commits[0].commit.message.split('\n')[0];
+                            project.lastCommitEmail = commits[0].commit.author.email;
                             updated++;
                         }
                     }
 
-                    // Fetch open issues count
                     const repoRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}`);
                     if (repoRes.ok) {
                         const repo = await repoRes.json();
@@ -447,7 +585,7 @@
 
         function renderProjects() {
             const grid = document.getElementById('projectsGrid');
-            let hot = 0, cold = 0;
+            let hot = 0, cold = 0, llmActive = 0;
 
             const sorted = [...projects].sort((a, b) => {
                 if (!a.lastCommit) return 1;
@@ -458,12 +596,19 @@
             grid.innerHTML = sorted.map(project => {
                 const days = getDaysSince(project.lastCommit);
                 const status = getStatus(days);
+                const llmDetection = project.repo ? detectLLM(project) : null;
                 
                 if (days !== null && days <= 7) hot++;
                 if (days !== null && days > 30) cold++;
+                if (llmDetection) llmActive++;
+
+                const llmClass = llmDetection ? 'llm-active' : '';
+                const llmBadge = llmDetection ? 
+                    `<span class="llm-badge">${llmDetection.llm}</span>` : '';
 
                 return `
-                    <div class="project-card">
+                    <div class="project-card ${llmClass}">
+                        ${llmBadge}
                         <div class="project-header">
                             <span class="project-name">${project.name}</span>
                             <span class="project-status ${status.class}">${status.label}</span>
@@ -494,8 +639,11 @@
                             </div>
                         ` : ''}
                         <div class="project-actions">
-                            ${project.url ? `<a href="${project.url}" target="_blank">View Repo</a>` : '<a href="#" style="opacity:0.3">No Repo</a>'}
-                            <a href="#" onclick="resumeProject('${project.name}'); return false;">Resume in Claude</a>
+                            ${project.url ? `<a href="${project.url}" target="_blank">GitHub</a>` : '<a class="disabled">GitHub</a>'}
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'claude'); return false;">Claude</a>
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'chatgpt'); return false;">ChatGPT</a>
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'gemini'); return false;">Gemini</a>
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'grok'); return false;">Grok</a>
                         </div>
                     </div>
                 `;
@@ -503,16 +651,8 @@
 
             document.getElementById('hotProjects').textContent = hot;
             document.getElementById('coldProjects').textContent = cold;
+            document.getElementById('llmProjects').textContent = llmActive;
             document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
-        }
-
-        function resumeProject(name) {
-            const project = projects.find(p => p.name === name);
-            const prompt = `I want to work on ${name}. ${project.repo ? `The repo is ${project.url}. Last commit was "${project.lastMessage}" on ${formatDate(project.lastCommit)}.` : 'This project is not on GitHub yet.'} ${project.description}. What should I focus on?`;
-            
-            navigator.clipboard.writeText(prompt).then(() => {
-                showToast('Prompt copied to clipboard');
-            });
         }
 
         async function refreshData() {
