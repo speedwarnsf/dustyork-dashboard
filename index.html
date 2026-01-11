@@ -168,10 +168,6 @@
             font-size: 16px;
             color: #ccc;
             font-weight: 500;
-            cursor: pointer;
-        }
-        .project-name:hover {
-            color: #fff;
         }
         .project-status {
             font-size: 10px;
@@ -280,6 +276,10 @@
             color: #8c8;
             background: #1a2a1a;
         }
+        .project-actions a.preview-btn {
+            color: #68a;
+            border-color: #346;
+        }
 
         /* Preview Panel */
         .preview-panel {
@@ -311,6 +311,7 @@
             line-height: 1.6;
             max-height: 150px;
             overflow-y: auto;
+            white-space: pre-wrap;
         }
         .preview-commits {
             font-size: 11px;
@@ -337,16 +338,10 @@
         .preview-files div {
             padding: 2px 0;
         }
-        .preview-toggle {
-            font-size: 9px;
+        .preview-loading {
             color: #555;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 10px;
-        }
-        .preview-toggle:hover {
-            color: #888;
+            font-size: 11px;
+            font-style: italic;
         }
 
         .toast {
@@ -523,7 +518,9 @@
             }
         ];
 
-        // Session tracking
+        // Track open previews
+        const openPreviews = new Set();
+
         function getSessions() {
             const stored = localStorage.getItem('llmSessions');
             return stored ? JSON.parse(stored) : {};
@@ -531,10 +528,7 @@
 
         function saveSession(repo, llm) {
             const sessions = getSessions();
-            sessions[repo] = {
-                llm: llm,
-                timestamp: new Date().toISOString()
-            };
+            sessions[repo] = { llm: llm, timestamp: new Date().toISOString() };
             localStorage.setItem('llmSessions', JSON.stringify(sessions));
         }
 
@@ -548,19 +542,15 @@
 
         function isWithinWindow(dateStr, windowDays) {
             if (!dateStr) return false;
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diffDays = (now - date) / (1000 * 60 * 60 * 24);
+            const diffDays = (new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24);
             return diffDays <= windowDays;
         }
 
         function detectLLM(project) {
             const sessions = getSessions();
             const session = sessions[project.repo];
-            
             const emailLLM = project.lastCommitEmail ? 
-                LLM_SIGNATURES[project.lastCommitEmail] || LLM_SIGNATURES[project.lastCommitEmail.toLowerCase()] : 
-                null;
+                LLM_SIGNATURES[project.lastCommitEmail] || LLM_SIGNATURES[project.lastCommitEmail.toLowerCase()] : null;
             
             if (session && project.lastCommit) {
                 const commitDate = new Date(project.lastCommit);
@@ -568,20 +558,14 @@
                 const daysDiff = Math.abs(commitDate - sessionDate) / (1000 * 60 * 60 * 24);
                 
                 if (daysDiff <= SESSION_WINDOW_DAYS) {
-                    if (commitDate > sessionDate) {
-                        updateSessionTimestamp(project.repo);
-                    }
-                    if (emailLLM) {
-                        return { llm: emailLLM, confidence: 'high' };
-                    }
-                    return { llm: session.llm, confidence: 'medium' };
+                    if (commitDate > sessionDate) updateSessionTimestamp(project.repo);
+                    return { llm: emailLLM || session.llm, confidence: emailLLM ? 'high' : 'medium' };
                 }
             }
             
             if (emailLLM && isWithinWindow(project.lastCommit, SESSION_WINDOW_DAYS)) {
                 return { llm: emailLLM, confidence: 'medium' };
             }
-            
             return null;
         }
 
@@ -594,10 +578,7 @@
 
         function getDaysSince(dateStr) {
             if (!dateStr) return null;
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            return Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
         }
 
         function getStatus(days) {
@@ -610,8 +591,7 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return 'Never';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
 
         function buildPrompt(project) {
@@ -626,16 +606,11 @@
             saveSession(project.repo, llm);
             
             if (llm === 'chatgpt') {
-                const encoded = encodeURIComponent(prompt);
-                window.open(`https://chat.openai.com/?hints=search&q=${encoded}`, '_blank');
+                window.open(`https://chat.openai.com/?hints=search&q=${encodeURIComponent(prompt)}`, '_blank');
                 showToast('Opening ChatGPT with prompt');
             } else {
                 navigator.clipboard.writeText(prompt).then(() => {
-                    const urls = {
-                        'claude': 'https://claude.ai',
-                        'gemini': 'https://gemini.google.com',
-                        'grok': 'https://grok.x.ai'
-                    };
+                    const urls = { 'claude': 'https://claude.ai', 'gemini': 'https://gemini.google.com', 'grok': 'https://grok.x.ai' };
                     window.open(urls[llm], '_blank');
                     showToast('Prompt copied - paste in ' + llm.charAt(0).toUpperCase() + llm.slice(1));
                 });
@@ -643,9 +618,18 @@
         }
 
         function togglePreview(projectName) {
-            const panel = document.getElementById(`preview-${projectName.replace(/[^a-zA-Z0-9]/g, '')}`);
+            const previewId = projectName.replace(/[^a-zA-Z0-9]/g, '');
+            const panel = document.getElementById(`preview-${previewId}`);
+            const btn = document.getElementById(`preview-btn-${previewId}`);
             if (panel) {
-                panel.classList.toggle('open');
+                const isOpen = panel.classList.toggle('open');
+                if (isOpen) {
+                    openPreviews.add(projectName);
+                    if (btn) btn.textContent = '▲ Hide';
+                } else {
+                    openPreviews.delete(projectName);
+                    if (btn) btn.textContent = '▼ Preview';
+                }
             }
         }
 
@@ -684,20 +668,21 @@
                     }
 
                     // Fetch README
-                    const readmeRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/readme`);
-                    if (readmeRes.ok) {
-                        const readme = await readmeRes.json();
-                        project.readme = atob(readme.content).substring(0, 500);
+                    try {
+                        const readmeRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/readme`);
+                        if (readmeRes.ok) {
+                            const readme = await readmeRes.json();
+                            project.readme = atob(readme.content);
+                        }
+                    } catch (e) {
+                        console.log(`No README for ${project.repo}`);
                     }
 
                     // Fetch root files
                     const contentsRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${project.repo}/contents`);
                     if (contentsRes.ok) {
                         const contents = await contentsRes.json();
-                        project.files = contents.slice(0, 10).map(f => ({
-                            name: f.name,
-                            type: f.type
-                        }));
+                        project.files = contents.slice(0, 12).map(f => ({ name: f.name, type: f.type }));
                     }
                 } catch (e) {
                     console.error(`Failed to fetch ${project.repo}:`, e);
@@ -725,42 +710,34 @@
                 const status = getStatus(days);
                 const llmDetection = project.repo ? detectLLM(project) : null;
                 const previewId = project.name.replace(/[^a-zA-Z0-9]/g, '');
+                const isPreviewOpen = openPreviews.has(project.name);
                 
                 if (days !== null && days <= 7) hot++;
                 if (days !== null && days > 30) cold++;
                 if (llmDetection) llmActive++;
 
                 const llmClass = llmDetection ? 'llm-active' : '';
-                const llmBadge = llmDetection ? 
-                    `<span class="llm-badge">${llmDetection.llm}</span>` : '';
+                const llmBadge = llmDetection ? `<span class="llm-badge">${llmDetection.llm}</span>` : '';
 
-                // Build meta line with live links
+                // Meta line
                 let metaHtml = '';
-                if (project.liveUrl) {
-                    metaHtml += `<a href="${project.liveUrl}" target="_blank" class="live-link">● Live</a>`;
-                }
-                if (project.shopifyUrl) {
-                    metaHtml += `${metaHtml ? ' · ' : ''}<a href="${project.shopifyUrl}" target="_blank" class="live-link">Shopify</a>`;
-                }
-                if (project.domain) {
-                    metaHtml += `${metaHtml ? ' · ' : ''}<span>${project.domain}</span>`;
-                }
-                if (project.url) {
-                    metaHtml += `${metaHtml ? ' · ' : ''}<a href="${project.url}" target="_blank">GitHub</a>`;
-                }
-                if (!metaHtml) {
-                    metaHtml = '<span>No repo yet</span>';
-                }
+                if (project.liveUrl) metaHtml += `<a href="${project.liveUrl}" target="_blank" class="live-link">● Live</a>`;
+                if (project.shopifyUrl) metaHtml += `${metaHtml ? ' · ' : ''}<a href="${project.shopifyUrl}" target="_blank" class="live-link">Shopify</a>`;
+                if (project.domain) metaHtml += `${metaHtml ? ' · ' : ''}<span>${project.domain}</span>`;
+                if (project.url) metaHtml += `${metaHtml ? ' · ' : ''}<a href="${project.url}" target="_blank">GitHub</a>`;
+                if (!metaHtml) metaHtml = '<span>No repo yet</span>';
 
-                // Build preview panel
-                let previewHtml = '';
+                // Preview content
+                let previewContent = '';
+                const hasContent = project.readme || project.recentCommits.length > 0 || project.files.length > 0;
+                
                 if (project.repo) {
-                    previewHtml = `
-                        <div class="preview-panel" id="preview-${previewId}">
+                    if (hasContent) {
+                        previewContent = `
                             ${project.readme ? `
                                 <div class="preview-section">
                                     <div class="preview-section-title">README</div>
-                                    <div class="preview-readme">${project.readme.replace(/[#*`]/g, '').substring(0, 300)}...</div>
+                                    <div class="preview-readme">${project.readme.replace(/[#*`]/g, ' ').substring(0, 400)}...</div>
                                 </div>
                             ` : ''}
                             ${project.recentCommits.length > 0 ? `
@@ -784,15 +761,17 @@
                                     </div>
                                 </div>
                             ` : ''}
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        previewContent = '<div class="preview-loading">Loading preview data... Click Refresh if empty.</div>';
+                    }
                 }
 
                 return `
                     <div class="project-card ${llmClass}">
                         ${llmBadge}
                         <div class="project-header">
-                            <span class="project-name" onclick="togglePreview('${project.name}')">${project.name}</span>
+                            <span class="project-name">${project.name}</span>
                             <span class="project-status ${status.class}">${status.label}</span>
                         </div>
                         <div class="project-meta">${metaHtml}</div>
@@ -819,14 +798,14 @@
                         ` : ''}
                         <div class="project-actions">
                             ${project.liveUrl ? `<a href="${project.liveUrl}" target="_blank" class="live-btn">Live</a>` : ''}
+                            ${project.repo ? `<a href="#" onclick="togglePreview('${project.name}'); return false;" class="preview-btn" id="preview-btn-${previewId}">${isPreviewOpen ? '▲ Hide' : '▼ Preview'}</a>` : ''}
                             ${project.url ? `<a href="${project.url}" target="_blank">GitHub</a>` : ''}
                             <a href="#" onclick="resumeInLLM('${project.name}', 'claude'); return false;" class="${!project.repo ? 'disabled' : ''}">Claude</a>
-                            <a href="#" onclick="resumeInLLM('${project.name}', 'chatgpt'); return false;" class="${!project.repo ? 'disabled' : ''}">ChatGPT</a>
+                            <a href="#" onclick="resumeInLLM('${project.name}', 'chatgpt'); return false;" class="${!project.repo ? 'disabled' : ''}">GPT</a>
                             <a href="#" onclick="resumeInLLM('${project.name}', 'gemini'); return false;" class="${!project.repo ? 'disabled' : ''}">Gemini</a>
                             <a href="#" onclick="resumeInLLM('${project.name}', 'grok'); return false;" class="${!project.repo ? 'disabled' : ''}">Grok</a>
                         </div>
-                        ${project.repo ? `<div class="preview-toggle" onclick="togglePreview('${project.name}')">▼ Preview</div>` : ''}
-                        ${previewHtml}
+                        ${project.repo ? `<div class="preview-panel ${isPreviewOpen ? 'open' : ''}" id="preview-${previewId}">${previewContent}</div>` : ''}
                     </div>
                 `;
             }).join('');
@@ -851,8 +830,7 @@
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const password = document.getElementById('password').value;
-            if (password === 'dustyork2025') {
+            if (document.getElementById('password').value === 'dustyork2025') {
                 sessionStorage.setItem('authenticated', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
