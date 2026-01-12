@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>D's Projects</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -11,24 +11,24 @@
             color: #888;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
-            padding: 20px;
+            padding: 12px;
         }
         .login-screen {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            margin: -20px;
+            margin: -12px;
         }
         .login-container {
-            width: 300px;
-            padding: 40px;
+            width: 280px;
+            padding: 30px;
             border: 1px solid #333;
         }
         .login-container h1 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 400;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             color: #ccc;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -39,8 +39,10 @@
             background: #111;
             border: 1px solid #333;
             color: #ccc;
-            font-size: 14px;
-            margin-bottom: 20px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            -webkit-appearance: none;
+            border-radius: 0;
         }
         .login-container button {
             width: 100%;
@@ -51,7 +53,6 @@
             font-size: 14px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         .error { color: #aa4444; font-size: 12px; margin-top: 10px; display: none; }
         
@@ -61,12 +62,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #222;
         }
-        h1 {
-            font-size: 16px;
+        header h1 {
+            font-size: 13px;
             font-weight: 400;
             color: #ccc;
             text-transform: uppercase;
@@ -74,39 +75,37 @@
         }
         .header-actions {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 6px;
         }
         .refresh-btn, .logout-btn {
             background: none;
             border: 1px solid #333;
             color: #666;
-            padding: 8px 12px;
-            font-size: 10px;
+            padding: 6px 10px;
+            font-size: 9px;
             cursor: pointer;
             text-transform: uppercase;
         }
-        .last-updated { font-size: 10px; color: #444; }
         
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
         .stat {
             background: #111;
             border: 1px solid #222;
-            padding: 15px 10px;
+            padding: 8px 4px;
             text-align: center;
         }
-        .stat-value { font-size: 24px; color: #ccc; font-weight: 300; }
-        .stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; color: #555; }
+        .stat-value { font-size: 18px; color: #ccc; font-weight: 300; }
+        .stat-label { font-size: 7px; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; color: #555; }
         
         .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         .project-card {
             background: #111;
@@ -117,32 +116,28 @@
         .project-card.llm-active { border-left: 2px solid #6aa4db; }
         .llm-badge {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 8px;
+            top: 6px;
+            right: 6px;
+            font-size: 7px;
             color: #6aa4db;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            background: rgba(0,0,0,0.7);
-            padding: 3px 6px;
+            background: rgba(0,0,0,0.85);
+            padding: 2px 5px;
             z-index: 10;
         }
         
-        /* Visual Preview */
         .project-preview {
             width: 100%;
-            height: 180px;
-            background: #0a0a0a;
+            height: 120px;
+            background: #080808;
             position: relative;
             overflow: hidden;
-            cursor: pointer;
         }
         .project-preview img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             object-position: top;
-            opacity: 0.9;
         }
         .project-preview .no-preview {
             display: flex;
@@ -150,131 +145,118 @@
             justify-content: center;
             height: 100%;
             color: #333;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .project-preview .live-overlay {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0,150,0,0.9);
-            color: #fff;
-            padding: 5px 10px;
             font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-decoration: none;
         }
-        .project-preview .live-overlay:hover { background: rgba(0,180,0,1); }
-        .project-preview .github-overlay {
+        .project-preview .overlay-btn {
             position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(50,50,50,0.9);
-            color: #ccc;
-            padding: 5px 10px;
-            font-size: 10px;
+            bottom: 6px;
+            left: 6px;
+            background: rgba(0,0,0,0.85);
+            color: #aaa;
+            padding: 4px 8px;
+            font-size: 8px;
             text-transform: uppercase;
-            letter-spacing: 1px;
             text-decoration: none;
+            border: 1px solid #444;
         }
+        .project-preview .overlay-btn.live { background: rgba(0,80,0,0.95); color: #fff; border-color: #0a0; }
         
-        .project-info { padding: 15px; }
+        .project-info { padding: 10px; }
         .project-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
-        .project-name { font-size: 15px; color: #ccc; font-weight: 500; }
+        .project-name { font-size: 13px; color: #ccc; font-weight: 500; }
         .project-status {
-            font-size: 9px;
+            font-size: 7px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 3px 6px;
+            padding: 2px 5px;
             background: #1a1a1a;
             border: 1px solid #333;
         }
         .status-hot { color: #8a8; border-color: #353; }
         .status-warm { color: #aa8; border-color: #553; }
         .status-cold { color: #a88; border-color: #533; }
-        .status-frozen { color: #666; border-color: #333; }
+        .status-frozen { color: #666; }
         
         .project-meta {
-            font-size: 11px;
+            font-size: 9px;
             color: #555;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .project-meta a { color: #666; text-decoration: none; }
-        .project-meta a:hover { color: #888; }
         .live-link { color: #6a6 !important; }
         
         .project-stats-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 12px;
-            font-size: 11px;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 9px;
             color: #666;
         }
         
         .last-commit {
-            font-size: 11px;
+            font-size: 9px;
             color: #555;
-            padding: 10px;
-            background: #0a0a0a;
-            margin-bottom: 12px;
-            border-left: 2px solid #222;
+            padding: 6px 8px;
+            background: #080808;
+            margin-bottom: 8px;
+            border-left: 2px solid #333;
         }
-        .last-commit strong { color: #777; font-weight: normal; }
         
-        /* LLM Buttons - Fixed Grid */
         .llm-buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
+            gap: 4px;
         }
         .llm-buttons a {
-            display: block;
-            padding: 10px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
             background: #1a1a1a;
             border: 1px solid #333;
             color: #888;
             text-decoration: none;
-            text-align: center;
-            font-size: 9px;
+            font-size: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
-        .llm-buttons a:hover { background: #252525; color: #aaa; }
-        .llm-buttons a.disabled { opacity: 0.3; pointer-events: none; }
+        .llm-buttons a:active { background: #333; }
+        .llm-buttons a.disabled { opacity: 0.25; pointer-events: none; }
         
         .toast {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             background: #222;
             border: 1px solid #444;
             color: #aaa;
-            padding: 10px 20px;
-            font-size: 11px;
+            padding: 8px 16px;
+            font-size: 10px;
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 1000;
         }
         .toast.show { opacity: 1; }
-        
-        @media (max-width: 500px) {
-            body { padding: 10px; }
-            header { flex-direction: column; gap: 10px; align-items: flex-start; }
-            .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .stat { padding: 10px; }
-            .stat-value { font-size: 20px; }
-            .projects-grid { grid-template-columns: 1fr; }
-            .project-preview { height: 150px; }
-            .llm-buttons { grid-template-columns: repeat(4, 1fr); }
-            .llm-buttons a { padding: 12px 2px; font-size: 8px; }
+
+        @media (min-width: 600px) {
+            body { padding: 20px; }
+            .projects-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .project-preview { height: 160px; }
+            .project-info { padding: 15px; }
+            .llm-buttons a { height: 44px; font-size: 9px; }
+        }
+        @media (min-width: 900px) {
+            .projects-grid { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -294,7 +276,6 @@
         <header>
             <h1>D's Projects</h1>
             <div class="header-actions">
-                <span class="last-updated" id="lastUpdated"></span>
                 <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">Refresh</button>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
@@ -327,117 +308,42 @@
     <script>
         const GITHUB_USER = 'speedwarnsf';
         const SESSION_WINDOW_DAYS = 3;
-        
         const LLM_SIGNATURES = {
             'speedwarnsf@gmail.com': 'claude',
             'dustinyork15@gmail.com': 'chatgpt'
         };
 
         const projects = [
-            {
-                name: "Nudio",
-                repo: "ebaix",
-                url: "https://github.com/speedwarnsf/ebaix",
-                liveUrl: "https://nudio.ai",
-                description: "AI product photography",
-                lastCommit: null,
-                lastMessage: null,
-                lastCommitEmail: null,
-                openIssues: 0
-            },
-            {
-                name: "The Forge",
-                repo: "Cforge",
-                url: "https://github.com/speedwarnsf/Cforge",
-                liveUrl: null,
-                placeholderDomain: "thecforge.com",
-                description: "AI creative ideation",
-                lastCommit: null,
-                lastMessage: null,
-                lastCommitEmail: null,
-                openIssues: 0
-            },
-            {
-                name: "Earth Defender",
-                repo: "earth-defender",
-                url: "https://github.com/speedwarnsf/earth-defender",
-                liveUrl: null,
-                description: "Orbital defense game",
-                lastCommit: null,
-                lastMessage: null,
-                lastCommitEmail: null,
-                openIssues: 0
-            },
-            {
-                name: "Wellth",
-                repo: "wellth-app",
-                url: "https://github.com/speedwarnsf/wellth-app",
-                liveUrl: null,
-                placeholderDomain: "goodwellth.com",
-                description: "Wellness tips app",
-                lastCommit: null,
-                lastMessage: null,
-                lastCommitEmail: null,
-                openIssues: 0
-            },
-            {
-                name: "Championship Tennis",
-                repo: "championship-tennis",
-                url: "https://github.com/speedwarnsf/championship-tennis",
-                liveUrl: null,
-                description: "Mobile tennis game",
-                lastCommit: null,
-                lastMessage: null,
-                lastCommitEmail: null,
-                openIssues: 0
-            },
-            {
-                name: "D York Music",
-                repo: null,
-                url: null,
-                liveUrl: null,
-                placeholderDomain: "dyorkmusic.com",
-                description: "Music portfolio",
-                lastCommit: null,
-                lastMessage: null,
-                lastCommitEmail: null,
-                openIssues: 0
-            }
+            { name: "Nudio", repo: "ebaix", url: "https://github.com/speedwarnsf/ebaix", liveUrl: "https://nudio.ai", description: "AI product photography" },
+            { name: "The Forge", repo: "Cforge", url: "https://github.com/speedwarnsf/Cforge", liveUrl: null, placeholder: "thecforge.com", description: "AI creative ideation" },
+            { name: "Earth Defender", repo: "earth-defender", url: "https://github.com/speedwarnsf/earth-defender", liveUrl: null, description: "Orbital defense game" },
+            { name: "Wellth", repo: "wellth-app", url: "https://github.com/speedwarnsf/wellth-app", liveUrl: null, placeholder: "goodwellth.com", description: "Wellness tips app" },
+            { name: "Championship Tennis", repo: "championship-tennis", url: "https://github.com/speedwarnsf/championship-tennis", liveUrl: null, description: "Mobile tennis game" },
+            { name: "D York Music", repo: null, url: null, liveUrl: null, placeholder: "dyorkmusic.com", description: "Music portfolio" }
         ];
 
+        projects.forEach(p => { p.lastCommit = null; p.lastMessage = null; p.lastCommitEmail = null; p.openIssues = 0; });
+
         function getSessions() {
-            try { return JSON.parse(localStorage.getItem('llmSessions') || '{}'); } 
-            catch { return {}; }
+            try { return JSON.parse(localStorage.getItem('llmSessions') || '{}'); } catch { return {}; }
         }
-
         function saveSession(repo, llm) {
-            const sessions = getSessions();
-            sessions[repo] = { llm, timestamp: new Date().toISOString() };
-            localStorage.setItem('llmSessions', JSON.stringify(sessions));
+            const s = getSessions();
+            s[repo] = { llm, timestamp: new Date().toISOString() };
+            localStorage.setItem('llmSessions', JSON.stringify(s));
         }
-
-        function detectLLM(project) {
-            if (!project.repo || !project.lastCommit) return null;
-            
+        function detectLLM(p) {
+            if (!p.repo || !p.lastCommit) return null;
             const sessions = getSessions();
-            const session = sessions[project.repo];
-            const emailLLM = project.lastCommitEmail ? 
-                LLM_SIGNATURES[project.lastCommitEmail.toLowerCase()] : null;
-            
-            const commitDate = new Date(project.lastCommit);
-            const now = new Date();
-            const daysSinceCommit = (now - commitDate) / (1000 * 60 * 60 * 24);
-            
-            if (daysSinceCommit <= SESSION_WINDOW_DAYS && emailLLM) {
-                return emailLLM;
-            }
-            
+            const session = sessions[p.repo];
+            const emailLLM = p.lastCommitEmail ? LLM_SIGNATURES[p.lastCommitEmail.toLowerCase()] : null;
+            const commitDate = new Date(p.lastCommit);
+            const daysSince = (new Date() - commitDate) / (1000*60*60*24);
+            if (daysSince <= SESSION_WINDOW_DAYS && emailLLM) return emailLLM;
             if (session) {
-                const sessionDate = new Date(session.timestamp);
-                const daysDiff = Math.abs(commitDate - sessionDate) / (1000 * 60 * 60 * 24);
-                if (daysDiff <= SESSION_WINDOW_DAYS) return session.llm;
+                const diff = Math.abs(commitDate - new Date(session.timestamp)) / (1000*60*60*24);
+                if (diff <= SESSION_WINDOW_DAYS) return session.llm;
             }
-            
             return null;
         }
 
@@ -447,80 +353,40 @@
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 2000);
         }
-
-        function getDaysSince(dateStr) {
-            if (!dateStr) return null;
-            return Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
-        }
-
+        function getDays(d) { return d ? Math.floor((new Date() - new Date(d)) / (1000*60*60*24)) : null; }
         function getStatus(days) {
-            if (days === null) return { label: 'New', class: 'status-frozen' };
-            if (days <= 7) return { label: 'Hot', class: 'status-hot' };
-            if (days <= 30) return { label: 'Warm', class: 'status-warm' };
-            if (days <= 90) return { label: 'Cold', class: 'status-cold' };
-            return { label: 'Frozen', class: 'status-frozen' };
+            if (days === null) return { label: 'New', cls: 'status-frozen' };
+            if (days <= 7) return { label: 'Hot', cls: 'status-hot' };
+            if (days <= 30) return { label: 'Warm', cls: 'status-warm' };
+            if (days <= 90) return { label: 'Cold', cls: 'status-cold' };
+            return { label: 'Frozen', cls: 'status-frozen' };
         }
-
-        function formatDate(d) {
-            if (!d) return '';
-            return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
+        function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''; }
 
         function resumeInLLM(name, llm) {
             const p = projects.find(x => x.name === name);
             if (!p || !p.repo) return;
-            
-            const prompt = `Continue working on ${p.name}. Repo: ${p.url}. Last commit: "${p.lastMessage}" on ${formatDate(p.lastCommit)}. ${p.description}. Review the files and suggest next steps.`;
+            const prompt = `Continue working on ${p.name}. Repo: ${p.url}. Last commit: "${p.lastMessage || 'unknown'}" on ${fmtDate(p.lastCommit) || 'unknown'}. ${p.description}. Review the files and suggest next steps.`;
             saveSession(p.repo, llm);
-            
             if (llm === 'chatgpt') {
-                window.open(`https://chat.openai.com/?hints=search&q=${encodeURIComponent(prompt)}`, '_blank');
+                window.open('https://chat.openai.com/?hints=search&q=' + encodeURIComponent(prompt), '_blank');
             } else {
-                navigator.clipboard.writeText(prompt);
+                navigator.clipboard.writeText(prompt).catch(() => {});
                 const urls = { claude: 'https://claude.ai', gemini: 'https://gemini.google.com', grok: 'https://grok.x.ai' };
                 window.open(urls[llm], '_blank');
                 showToast('Prompt copied');
             }
         }
 
-        async function fetchGitHubData() {
-            document.getElementById('refreshBtn').textContent = 'Loading...';
-            
-            for (const p of projects) {
-                if (!p.repo) continue;
-                try {
-                    const [commits, repo] = await Promise.all([
-                        fetch(`https://api.github.com/repos/${GITHUB_USER}/${p.repo}/commits?per_page=1`).then(r => r.json()),
-                        fetch(`https://api.github.com/repos/${GITHUB_USER}/${p.repo}`).then(r => r.json())
-                    ]);
-                    if (commits[0]) {
-                        p.lastCommit = commits[0].commit.author.date;
-                        p.lastMessage = commits[0].commit.message.split('\n')[0];
-                        p.lastCommitEmail = commits[0].commit.author.email;
-                    }
-                    p.openIssues = repo.open_issues_count || 0;
-                } catch (e) { console.error(e); }
-            }
-            
-            document.getElementById('refreshBtn').textContent = 'Refresh';
-        }
-
         function getPreviewUrl(p) {
-            // Live site screenshot
-            if (p.liveUrl) {
-                return `https://api.microlink.io/?url=${encodeURIComponent(p.liveUrl)}&screenshot=true&meta=false&embed=screenshot.url`;
-            }
-            // GitHub repo social preview
-            if (p.repo) {
-                return `https://opengraph.githubassets.com/1/${GITHUB_USER}/${p.repo}`;
-            }
+            if (p.liveUrl) return 'https://api.microlink.io/?url=' + encodeURIComponent(p.liveUrl) + '&screenshot=true&meta=false&embed=screenshot.url';
+            if (p.repo) return 'https://opengraph.githubassets.com/1/' + GITHUB_USER + '/' + p.repo;
             return null;
         }
 
-        function renderProjects() {
+        function render() {
             const grid = document.getElementById('projectsGrid');
-            let hot = 0, cold = 0, llmActive = 0;
-
+            let hot = 0, cold = 0, llmCount = 0;
             const sorted = [...projects].sort((a, b) => {
                 if (!a.lastCommit) return 1;
                 if (!b.lastCommit) return -1;
@@ -528,74 +394,83 @@
             });
 
             grid.innerHTML = sorted.map(p => {
-                const days = getDaysSince(p.lastCommit);
+                const days = getDays(p.lastCommit);
                 const status = getStatus(days);
                 const llm = detectLLM(p);
-                
                 if (days !== null && days <= 7) hot++;
                 if (days !== null && days > 30) cold++;
-                if (llm) llmActive++;
+                if (llm) llmCount++;
 
                 const previewUrl = getPreviewUrl(p);
-                let previewHtml = '<div class="no-preview">No Preview</div>';
-                
+                const linkUrl = p.liveUrl || p.url || '#';
+                let previewHtml;
                 if (previewUrl) {
-                    const linkUrl = p.liveUrl || p.url;
-                    const overlayClass = p.liveUrl ? 'live-overlay' : 'github-overlay';
-                    const overlayText = p.liveUrl ? '● Live Site' : 'View Repo';
-                    
-                    previewHtml = `
-                        <a href="${linkUrl}" target="_blank">
-                            <img src="${previewUrl}" alt="${p.name}" 
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="no-preview" style="display:none;">Preview unavailable</div>
-                        </a>
-                        <a href="${linkUrl}" target="_blank" class="${overlayClass}">${overlayText}</a>
-                    `;
+                    const btnClass = p.liveUrl ? 'overlay-btn live' : 'overlay-btn';
+                    const btnText = p.liveUrl ? '● Live' : 'Repo';
+                    previewHtml = `<a href="${linkUrl}" target="_blank"><img src="${previewUrl}" alt="${p.name}" onerror="this.outerHTML='<div class=no-preview>No Preview</div>'"></a><a href="${linkUrl}" target="_blank" class="${btnClass}">${btnText}</a>`;
+                } else {
+                    previewHtml = '<div class="no-preview">No Repo</div>';
                 }
 
-                // Meta line
                 let meta = [];
-                if (p.liveUrl) meta.push(`<a href="${p.liveUrl}" target="_blank" class="live-link">● Live</a>`);
-                if (p.placeholderDomain) meta.push(`<span>${p.placeholderDomain}</span>`);
-                if (p.url) meta.push(`<a href="${p.url}" target="_blank">GitHub</a>`);
+                if (p.liveUrl) meta.push('<a href="' + p.liveUrl + '" target="_blank" class="live-link">● Live</a>');
+                if (p.placeholder) meta.push('<span>' + p.placeholder + '</span>');
+                if (p.url) meta.push('<a href="' + p.url + '" target="_blank">GitHub</a>');
                 const metaHtml = meta.length ? meta.join(' · ') : '<span>No repo</span>';
 
                 return `
-                    <div class="project-card ${llm ? 'llm-active' : ''}">
-                        ${llm ? `<span class="llm-badge">${llm}</span>` : ''}
-                        <div class="project-preview">${previewHtml}</div>
-                        <div class="project-info">
-                            <div class="project-header">
-                                <span class="project-name">${p.name}</span>
-                                <span class="project-status ${status.class}">${status.label}</span>
-                            </div>
-                            <div class="project-meta">${metaHtml}</div>
-                            <div class="project-stats-row">
-                                <span>${days !== null ? days + 'd idle' : 'New'}</span>
-                                <span>${p.openIssues} issues</span>
-                            </div>
-                            ${p.lastMessage ? `<div class="last-commit"><strong>${p.lastMessage}</strong> · ${formatDate(p.lastCommit)}</div>` : ''}
-                            <div class="llm-buttons">
-                                <a href="#" onclick="resumeInLLM('${p.name}', 'claude'); return false" class="${!p.repo ? 'disabled' : ''}">Claude</a>
-                                <a href="#" onclick="resumeInLLM('${p.name}', 'chatgpt'); return false" class="${!p.repo ? 'disabled' : ''}">GPT</a>
-                                <a href="#" onclick="resumeInLLM('${p.name}', 'gemini'); return false" class="${!p.repo ? 'disabled' : ''}">Gemini</a>
-                                <a href="#" onclick="resumeInLLM('${p.name}', 'grok'); return false" class="${!p.repo ? 'disabled' : ''}">Grok</a>
-                            </div>
+                <div class="project-card ${llm ? 'llm-active' : ''}">
+                    ${llm ? '<span class="llm-badge">' + llm + '</span>' : ''}
+                    <div class="project-preview">${previewHtml}</div>
+                    <div class="project-info">
+                        <div class="project-header">
+                            <span class="project-name">${p.name}</span>
+                            <span class="project-status ${status.cls}">${status.label}</span>
+                        </div>
+                        <div class="project-meta">${metaHtml}</div>
+                        <div class="project-stats-row">
+                            <span>${days !== null ? days + 'd idle' : 'New'}</span>
+                            <span>${p.openIssues} issues</span>
+                        </div>
+                        ${p.lastMessage ? '<div class="last-commit">' + p.lastMessage + ' · ' + fmtDate(p.lastCommit) + '</div>' : ''}
+                        <div class="llm-buttons">
+                            <a href="#" onclick="resumeInLLM('${p.name}','claude');return false" class="${!p.repo ? 'disabled' : ''}">Claude</a>
+                            <a href="#" onclick="resumeInLLM('${p.name}','chatgpt');return false" class="${!p.repo ? 'disabled' : ''}">GPT</a>
+                            <a href="#" onclick="resumeInLLM('${p.name}','gemini');return false" class="${!p.repo ? 'disabled' : ''}">Gemini</a>
+                            <a href="#" onclick="resumeInLLM('${p.name}','grok');return false" class="${!p.repo ? 'disabled' : ''}">Grok</a>
                         </div>
                     </div>
-                `;
+                </div>`;
             }).join('');
 
             document.getElementById('hotProjects').textContent = hot;
             document.getElementById('coldProjects').textContent = cold;
-            document.getElementById('llmProjects').textContent = llmActive;
-            document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+            document.getElementById('llmProjects').textContent = llmCount;
+        }
+
+        async function fetchGitHub() {
+            document.getElementById('refreshBtn').textContent = 'Loading...';
+            for (const p of projects) {
+                if (!p.repo) continue;
+                try {
+                    const [commits, repo] = await Promise.all([
+                        fetch('https://api.github.com/repos/' + GITHUB_USER + '/' + p.repo + '/commits?per_page=1').then(r => r.json()),
+                        fetch('https://api.github.com/repos/' + GITHUB_USER + '/' + p.repo).then(r => r.json())
+                    ]);
+                    if (commits && commits[0] && commits[0].commit) {
+                        p.lastCommit = commits[0].commit.author.date;
+                        p.lastMessage = commits[0].commit.message.split('\n')[0];
+                        p.lastCommitEmail = commits[0].commit.author.email;
+                    }
+                    if (repo && repo.open_issues_count !== undefined) p.openIssues = repo.open_issues_count;
+                } catch (e) {}
+            }
+            document.getElementById('refreshBtn').textContent = 'Refresh';
+            render();
         }
 
         async function refreshData() {
-            await fetchGitHubData();
-            renderProjects();
+            await fetchGitHub();
             showToast('Updated');
         }
 
@@ -611,7 +486,8 @@
                 sessionStorage.setItem('authenticated', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
-                refreshData();
+                render();
+                fetchGitHub();
             } else {
                 document.getElementById('error').style.display = 'block';
             }
@@ -620,7 +496,8 @@
         if (sessionStorage.getItem('authenticated') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            refreshData();
+            render();
+            fetchGitHub();
         }
     </script>
 </body>
