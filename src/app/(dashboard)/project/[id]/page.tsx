@@ -9,6 +9,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { JournalEntry, Milestone, Project, Task } from "@/lib/types";
 import MilestoneList from "@/components/MilestoneList";
 import JournalEntryCard from "@/components/JournalEntry";
+import QuickActions from "@/components/QuickActions";
+import ProjectStats from "@/components/ProjectStats";
 
 type MilestoneWithTasks = Milestone & { tasks: Task[] };
 
@@ -110,6 +112,41 @@ export default async function ProjectDetailPage({
             Back
           </a>
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-6">
+        <QuickActions
+          project={{
+            id: typedProject.id,
+            name: typedProject.name,
+            description: typedProject.description,
+            github_repo: typedProject.github_repo,
+            live_url: typedProject.live_url,
+            status: typedProject.status,
+            priority: typedProject.priority,
+          }}
+          milestones={milestones.map((m) => ({
+            name: m.name,
+            status: m.status,
+            percent_complete: m.percent_complete,
+          }))}
+          recentJournalEntries={(journalData || []).slice(0, 5).map((j) => ({
+            content: j.content,
+            entry_type: j.entry_type,
+            created_at: j.created_at,
+          }))}
+        />
+      </div>
+
+      {/* Project Stats */}
+      <div className="mt-6">
+        <ProjectStats
+          milestoneCount={milestones.length}
+          completedMilestones={milestones.filter((m) => m.status === "completed").length}
+          journalEntryCount={(journalData || []).length}
+          lastUpdated={typedProject.updated_at}
+        />
       </div>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
