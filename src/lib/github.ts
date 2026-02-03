@@ -49,45 +49,58 @@ export const fetchGithubActivity = async (repo: string): Promise<GithubActivity>
     };
   }
 
-  const token = process.env.GITHUB_TOKEN;
-  const headers: HeadersInit = token
-    ? { Authorization: `token ${token}` }
-    : {};
+  try {
+    const token = process.env.GITHUB_TOKEN;
+    const headers: HeadersInit = token
+      ? { Authorization: `token ${token}` }
+      : {};
 
-  const base = `https://api.github.com/repos/${parsed.owner}/${parsed.name}`;
-  const [commitRes, issuesRes, actionsRes] = await Promise.all([
-    fetch(`${base}/commits?per_page=1`, { headers, next: { revalidate: 120 } }),
-    fetch(
-      `https://api.github.com/search/issues?q=repo:${parsed.owner}/${parsed.name}+type:issue+state:open`,
-      { headers, next: { revalidate: 120 } }
-    ),
-    fetch(`${base}/actions/runs?per_page=1`, { headers, next: { revalidate: 120 } }),
-  ]);
+    const base = `https://api.github.com/repos/${parsed.owner}/${parsed.name}`;
+    const [commitRes, issuesRes, actionsRes] = await Promise.all([
+      fetch(`${base}/commits?per_page=1`, { headers, next: { revalidate: 300 } }).catch(() => null),
+      fetch(
+        `https://api.github.com/search/issues?q=repo:${parsed.owner}/${parsed.name}+type:issue+state:open`,
+        { headers, next: { revalidate: 300 } }
+      ).catch(() => null),
+      fetch(`${base}/actions/runs?per_page=1`, { headers, next: { revalidate: 300 } }).catch(() => null),
+    ]);
 
-  const commitData = commitRes.ok ? await commitRes.json() : [];
-  const issuesData = issuesRes.ok ? await issuesRes.json() : null;
-  const actionsData = actionsRes.ok ? await actionsRes.json() : null;
+    const commitData = commitRes?.ok ? await commitRes.json().catch(() => []) : [];
+    const issuesData = issuesRes?.ok ? await issuesRes.json().catch(() => null) : null;
+    const actionsData = actionsRes?.ok ? await actionsRes.json().catch(() => null) : null;
 
-  const latestCommit = Array.isArray(commitData) && commitData.length > 0 ? commitData[0] : null;
-  const lastCommitSha = latestCommit?.sha ?? null;
-  const lastCommitMessage = latestCommit?.commit?.message ?? null;
-  const lastCommitDate = latestCommit?.commit?.author?.date ?? null;
-  const openIssues = typeof issuesData?.total_count === "number" ? issuesData.total_count : null;
-  const workflowRun = actionsData?.workflow_runs?.[0];
-  const ciStatus =
-    workflowRun?.conclusion === "success"
-      ? "success"
-      : workflowRun?.conclusion
-      ? "failure"
-      : "unknown";
+    const latestCommit = Array.isArray(commitData) && commitData.length > 0 ? commitData[0] : null;
+    const lastCommitSha = latestCommit?.sha ?? null;
+    const lastCommitMessage = latestCommit?.commit?.message ?? null;
+    const lastCommitDate = latestCommit?.commit?.author?.date ?? null;
+    const openIssues = typeof issuesData?.total_count === "number" ? issuesData.total_count : null;
+    const workflowRun = actionsData?.workflow_runs?.[0];
+    const ciStatus =
+      workflowRun?.conclusion === "success"
+        ? "success"
+        : workflowRun?.conclusion
+        ? "failure"
+        : "unknown";
 
-  return {
-    lastCommitSha,
-    lastCommitMessage,
-    lastCommitDate,
-    openIssues,
-    ciStatus,
-    activityLabel: computeActivity(lastCommitDate),
-    repoUrl: `https://github.com/${parsed.owner}/${parsed.name}`,
-  };
+    return {
+      lastCommitSha,
+      lastCommitMessage,
+      lastCommitDate,
+      openIssues,
+      ciStatus,
+      activityLabel: computeActivity(lastCommitDate),
+      repoUrl: `https://github.com/${parsed.owner}/${parsed.name}`,
+    };
+  } catch (error) {
+    console.error(`GitHub fetch error for ${repo}:`, error);
+    return {
+      lastCommitSha: null,
+      lastCommitMessage: null,
+      lastCommitDate: null,
+      openIssues: null,
+      ciStatus: "unknown",
+      activityLabel: "Unknown",
+      repoUrl: `https://github.com/${parsed.owner}/${parsed.name}`,
+    };
+  }
 };

@@ -6,19 +6,29 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-function checkApiKey(request: NextRequest): boolean {
+function checkApiKey(request: NextRequest): { valid: boolean; reason?: string } {
   const authHeader = request.headers.get("authorization");
   const apiKey = process.env.DASHBOARD_API_KEY;
-  if (!apiKey) return false;
-  return authHeader === `Bearer ${apiKey}`;
+  
+  if (!apiKey) {
+    return { valid: false, reason: "API key not configured" };
+  }
+  if (!authHeader) {
+    return { valid: false, reason: "No authorization header" };
+  }
+  if (authHeader !== `Bearer ${apiKey}`) {
+    return { valid: false, reason: "Invalid API key" };
+  }
+  return { valid: true };
 }
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!checkApiKey(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authCheck = checkApiKey(request);
+  if (!authCheck.valid) {
+    return NextResponse.json({ error: "Unauthorized", reason: authCheck.reason }, { status: 401 });
   }
 
   const { id: projectId } = await params;
