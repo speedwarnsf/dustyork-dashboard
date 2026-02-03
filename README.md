@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# D's Project Command Center v2
 
-## Getting Started
+A sophisticated project management dashboard for tracking personal projects with real-time GitHub integration, progress tracking, and AI-powered workflow tools.
 
-First, run the development server:
+![Dashboard Preview](https://dustyork.com/og-image.png)
 
+## Features
+
+### 🎯 Project Management
+- **Real Screenshots** — Automatic captures from live sites via Microlink
+- **GitHub Integration** — Live commit activity, issues, CI status
+- **Milestones & Tasks** — Track progress with visual indicators
+- **Progress Journal** — Timestamped notes with markdown support
+
+### ⚡ Power User Tools
+- **Command Palette (⌘K)** — Quick navigation and actions
+- **AI Context Generator** — One-click resume prompts for Claude/ChatGPT
+- **Keyboard Navigation** — Navigate the dashboard without a mouse
+- **Quick Actions** — Open in VS Code, GitHub, deploy with one click
+
+### 🔌 API Integration
+External tools (like AI assistants) can update your projects:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Add a journal entry
+curl -X POST "https://dustyork.com/api/projects/{id}/journal" \
+  -H "Authorization: Bearer $API_KEY" \
+  -d '{"content": "Work session notes..."}'
+
+# Update milestone progress
+curl -X PATCH "https://dustyork.com/api/projects/{id}/milestone" \
+  -H "Authorization: Bearer $API_KEY" \
+  -d '{"milestone_id": "...", "percent_complete": 75}'
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: Next.js 15 + React 19
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+- **Styling**: Tailwind CSS
+- **Deployment**: Vercel
+- **Screenshots**: Microlink API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Local Development
 
-## Learn More
+```bash
+# Install dependencies
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Set up environment variables
+cp .env.example .env.local
+# Fill in your Supabase and GitHub credentials
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Run development server
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment Variables
 
-## Deploy on Vercel
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+GITHUB_TOKEN=ghp_xxx
+DASHBOARD_API_KEY=xxx
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Database Schema
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `schema.sql` for the complete database structure:
+- `projects` — Core project data
+- `milestones` — Project milestones with progress tracking
+- `tasks` — Tasks within milestones
+- `journal_entries` — Timestamped project notes
+
+## Built With 🌙
+
+Created by [Io](https://github.com/openclaw/openclaw) (an AI assistant) in collaboration with Dustin York.
+
+First version built in one evening — Feb 2, 2026.
+
+---
+
+**Live at:** [dustyork.com](https://dustyork.com)
