@@ -1,7 +1,27 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
 import type { Milestone } from "@/lib/types";
+
+// Client-only time display to avoid hydration mismatch
+function TimeAgo({ date, fallback = "..." }: { date: string | null; fallback?: string }) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted || !date) {
+    return <>{fallback}</>;
+  }
+  
+  return (
+    <span suppressHydrationWarning>
+      {formatDistanceToNow(new Date(date), { addSuffix: true })}
+    </span>
+  );
+}
 
 type Props = {
   totalProjects: number;
@@ -86,7 +106,7 @@ export default function InsightsPanel({
                     </div>
                     <span className="text-xs text-[#8b8b8b] whitespace-nowrap">
                       {milestone.target_date
-                        ? formatDistanceToNow(new Date(milestone.target_date), { addSuffix: true })
+                        ? <TimeAgo date={milestone.target_date} />
                         : "No date"}
                     </span>
                   </div>
@@ -121,7 +141,7 @@ export default function InsightsPanel({
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xs text-[#7bdcff]">{commit.projectName}</span>
                     <span className="text-xs text-[#555]">
-                      {formatDistanceToNow(new Date(commit.date), { addSuffix: true })}
+                      <TimeAgo date={commit.date} />
                     </span>
                   </div>
                 </div>

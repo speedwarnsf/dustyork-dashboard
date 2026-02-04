@@ -1,7 +1,27 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
 import type { Project } from "@/lib/types";
+
+// Client-only time display to avoid hydration mismatch
+function TimeAgo({ date }: { date: string }) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted) {
+    return <>...</>;
+  }
+  
+  return (
+    <span suppressHydrationWarning>
+      Last activity {formatDistanceToNow(new Date(date), { addSuffix: true })}
+    </span>
+  );
+}
 
 type ProjectWithActivity = Project & {
   lastActivity?: string;
@@ -52,7 +72,7 @@ export default function NeedsAttention({ projects }: Props) {
               </p>
               <p className="text-xs text-[#666]">
                 {project.lastActivity
-                  ? `Last activity ${formatDistanceToNow(new Date(project.lastActivity), { addSuffix: true })}`
+                  ? <TimeAgo date={project.lastActivity} />
                   : "No recent activity"}
               </p>
             </div>
