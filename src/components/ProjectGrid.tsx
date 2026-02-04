@@ -8,7 +8,7 @@ type ProjectGridProps = {
 
 export default function ProjectGrid({ projects }: ProjectGridProps) {
   return (
-    <div className="mt-8 grid gap-6 md:grid-cols-2">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {projects.map((project) => (
         <ProjectCard key={project.id} project={project} />
       ))}
