@@ -1,13 +1,21 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 // API for Io (AI assistant) to post updates
 // Uses API key authentication
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const IO_API_KEY = process.env.IO_API_KEY || process.env.DASHBOARD_API_KEY || "003e91026ee5b01243615147a7fd740e96058bda86e7ea60fd1bc3724e415d1f";
 
-const IO_API_KEY = process.env.IO_API_KEY || "003e91026ee5b01243615147a7fd740e96058bda86e7ea60fd1bc3724e415d1f";
+function getSupabaseClient(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!url || !key) {
+    return null;
+  }
+  
+  return createClient(url, key);
+}
 
 function verifyApiKey(request: NextRequest): boolean {
   const authHeader = request.headers.get("authorization");
@@ -23,7 +31,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+  }
 
   // Fetch all projects
   const { data: projects, error: projectsError } = await supabase
@@ -47,7 +58,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Fetch milestones
-  const { data: milestones, error: milestonesError } = await supabase
+  const { data: milestones } = await supabase
     .from("milestones")
     .select("*, projects(name)")
     .order("updated_at", { ascending: false });
@@ -66,7 +77,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+  }
   
   try {
     const body = await request.json();

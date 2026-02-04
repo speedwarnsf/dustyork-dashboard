@@ -30,12 +30,30 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   // Fetch projects on mount
   useEffect(() => {
+    setIsLoading(true);
+    setFetchError(null);
+    
     fetch("/api/projects")
-      .then((res) => res.json())
-      .then((data) => setProjects(data.projects || []))
-      .catch(console.error);
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch projects: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setProjects(data.projects || []);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("CommandPalette fetch error:", err);
+        setFetchError(err.message);
+        setIsLoading(false);
+      });
   }, []);
 
   // Handle keyboard shortcut (Cmd+K)
@@ -243,9 +261,19 @@ export default function CommandPalette() {
 
         {/* Results */}
         <div className="max-h-[400px] overflow-y-auto">
-          {flatActions.length === 0 ? (
+          {isLoading ? (
             <div className="px-4 py-12 text-center">
-              <p className="text-[#8b8b8b]">No results for "{query}"</p>
+              <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-[#7bdcff] border-t-transparent mb-3" />
+              <p className="text-[#8b8b8b]">Loading projects...</p>
+            </div>
+          ) : fetchError ? (
+            <div className="px-4 py-12 text-center">
+              <p className="text-red-400">⚠️ {fetchError}</p>
+              <p className="text-sm text-[#555] mt-1">Try refreshing the page</p>
+            </div>
+          ) : flatActions.length === 0 ? (
+            <div className="px-4 py-12 text-center">
+              <p className="text-[#8b8b8b]">No results for &ldquo;{query}&rdquo;</p>
               <p className="text-sm text-[#555] mt-1">Try a different search term</p>
             </div>
           ) : (

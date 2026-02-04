@@ -26,7 +26,7 @@ export default async function DashboardLayout({
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-[#1c1c1c] bg-black/90 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
-          <Header userEmail={user.email} />
+          <Header />
           
           <div className="flex items-center gap-4">
             {/* User info */}

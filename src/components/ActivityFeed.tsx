@@ -1,26 +1,6 @@
 "use client";
 
-import { formatDistanceToNow } from "date-fns";
-import { useEffect, useState } from "react";
-
-// Client-only time display to avoid hydration mismatch
-function TimeAgo({ timestamp }: { timestamp: string }) {
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted) {
-    return <span className="text-xs text-[#666]">...</span>;
-  }
-  
-  return (
-    <span suppressHydrationWarning>
-      {formatDistanceToNow(new Date(timestamp), { addSuffix: true })}
-    </span>
-  );
-}
+import TimeAgo from "./TimeAgo";
 
 type ActivityItem = {
   id: string;
@@ -85,7 +65,7 @@ export default function ActivityFeed({ activities }: Props) {
                 {activity.message}
               </p>
               <p className="text-xs text-[#666] mt-1">
-                <TimeAgo timestamp={activity.timestamp} />
+                <TimeAgo date={activity.timestamp} />
               </p>
             </div>
           </a>

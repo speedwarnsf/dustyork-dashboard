@@ -12,7 +12,7 @@ export default async function LoginPage({
       <div className="w-full max-w-md rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-8 shadow-[0_0_40px_rgba(123,220,255,0.08)]">
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff]">
-            D's Command Center
+            D&apos;s Command Center
           </p>
           <h1 className="mt-3 text-3xl font-semibold">
             Sign in to your dashboard

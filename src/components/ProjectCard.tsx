@@ -1,7 +1,10 @@
+"use client";
+
 import type { Project } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
 import { getGithubOpenGraphUrl } from "@/lib/github";
-import { formatDistanceToNow, differenceInDays } from "date-fns";
+import { differenceInDays } from "date-fns";
+import TimeAgo from "./TimeAgo";
 
 const statusStyles: Record<string, string> = {
   active: "bg-[#0f1d12] text-[#d2ff5a] border-[#20381f]",
@@ -46,7 +49,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const fallbackImage = getGithubOpenGraphUrl(project.github_repo);
   const imageUrl = project.screenshot_url || fallbackImage;
   const health = getHealthIndicator(project);
-  const lastUpdated = formatDistanceToNow(new Date(project.updated_at), { addSuffix: true });
 
   return (
     <a
@@ -107,7 +109,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       {/* Meta info */}
       <div className="mt-4 pt-4 border-t border-[#1c1c1c]">
         <div className="flex items-center justify-between text-xs text-[#666]">
-          <span>Updated {lastUpdated}</span>
+          <TimeAgo date={project.updated_at} prefix="Updated " />
           <div className="flex items-center gap-2">
             {project.github?.openIssues != null && project.github.openIssues > 0 && (
               <span className="text-[#8b8b8b]">{project.github.openIssues} issues</span>

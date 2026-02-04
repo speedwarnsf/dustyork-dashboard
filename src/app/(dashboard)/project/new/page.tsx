@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createProject } from "@/app/(dashboard)/actions";
 
 export default function NewProjectPage() {
@@ -64,12 +65,12 @@ export default function NewProjectPage() {
             >
               Create
             </button>
-            <a
+            <Link
               href="/"
               className="rounded-full border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
             >
               Cancel
-            </a>
+            </Link>
           </div>
         </form>
       </div>

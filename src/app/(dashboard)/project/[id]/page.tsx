@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   addJournalEntry,
   archiveProject,
@@ -91,12 +92,12 @@ export default async function ProjectDetailPage({
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.3em]">
-          <a
+          <Link
             href={`/project/${typedProject.id}/edit`}
             className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
           >
             Edit
-          </a>
+          </Link>
           <form action={archiveProject.bind(null, typedProject.id)}>
             <button
               type="submit"
@@ -105,12 +106,12 @@ export default async function ProjectDetailPage({
               Archive
             </button>
           </form>
-          <a
+          <Link
             href="/"
             className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
           >
             Back
-          </a>
+          </Link>
         </div>
       </div>
 

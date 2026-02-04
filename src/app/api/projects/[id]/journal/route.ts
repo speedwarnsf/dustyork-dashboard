@@ -1,14 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+function getSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!url || !key) {
+    return null;
+  }
+  
+  return createClient(url, key);
+}
 
 function checkApiKey(request: NextRequest): { valid: boolean; reason?: string } {
   const authHeader = request.headers.get("authorization");
-  const apiKey = process.env.DASHBOARD_API_KEY;
+  // Accept both DASHBOARD_API_KEY and IO_API_KEY for consistency
+  const apiKey = process.env.DASHBOARD_API_KEY || process.env.IO_API_KEY;
   
   if (!apiKey) {
     return { valid: false, reason: "API key not configured" };
@@ -29,6 +36,11 @@ export async function POST(
   const authCheck = checkApiKey(request);
   if (!authCheck.valid) {
     return NextResponse.json({ error: "Unauthorized", reason: authCheck.reason }, { status: 401 });
+  }
+
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
   }
 
   const { id: projectId } = await params;
@@ -57,7 +69,7 @@ export async function POST(
     }
 
     return NextResponse.json({ success: true, entry: data });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 }
@@ -66,6 +78,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+  }
+
   const { id: projectId } = await params;
 
   const { data, error } = await supabase

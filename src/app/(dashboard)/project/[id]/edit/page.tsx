@@ -28,7 +28,7 @@ export default async function EditProjectPage({
         </p>
         <h2 className="mt-2 text-2xl font-semibold">{project.name}</h2>
         <form
-          action={async (formData) => updateProject(project.id, formData)}
+          action={updateProject.bind(null, project.id)}
           className="mt-6 grid gap-4 text-sm"
         >
           <input

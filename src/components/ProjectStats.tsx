@@ -1,3 +1,16 @@
+"use client";
+
+import { useSyncExternalStore } from "react";
+
+// Use useSyncExternalStore to safely get Date.now() only on client
+function useNow() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => Date.now(),
+    () => 0
+  );
+}
+
 type ProjectStatsProps = {
   milestoneCount: number;
   completedMilestones: number;
@@ -11,9 +24,11 @@ export default function ProjectStats({
   journalEntryCount,
   lastUpdated,
 }: ProjectStatsProps) {
-  const daysSinceUpdate = Math.floor(
-    (Date.now() - new Date(lastUpdated).getTime()) / (1000 * 60 * 60 * 24)
-  );
+  const now = useNow();
+  
+  const daysSinceUpdate = now > 0
+    ? Math.floor((now - new Date(lastUpdated).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
 
   const progress = milestoneCount > 0
     ? Math.round((completedMilestones / milestoneCount) * 100)

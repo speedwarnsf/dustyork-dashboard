@@ -1,27 +1,7 @@
 "use client";
 
-import { formatDistanceToNow } from "date-fns";
-import { useEffect, useState } from "react";
 import type { Milestone } from "@/lib/types";
-
-// Client-only time display to avoid hydration mismatch
-function TimeAgo({ date, fallback = "..." }: { date: string | null; fallback?: string }) {
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted || !date) {
-    return <>{fallback}</>;
-  }
-  
-  return (
-    <span suppressHydrationWarning>
-      {formatDistanceToNow(new Date(date), { addSuffix: true })}
-    </span>
-  );
-}
+import TimeAgo from "./TimeAgo";
 
 type Props = {
   totalProjects: number;

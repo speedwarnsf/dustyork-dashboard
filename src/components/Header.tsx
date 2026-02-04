@@ -1,10 +1,8 @@
 "use client";
 
-type Props = {
-  userEmail?: string;
-};
+import Link from "next/link";
 
-export default function Header({ userEmail }: Props) {
+export default function Header() {
   const triggerCommandPalette = () => {
     const event = new KeyboardEvent("keydown", {
       key: "k",
@@ -16,14 +14,14 @@ export default function Header({ userEmail }: Props) {
 
   return (
     <div className="flex items-center gap-6">
-      <a href="/" className="flex items-center gap-3 group">
+      <Link href="/" className="flex items-center gap-3 group">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7bdcff] to-[#d2ff5a] flex items-center justify-center">
           <span className="text-black font-bold text-sm">D</span>
         </div>
         <h1 className="text-lg font-semibold group-hover:text-[#7bdcff] transition">
           Command Center
         </h1>
-      </a>
+      </Link>
       
       {/* Quick search hint */}
       <button 

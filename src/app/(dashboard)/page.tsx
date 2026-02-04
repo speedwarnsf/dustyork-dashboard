@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ProjectDashboard from "@/components/ProjectDashboard";
 import ActivityFeed from "@/components/ActivityFeed";
 import NeedsAttention from "@/components/NeedsAttention";
@@ -125,12 +126,12 @@ export default async function DashboardPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <a
+            <Link
               href="/project/new"
               className="rounded-xl bg-[#7bdcff] px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
             >
               + New Project
-            </a>
+            </Link>
           </div>
         </div>
 
