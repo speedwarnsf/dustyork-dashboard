@@ -9,26 +9,70 @@ type Props = {
   projects: Array<Project & { github?: GithubActivity | null }>;
 };
 
+type SortOption = "updated" | "name" | "status" | "priority";
+type FilterStatus = "all" | "active" | "paused" | "completed" | "archived";
+
 export default function ProjectDashboard({ projects }: Props) {
   const [view, setView] = useState<"grid" | "list">("grid");
-  const sortedProjects = useMemo(
-    () =>
-      [...projects].sort((a, b) => {
-        const aTime = new Date(a.updated_at).getTime();
-        const bTime = new Date(b.updated_at).getTime();
-        return bTime - aTime;
-      }),
-    [projects]
-  );
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("updated");
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+
+  const filteredAndSortedProjects = useMemo(() => {
+    let result = [...projects];
+
+    // Filter by search
+    if (search) {
+      const searchLower = search.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchLower) ||
+          p.description?.toLowerCase().includes(searchLower) ||
+          p.tags?.some((t) => t.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // Filter by status
+    if (filterStatus !== "all") {
+      result = result.filter((p) => p.status === filterStatus);
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "status":
+          return a.status.localeCompare(b.status);
+        case "priority": {
+          const priorityOrder = { high: 0, medium: 1, low: 2 };
+          return (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1);
+        }
+        case "updated":
+        default:
+          return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+      }
+    });
+
+    return result;
+  }, [projects, search, sortBy, filterStatus]);
 
   return (
     <section className="mx-auto w-full max-w-7xl px-6 py-10">
+      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <p className="text-xs uppercase tracking-[0.4em] text-[#d2ff5a] mb-2">
             All Projects
           </p>
-          <h2 className="text-2xl font-semibold">Live Projects</h2>
+          <h2 className="text-2xl font-semibold">
+            Live Projects
+            {filteredAndSortedProjects.length !== projects.length && (
+              <span className="text-sm font-normal text-[#666] ml-2">
+                ({filteredAndSortedProjects.length} of {projects.length})
+              </span>
+            )}
+          </h2>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] bg-[#0a0a0a] p-1 text-xs">
@@ -54,8 +98,74 @@ export default function ProjectDashboard({ projects }: Props) {
         </div>
       </div>
 
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-[#1c1c1c] bg-[#0a0a0a] pl-10 pr-4 py-2 text-sm placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
+          />
+        </div>
+
+        {/* Status Filter */}
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
+          className="rounded-lg border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
+        >
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="paused">Paused</option>
+          <option value="completed">Completed</option>
+          <option value="archived">Archived</option>
+        </select>
+
+        {/* Sort */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortOption)}
+          className="rounded-lg border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
+        >
+          <option value="updated">Recently Updated</option>
+          <option value="name">Name A-Z</option>
+          <option value="priority">Priority</option>
+          <option value="status">Status</option>
+        </select>
+
+        {/* Clear filters */}
+        {(search || filterStatus !== "all" || sortBy !== "updated") && (
+          <button
+            onClick={() => {
+              setSearch("");
+              setFilterStatus("all");
+              setSortBy("updated");
+            }}
+            className="text-xs text-[#7bdcff] hover:text-white transition"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
       {view === "grid" ? (
-        <ProjectGrid projects={sortedProjects} />
+        <ProjectGrid projects={filteredAndSortedProjects} />
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a]">
           <table className="w-full min-w-[700px]">
@@ -70,7 +180,7 @@ export default function ProjectDashboard({ projects }: Props) {
               </tr>
             </thead>
             <tbody>
-              {sortedProjects.map((project) => (
+              {filteredAndSortedProjects.map((project) => (
                 <tr
                   key={project.id}
                   className="border-b border-[#1c1c1c] last:border-b-0 hover:bg-[#111] transition"
