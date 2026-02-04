@@ -84,12 +84,10 @@ What would you like to work on?`;
     }
   };
 
-  const openInVSCode = () => {
-    // This creates a vscode:// URL to open the project
-    // Note: Requires VS Code URL handler to be enabled
-    const path = `/Users/macster/Projects/${project.github_repo || project.name}`;
-    window.open(`vscode://file${path}`, "_blank");
-    addToast("Opening in VS Code...", "info");
+  const openVercel = () => {
+    // Link to Vercel dashboard - team page for now
+    // Could add project-specific links if we add a vercel_project field
+    window.open("https://vercel.com/speed-warns-projects", "_blank");
   };
 
   const openGitHub = () => {
@@ -119,11 +117,11 @@ What would you like to work on?`;
       </button>
 
       <button
-        onClick={openInVSCode}
+        onClick={openVercel}
         className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
       >
-        <span>💻</span>
-        VS Code
+        <span>▲</span>
+        Vercel
       </button>
 
       {project.github_repo && (
