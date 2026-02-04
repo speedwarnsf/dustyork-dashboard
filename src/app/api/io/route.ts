@@ -3,8 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 // API for Io (AI assistant) to post updates
 // Uses API key authentication
+// Default key for local dev - in production, set IO_API_KEY or DASHBOARD_API_KEY env var
+const DEFAULT_API_KEY = "003e91026ee5b01243615147a7fd740e96058bda86e7ea60fd1bc3724e415d1f";
 
-const IO_API_KEY = process.env.IO_API_KEY || process.env.DASHBOARD_API_KEY || "003e91026ee5b01243615147a7fd740e96058bda86e7ea60fd1bc3724e415d1f";
+function getApiKey(): string {
+  // Read at runtime to ensure env vars are available
+  return process.env.IO_API_KEY || process.env.DASHBOARD_API_KEY || DEFAULT_API_KEY;
+}
 
 function getSupabaseClient(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -22,7 +27,7 @@ function verifyApiKey(request: NextRequest): boolean {
   if (!authHeader) return false;
   
   const token = authHeader.replace("Bearer ", "");
-  return token === IO_API_KEY;
+  return token === getApiKey();
 }
 
 // GET /api/io - Get all projects and recent activity
