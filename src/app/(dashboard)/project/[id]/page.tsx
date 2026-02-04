@@ -17,9 +17,9 @@ type MilestoneWithTasks = Milestone & { tasks: Task[] };
 export default async function ProjectDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
   const supabase = await createSupabaseServerClient();
 
   const { data: project } = await supabase

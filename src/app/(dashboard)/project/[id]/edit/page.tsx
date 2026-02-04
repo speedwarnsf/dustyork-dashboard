@@ -5,9 +5,9 @@ import type { Project } from "@/lib/types";
 export default async function EditProjectPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("projects").select("*").eq("id", id).single();
 
