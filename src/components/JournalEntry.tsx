@@ -20,7 +20,7 @@ export default function JournalEntry({ entry, projectId }: JournalEntryProps) {
           __html: renderMarkdown(entry.content),
         }}
       />
-      <form action={async () => deleteJournalEntry(entry.id, projectId)}>
+      <form action={deleteJournalEntry.bind(null, entry.id, projectId)}>
         <button
           type="submit"
           className="mt-3 text-xs uppercase tracking-[0.3em] text-[#8b8b8b] transition hover:text-[#f4b26a]"

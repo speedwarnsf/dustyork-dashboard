@@ -97,7 +97,7 @@ export default async function ProjectDetailPage({
           >
             Edit
           </a>
-          <form action={async () => archiveProject(typedProject.id)}>
+          <form action={archiveProject.bind(null, typedProject.id)}>
             <button
               type="submit"
               className="rounded-full border border-[#2a2a2a] px-4 py-2 text-[#8b8b8b] transition hover:border-[#f4b26a] hover:text-[#f4b26a]"
@@ -178,9 +178,7 @@ export default async function ProjectDetailPage({
             ) : null}
             {typedProject.live_url ? (
               <form
-                action={async () =>
-                  refreshScreenshot(typedProject.id, typedProject.live_url || "")
-                }
+                action={refreshScreenshot.bind(null, typedProject.id, typedProject.live_url)}
               >
                 <button
                   type="submit"
@@ -242,7 +240,7 @@ export default async function ProjectDetailPage({
         <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           <h3 className="text-lg font-semibold">Progress Journal</h3>
           <form
-            action={async (formData) => addJournalEntry(typedProject.id, formData)}
+            action={addJournalEntry.bind(null, typedProject.id)}
             className="mt-4 grid gap-3"
           >
             <textarea

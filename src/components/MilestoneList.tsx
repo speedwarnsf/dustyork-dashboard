@@ -37,9 +37,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                 </p>
               </div>
               <form
-                action={async (formData) =>
-                  updateMilestone(milestone.id, projectId, formData)
-                }
+                action={updateMilestone.bind(null, milestone.id, projectId)}
                 className="flex flex-col gap-2 text-xs uppercase tracking-[0.3em]"
               >
                 <select
@@ -67,7 +65,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                 </button>
               </form>
               <form
-                action={async () => deleteMilestone(milestone.id, projectId)}
+                action={deleteMilestone.bind(null, milestone.id, projectId)}
               >
                 <button
                   type="submit"
@@ -91,7 +89,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                     </p>
                   </div>
                   <form
-                    action={async (formData) => updateTask(task.id, projectId, formData)}
+                    action={updateTask.bind(null, task.id, projectId)}
                     className="flex items-center gap-2 text-xs uppercase tracking-[0.3em]"
                   >
                     <select
@@ -110,7 +108,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                       Save
                     </button>
                   </form>
-                  <form action={async () => deleteTask(task.id, projectId)}>
+                  <form action={deleteTask.bind(null, task.id, projectId)}>
                     <button
                       type="submit"
                       className="text-xs uppercase tracking-[0.3em] text-[#8b8b8b] transition hover:text-[#f4b26a]"
@@ -123,7 +121,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
             </div>
 
             <form
-              action={async (formData) => addTask(milestone.id, projectId, formData)}
+              action={addTask.bind(null, milestone.id, projectId)}
               className="mt-4 grid gap-3 rounded-2xl border border-dashed border-[#1c1c1c] p-4 text-sm"
             >
               <input
@@ -157,7 +155,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
       </div>
 
       <form
-        action={async (formData) => addMilestone(projectId, formData)}
+        action={addMilestone.bind(null, projectId)}
         className="mt-6 grid gap-3 rounded-2xl border border-dashed border-[#1c1c1c] p-5 text-sm"
       >
         <h4 className="text-sm font-semibold uppercase tracking-[0.3em] text-[#8b8b8b]">
