@@ -9,47 +9,84 @@ import type { Project, Milestone } from "@/lib/types";
 import { differenceInDays } from "date-fns";
 
 export default async function DashboardPage() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  let projects: Project[] = [];
+  let milestones: Array<Milestone & { projects: { name: string } | null }> = [];
+  let journalData: Array<{ id: string; content: string; entry_type: string; created_at: string; projects: { id: string; name: string } | null }> = [];
 
-  // Fetch all projects
-  const { data: projectsData } = await supabase
-    .from("projects")
-    .select("*")
-    .order("updated_at", { ascending: false });
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    user = authUser;
 
-  const projects = (projectsData || []) as Project[];
+    // Fetch all projects
+    const { data: projectsData, error: projectsError } = await supabase
+      .from("projects")
+      .select("*")
+      .order("updated_at", { ascending: false });
 
-  // Fetch GitHub activity for all projects
+    if (projectsError) {
+      console.error("Projects fetch error:", projectsError);
+    }
+    projects = (projectsData || []) as Project[];
+
+    // Fetch all milestones
+    const { data: milestonesData, error: milestonesError } = await supabase
+      .from("milestones")
+      .select("*, projects(name)")
+      .order("target_date", { ascending: true });
+
+    if (milestonesError) {
+      console.error("Milestones fetch error:", milestonesError);
+    }
+    milestones = (milestonesData || []) as Array<Milestone & { projects: { name: string } | null }>;
+
+    // Fetch recent journal entries for activity feed
+    const { data: journalResult, error: journalError } = await supabase
+      .from("journal_entries")
+      .select("*, projects(id, name)")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (journalError) {
+      console.error("Journal fetch error:", journalError);
+    }
+    journalData = journalResult || [];
+  } catch (err) {
+    console.error("Database error:", err);
+  }
+
+  // Fetch GitHub activity for all projects (with error handling for each)
   const projectsWithGithub = await Promise.all(
     projects.map(async (project) => {
       if (!project.github_repo) {
         return { ...project, github: null };
       }
-      const github = await fetchGithubActivity(project.github_repo);
-      return { ...project, github };
+      try {
+        const github = await fetchGithubActivity(project.github_repo);
+        return { ...project, github };
+      } catch (err) {
+        console.error(`GitHub fetch error for ${project.name}:`, err);
+        return { ...project, github: null };
+      }
     })
   );
 
-  // Add activity metadata to projects
-  const projectsWithActivity = projectsWithGithub.map((p) => ({
-    ...p,
-    lastActivity: p.github?.lastCommitDate || p.updated_at,
-    daysSinceActivity: differenceInDays(
-      new Date(),
-      new Date(p.github?.lastCommitDate || p.updated_at)
-    ),
-  }));
-
-  // Fetch all milestones
-  const { data: milestonesData } = await supabase
-    .from("milestones")
-    .select("*, projects(name)")
-    .order("target_date", { ascending: true });
-
-  const milestones = (milestonesData || []) as Array<Milestone & { projects: { name: string } }>;
+  // Add activity metadata to projects (with safe date handling)
+  const projectsWithActivity = projectsWithGithub.map((p) => {
+    const lastActivityDate = p.github?.lastCommitDate || p.updated_at;
+    let daysSinceActivity = 0;
+    try {
+      daysSinceActivity = differenceInDays(new Date(), new Date(lastActivityDate));
+    } catch {
+      daysSinceActivity = 0;
+    }
+    return {
+      ...p,
+      lastActivity: lastActivityDate,
+      daysSinceActivity,
+    };
+  });
 
   // Get upcoming milestones (not completed, with dates)
   const upcomingMilestones = milestones
@@ -60,22 +97,15 @@ export default async function DashboardPage() {
     }))
     .slice(0, 5);
 
-  // Fetch recent journal entries for activity feed
-  const { data: journalData } = await supabase
-    .from("journal_entries")
-    .select("*, projects(id, name)")
-    .order("created_at", { ascending: false })
-    .limit(20);
-
   // Build activity feed
   type ActivityType = "commit" | "journal" | "milestone" | "status_change" | "io_update";
   
-  const journalActivities = (journalData || []).map((entry) => ({
+  const journalActivities = journalData.map((entry) => ({
     id: `journal-${entry.id}`,
     type: (entry.entry_type === "io_update" ? "io_update" : "journal") as ActivityType,
     projectName: entry.projects?.name || "Unknown",
     projectId: entry.projects?.id || "",
-    message: entry.content.slice(0, 100) + (entry.content.length > 100 ? "..." : ""),
+    message: (entry.content || "").slice(0, 100) + ((entry.content || "").length > 100 ? "..." : ""),
     timestamp: entry.created_at,
   }));
   
