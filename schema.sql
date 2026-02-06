@@ -45,3 +45,16 @@ create table journal_entries (
   metadata jsonb,
   created_at timestamptz default now()
 );
+
+-- Site visits counter (for dyorkmusic.com)
+CREATE TABLE IF NOT EXISTS site_visits (
+  site TEXT PRIMARY KEY,
+  count INTEGER DEFAULT 0,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Allow anonymous access for the music site
+ALTER TABLE site_visits ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read" ON site_visits FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON site_visits FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update" ON site_visits FOR UPDATE USING (true);
