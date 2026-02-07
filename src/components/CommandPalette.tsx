@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -268,7 +269,7 @@ export default function CommandPalette() {
             </div>
           ) : fetchError ? (
             <div className="px-4 py-12 text-center">
-              <p className="text-red-400">⚠️ {fetchError}</p>
+              <p className="text-red-400"><Icon name="warning" size={16} /> {fetchError}</p>
               <p className="text-sm text-[#555] mt-1">Try refreshing the page</p>
             </div>
           ) : flatActions.length === 0 ? (

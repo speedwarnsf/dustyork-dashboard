@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import { useMemo, useState } from "react";
 import { format, startOfDay, subDays, eachDayOfInterval, isSameDay } from "date-fns";
@@ -20,7 +21,7 @@ type Props = {
 const eventStyles: Record<string, { bg: string; border: string; icon: string }> = {
   commit: { bg: "bg-green-400", border: "border-green-400", icon: "🔨" },
   journal: { bg: "bg-blue-400", border: "border-blue-400", icon: "📝" },
-  deploy: { bg: "bg-purple-400", border: "border-purple-400", icon: "🚀" },
+  deploy: { bg: "bg-purple-400", border: "border-purple-400", icon: "rocket" },
   milestone: { bg: "bg-yellow-400", border: "border-yellow-400", icon: "🎯" },
   status_change: { bg: "bg-orange-400", border: "border-orange-400", icon: "🔄" },
   io_update: { bg: "bg-cyan-400", border: "border-cyan-400", icon: "🌙" },
@@ -82,7 +83,7 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
     <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <span className="text-xl">📅</span>
+          <Icon name="calendar" size={20} />
           <h3 className="text-lg font-semibold">Activity Timeline</h3>
         </div>
         <span className="text-xs text-[#666]">Last {days} days</span>

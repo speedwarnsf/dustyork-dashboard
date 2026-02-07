@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import { Component, ReactNode } from "react";
 
@@ -34,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
       
       return (
         <div className="rounded-3xl border border-red-500/30 bg-red-500/5 p-6 text-center">
-          <div className="text-4xl mb-4">⚠️</div>
+          <div className="mb-4"><Icon name="warning" size={48} /></div>
           <h2 className="text-lg font-semibold text-red-400 mb-2">
             Something went wrong
           </h2>
@@ -67,7 +68,7 @@ export function ErrorCard({
 }) {
   return (
     <div className="rounded-3xl border border-red-500/30 bg-red-500/5 p-6 text-center">
-      <div className="text-4xl mb-4">⚠️</div>
+      <div className="mb-4"><Icon name="warning" size={48} /></div>
       <h2 className="text-lg font-semibold text-red-400 mb-2">{title}</h2>
       <p className="text-sm text-[#8b8b8b] mb-4">{message}</p>
       {onRetry && (

@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
@@ -57,7 +58,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           {/* Launched badge */}
           {project.launched && (
             <div className="absolute top-3 left-3 px-2 py-1 rounded-lg bg-[#d2ff5a] text-black text-xs font-medium">
-              🚀 Launched
+              <Icon name="rocket" size={14} /> Launched
             </div>
           )}
         </div>

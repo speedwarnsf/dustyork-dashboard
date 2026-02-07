@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import type { Project } from "@/lib/types";
 import TimeAgo from "./TimeAgo";
@@ -36,7 +37,7 @@ export default function NeedsAttention({ projects }: Props) {
   return (
     <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-xl">⚠️</span>
+        <Icon name="warning" size={20} />
         <h3 className="text-lg font-semibold">Needs Attention</h3>
       </div>
       <div className="space-y-3">

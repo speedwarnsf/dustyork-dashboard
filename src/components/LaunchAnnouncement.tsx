@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import { useState } from "react";
 import { useToast } from "./Toast";
@@ -21,7 +22,7 @@ const platformConfig: Record<
 > = {
   twitter: { icon: "𝕏", name: "X (Twitter)", charLimit: 280 },
   linkedin: { icon: "in", name: "LinkedIn", charLimit: 3000 },
-  producthunt: { icon: "🚀", name: "Product Hunt", charLimit: 260 },
+  producthunt: { icon: "rocket", name: "Product Hunt", charLimit: 260 },
 };
 
 const templates: Record<Platform, (project: Props["project"]) => string> = {
@@ -102,7 +103,7 @@ export default function LaunchAnnouncement({ project }: Props) {
     <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <span className="text-xl">📣</span>
+          <Icon name="megaphone" size={20} />
           <h3 className="text-lg font-semibold">Launch Announcement</h3>
         </div>
       </div>
@@ -183,7 +184,7 @@ export default function LaunchAnnouncement({ project }: Props) {
       {/* Tips */}
       <div className="mt-6 p-4 rounded-xl bg-[#111] border border-[#1c1c1c]">
         <p className="text-xs font-medium text-[#8b8b8b] mb-2">
-          💡 Tips for {config.name}
+          <Icon name="info" size={16} /> Tips for {config.name}
         </p>
         <ul className="text-xs text-[#666] space-y-1">
           {platform === "twitter" && (

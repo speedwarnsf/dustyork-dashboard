@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import type { SmartInsight } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -9,12 +10,12 @@ type Props = {
 
 const typeStyles: Record<SmartInsight["type"], { icon: string; border: string; bg: string }> = {
   stale: {
-    icon: "⏰",
+    icon: "clock",
     border: "border-orange-500/30",
     bg: "bg-orange-500/5",
   },
   active: {
-    icon: "🔥",
+    icon: "flame",
     border: "border-green-500/30",
     bg: "bg-green-500/5",
   },
@@ -24,12 +25,12 @@ const typeStyles: Record<SmartInsight["type"], { icon: string; border: string; b
     bg: "bg-cyan-500/5",
   },
   suggestion: {
-    icon: "💡",
+    icon: "info",
     border: "border-yellow-500/30",
     bg: "bg-yellow-500/5",
   },
   alert: {
-    icon: "⚠️",
+    icon: "warning",
     border: "border-red-500/30",
     bg: "bg-red-500/5",
   },
@@ -48,7 +49,7 @@ export default function SmartInsights({ insights }: Props) {
     return (
       <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-xl">💡</span>
+          <Icon name="info" size={20} />
           <h3 className="text-lg font-semibold">Smart Insights</h3>
         </div>
         <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -64,7 +65,7 @@ export default function SmartInsights({ insights }: Props) {
     <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-xl">💡</span>
+          <Icon name="info" size={20} />
           <h3 className="text-lg font-semibold">Smart Insights</h3>
         </div>
         <span className="text-xs text-[#666] px-2 py-1 rounded-full bg-[#1c1c1c]">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useToast } from "./Toast";
+import { Icon } from "./Icon";
 
 type CommandCenterProps = {
   project: {
@@ -97,7 +98,7 @@ What would you like to work on?`;
     }
 
     setIsDeploying(true);
-    addToast("🚀 Triggering deploy...", "info");
+    addToast("Triggering deploy...", "info");
 
     // In production, this would call the Vercel API
     // For now, simulate deployment
@@ -192,7 +193,7 @@ Focus on quick wins that improve quality.`;
             disabled={isDeploying}
             className="flex items-center gap-2 rounded-xl bg-[#d2ff5a] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#e5ff8a] disabled:opacity-50"
           >
-            <span>{isDeploying ? "⏳" : "🚀"}</span>
+            <span>{isDeploying ? <Icon name="hourglass" size={16} /> : <Icon name="deploy" size={16} />}</span>
             {isDeploying ? "Deploying..." : "Deploy"}
           </button>
         )}

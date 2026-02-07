@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import type { ProjectHealth } from "@/lib/types";
 import { getHealthColor, getHealthLabel } from "@/lib/health";
@@ -85,7 +86,7 @@ export default function HealthScore({ health, size = "md", showFactors = false }
             label="Deployment"
             value={health.factors.deploymentStatus}
             max={25}
-            icon="🚀"
+            icon="rocket"
           />
           <FactorBar
             label="Issue Health"
@@ -105,7 +106,7 @@ export default function HealthScore({ health, size = "md", showFactors = false }
       {/* Alerts */}
       {showFactors && health.alerts.length > 0 && (
         <div className="mt-4 p-3 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-          <p className="text-xs font-medium text-yellow-400 mb-2">⚠️ Attention Needed</p>
+          <p className="text-xs font-medium text-yellow-400 mb-2"><Icon name="warning" size={16} /> Attention Needed</p>
           <ul className="text-xs text-[#8b8b8b] space-y-1">
             {health.alerts.map((alert, i) => (
               <li key={i}>• {alert}</li>

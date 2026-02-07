@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "./Icon";
 
 import { useState } from "react";
 import type { CheckType, CheckStatus } from "@/lib/types";
@@ -118,7 +119,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold flex items-center gap-2">
-            🚀 Launch Readiness
+            <Icon name="rocket" size={18} /> Launch Readiness
           </h3>
           <p className="text-sm text-[#666] mt-1">
             {passedCount === totalCount
@@ -154,7 +155,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
       {!liveUrl && (
         <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 mb-4">
           <p className="text-sm text-yellow-400">
-            ⚠️ Add a live URL to run automated checks
+            <Icon name="warning" size={16} /> Add a live URL to run automated checks
           </p>
         </div>
       )}
