@@ -245,6 +245,53 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true, project });
       }
 
+      case "create_project": {
+        // Create a new project
+        const { name, description, github_repo, live_url, screenshot_url, status = "active", priority = "medium", tags } = data;
+
+        if (!name) {
+          return NextResponse.json(
+            { error: "Missing project name" },
+            { status: 400 }
+          );
+        }
+
+        // Check if project already exists
+        const { data: existing } = await supabase
+          .from("projects")
+          .select("id")
+          .ilike("name", name)
+          .single();
+
+        if (existing) {
+          return NextResponse.json(
+            { error: `Project '${name}' already exists`, projectId: existing.id },
+            { status: 409 }
+          );
+        }
+
+        const { data: project, error } = await supabase
+          .from("projects")
+          .insert({
+            name,
+            description,
+            github_repo,
+            live_url,
+            screenshot_url,
+            status,
+            priority,
+            tags,
+          })
+          .select()
+          .single();
+
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ success: true, project });
+      }
+
       default:
         return NextResponse.json(
           { error: `Unknown action: ${action}` },
