@@ -6,12 +6,16 @@ import {
 } from "@/app/(dashboard)/actions";
 import { fetchGithubActivity } from "@/lib/github";
 import { getGithubOpenGraphUrl } from "@/lib/github";
+import { calculateProjectHealth } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { JournalEntry, Milestone, Project, Task } from "@/lib/types";
 import MilestoneList from "@/components/MilestoneList";
 import JournalEntryCard from "@/components/JournalEntry";
-import QuickActions from "@/components/QuickActions";
+import CommandCenter from "@/components/CommandCenter";
 import ProjectStats from "@/components/ProjectStats";
+import HealthScore from "@/components/HealthScore";
+import LaunchChecklist from "@/components/LaunchChecklist";
+import LaunchAnnouncement from "@/components/LaunchAnnouncement";
 
 type MilestoneWithTasks = Milestone & { tasks: Task[] };
 
@@ -79,45 +83,61 @@ export default async function ProjectDetailPage({
   const fallbackScreenshot = getGithubOpenGraphUrl(typedProject.github_repo);
   const screenshotUrl = typedProject.screenshot_url || fallbackScreenshot;
 
+  // Calculate project health
+  const health = calculateProjectHealth({ ...typedProject, github });
+
   return (
     <main className="mx-auto w-full max-w-6xl px-6 py-10 text-white">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff]">
-            Project Overview
-          </p>
+          <div className="flex items-center gap-3 mb-2">
+            <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff]">
+              Project Overview
+            </p>
+            {typedProject.launched && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#d2ff5a] text-black">
+                🚀 Launched
+              </span>
+            )}
+          </div>
           <h2 className="mt-2 text-3xl font-semibold">{typedProject.name}</h2>
           <p className="mt-2 max-w-2xl text-sm text-[#8b8b8b]">
             {typedProject.description || "No description yet."}
           </p>
         </div>
-        <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.3em]">
-          <Link
-            href={`/project/${typedProject.id}/edit`}
-            className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
-          >
-            Edit
-          </Link>
-          <form action={archiveProject.bind(null, typedProject.id)}>
-            <button
-              type="submit"
-              className="rounded-full border border-[#2a2a2a] px-4 py-2 text-[#8b8b8b] transition hover:border-[#f4b26a] hover:text-[#f4b26a]"
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Health Score Badge */}
+          <div className="hidden sm:block">
+            <HealthScore health={health} size="sm" />
+          </div>
+          <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.3em]">
+            <Link
+              href={`/project/${typedProject.id}/edit`}
+              className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
             >
-              Archive
-            </button>
-          </form>
-          <Link
-            href="/"
-            className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
-          >
-            Back
-          </Link>
+              Edit
+            </Link>
+            <form action={archiveProject.bind(null, typedProject.id)}>
+              <button
+                type="submit"
+                className="rounded-full border border-[#2a2a2a] px-4 py-2 text-[#8b8b8b] transition hover:border-[#f4b26a] hover:text-[#f4b26a]"
+              >
+                Archive
+              </button>
+            </form>
+            <Link
+              href="/"
+              className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+            >
+              Back
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* Command Center */}
       <div className="mt-6">
-        <QuickActions
+        <CommandCenter
           project={{
             id: typedProject.id,
             name: typedProject.name,
@@ -125,7 +145,6 @@ export default async function ProjectDetailPage({
             github_repo: typedProject.github_repo,
             live_url: typedProject.live_url,
             status: typedProject.status,
-            priority: typedProject.priority,
           }}
           milestones={milestones.map((m) => ({
             name: m.name,
@@ -150,6 +169,7 @@ export default async function ProjectDetailPage({
         />
       </div>
 
+      {/* Screenshot + GitHub + Health Section */}
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           {screenshotUrl ? (
@@ -192,49 +212,75 @@ export default async function ProjectDetailPage({
           </div>
         </div>
 
-        <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
-          <h3 className="text-lg font-semibold">GitHub Intelligence</h3>
-          {github ? (
-            <div className="mt-4 space-y-3 text-sm text-[#8b8b8b]">
-              <p>
-                Repo:{" "}
-                <a
-                  href={github.repoUrl || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-white underline decoration-[#7bdcff]"
-                >
-                  {typedProject.github_repo}
-                </a>
+        <div className="space-y-6">
+          {/* Health Score Panel */}
+          <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+            <h3 className="text-lg font-semibold mb-4">Project Health</h3>
+            <HealthScore health={health} size="md" showFactors />
+          </div>
+
+          {/* GitHub Intelligence */}
+          <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+            <h3 className="text-lg font-semibold">GitHub Intelligence</h3>
+            {github ? (
+              <div className="mt-4 space-y-3 text-sm text-[#8b8b8b]">
+                <p>
+                  Repo:{" "}
+                  <a
+                    href={github.repoUrl || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white underline decoration-[#7bdcff]"
+                  >
+                    {typedProject.github_repo}
+                  </a>
+                </p>
+                <div className="flex items-center gap-2">
+                  <span>Activity:</span>
+                  <span className={`px-2 py-0.5 rounded text-xs ${
+                    github.activityLabel === "Hot" ? "bg-green-500/10 text-green-400" :
+                    github.activityLabel === "Warm" ? "bg-yellow-500/10 text-yellow-400" :
+                    github.activityLabel === "Cold" ? "bg-blue-500/10 text-blue-400" :
+                    "bg-[#1c1c1c] text-[#666]"
+                  }`}>
+                    {github.activityLabel}
+                  </span>
+                </div>
+                <p>
+                  Latest: {github.lastCommitMessage || "No commits"}{" "}
+                </p>
+                <p>Open issues: {github.openIssues ?? "—"}</p>
+                <div className="flex items-center gap-2">
+                  <span>CI:</span>
+                  <span className={`px-2 py-0.5 rounded text-xs ${
+                    github.ciStatus === "success" ? "bg-green-500/10 text-green-400" :
+                    github.ciStatus === "failure" ? "bg-red-500/10 text-red-400" :
+                    "bg-[#1c1c1c] text-[#666]"
+                  }`}>
+                    {github.ciStatus}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-3 text-sm text-[#8b8b8b]">
+                Add a GitHub repo to unlock real-time activity.
               </p>
-              <p>Activity: {github.activityLabel}</p>
-              <p>
-                Latest commit: {github.lastCommitMessage || "No commits"}{" "}
-                {github.lastCommitDate
-                  ? `(${new Date(github.lastCommitDate).toLocaleDateString()})`
-                  : ""}
-              </p>
-              <p>Open issues: {github.openIssues ?? "—"}</p>
-              <p>CI status: {github.ciStatus}</p>
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-[#8b8b8b]">
-              Add a GitHub repo to unlock real-time activity.
-            </p>
-          )}
-          <div className="mt-6 grid gap-3 text-xs uppercase tracking-[0.3em] text-[#8b8b8b]">
-            <div>Status: {typedProject.status}</div>
-            <div>Priority: {typedProject.priority}</div>
-            <div>
-              Tags:{" "}
-              {typedProject.tags && typedProject.tags.length
-                ? typedProject.tags.join(", ")
-                : "—"}
-            </div>
+            )}
           </div>
         </div>
       </section>
 
+      {/* Launch Readiness Section */}
+      {typedProject.status === "active" && (
+        <section className="mt-8">
+          <LaunchChecklist
+            projectId={typedProject.id}
+            liveUrl={typedProject.live_url}
+          />
+        </section>
+      )}
+
+      {/* Milestones + Journal Section */}
       <section className="mt-10 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <MilestoneList milestones={milestones} projectId={typedProject.id} />
 
@@ -249,7 +295,7 @@ export default async function ProjectDetailPage({
               required
               rows={4}
               placeholder="Log progress, blockers, or insights..."
-              className="rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm"
+              className="rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm focus:outline-none focus:border-[#7bdcff]"
             />
             <select
               name="entry_type"
@@ -266,7 +312,7 @@ export default async function ProjectDetailPage({
               Add entry
             </button>
           </form>
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 space-y-4 max-h-[500px] overflow-y-auto">
             {(journalData || []).map((entry) => (
               <JournalEntryCard
                 key={entry.id}
@@ -274,6 +320,65 @@ export default async function ProjectDetailPage({
                 projectId={typedProject.id}
               />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Launch Announcement Section */}
+      {typedProject.status === "active" && typedProject.live_url && (
+        <section className="mt-10">
+          <LaunchAnnouncement
+            project={{
+              id: typedProject.id,
+              name: typedProject.name,
+              description: typedProject.description,
+              live_url: typedProject.live_url,
+              tags: typedProject.tags,
+            }}
+          />
+        </section>
+      )}
+
+      {/* Project Meta */}
+      <section className="mt-10">
+        <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+          <h3 className="text-lg font-semibold mb-4">Project Details</h3>
+          <div className="grid gap-4 sm:grid-cols-3 text-sm">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-[#666] mb-1">Status</p>
+              <span className={`inline-block px-2 py-0.5 rounded text-xs capitalize ${
+                typedProject.status === "active" ? "bg-green-500/10 text-green-400" :
+                typedProject.status === "paused" ? "bg-yellow-500/10 text-yellow-400" :
+                typedProject.status === "completed" ? "bg-blue-500/10 text-blue-400" :
+                "bg-[#1c1c1c] text-[#666]"
+              }`}>
+                {typedProject.status}
+              </span>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wider text-[#666] mb-1">Priority</p>
+              <span className={`inline-block px-2 py-0.5 rounded text-xs capitalize ${
+                typedProject.priority === "high" ? "bg-red-500/10 text-red-400" :
+                typedProject.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" :
+                "bg-green-500/10 text-green-400"
+              }`}>
+                {typedProject.priority}
+              </span>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wider text-[#666] mb-1">Tags</p>
+              <div className="flex flex-wrap gap-1">
+                {typedProject.tags && typedProject.tags.length ? (
+                  typedProject.tags.map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 rounded text-xs bg-[#1c1c1c] text-[#8b8b8b]">
+                      {tag}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[#666]">No tags</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -2,6 +2,8 @@ export type ProjectStatus = "active" | "paused" | "completed" | "archived";
 export type ProjectPriority = "high" | "medium" | "low";
 export type MilestoneStatus = "not_started" | "in_progress" | "completed";
 export type TaskStatus = "todo" | "in_progress" | "done";
+export type CheckType = "ssl" | "mobile" | "performance" | "seo" | "analytics" | "accessibility";
+export type CheckStatus = "pending" | "passed" | "failed" | "warning";
 
 export type Project = {
   id: string;
@@ -16,6 +18,13 @@ export type Project = {
   created_at: string;
   updated_at: string;
   user_id: string;
+  // V2 fields
+  health_score?: number;
+  health_updated_at?: string;
+  launched?: boolean;
+  launch_date?: string;
+  vercel_project_id?: string;
+  domain?: string;
 };
 
 export type Milestone = {
@@ -49,4 +58,77 @@ export type JournalEntry = {
   entry_type: string;
   metadata: Record<string, unknown> | null;
   created_at: string;
+};
+
+// V2 Types
+
+export type LaunchChecklistItem = {
+  id: string;
+  project_id: string;
+  check_type: CheckType;
+  status: CheckStatus;
+  score: number | null;
+  last_checked_at: string | null;
+  details: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AgentActivity = {
+  id: string;
+  agent_name: string;
+  project_id: string | null;
+  action_type: "commit" | "journal" | "milestone" | "deploy" | "check" | "polish";
+  summary: string;
+  details: Record<string, unknown> | null;
+  created_at: string;
+};
+
+export type DeployLog = {
+  id: string;
+  project_id: string;
+  environment: "production" | "preview";
+  status: "pending" | "building" | "success" | "failed";
+  vercel_deployment_id: string | null;
+  url: string | null;
+  triggered_by: "manual" | "io" | "commit";
+  started_at: string;
+  completed_at: string | null;
+  details: Record<string, unknown> | null;
+};
+
+export type LaunchAnnouncement = {
+  id: string;
+  project_id: string;
+  platform: "twitter" | "linkedin" | "producthunt";
+  content: string;
+  posted: boolean;
+  posted_at: string | null;
+  post_url: string | null;
+  created_at: string;
+};
+
+// Computed types for UI
+export type ProjectHealth = {
+  score: number; // 0-100
+  factors: {
+    commitActivity: number; // 0-25
+    deploymentStatus: number; // 0-25
+    issueHealth: number; // 0-25
+    ciStatus: number; // 0-25
+  };
+  status: "excellent" | "good" | "fair" | "poor" | "critical";
+  alerts: string[];
+};
+
+export type SmartInsight = {
+  id: string;
+  type: "stale" | "active" | "completion" | "suggestion" | "alert";
+  title: string;
+  description: string;
+  projectId?: string;
+  projectName?: string;
+  priority: "high" | "medium" | "low";
+  actionLabel?: string;
+  actionUrl?: string;
 };

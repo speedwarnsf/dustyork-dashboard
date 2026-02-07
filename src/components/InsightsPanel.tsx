@@ -2,6 +2,7 @@
 
 import type { Milestone } from "@/lib/types";
 import TimeAgo from "./TimeAgo";
+import { ActivityHeatmap } from "./ProjectTimeline";
 
 type Props = {
   totalProjects: number;
@@ -14,6 +15,7 @@ type Props = {
     message: string;
     date: string;
   }>;
+  avgHealthScore?: number;
 };
 
 export default function InsightsPanel({
@@ -23,10 +25,21 @@ export default function InsightsPanel({
   completedMilestones,
   upcomingMilestones,
   recentCommits,
+  avgHealthScore = 50,
 }: Props) {
   const completionRate = totalMilestones > 0 
     ? Math.round((completedMilestones / totalMilestones) * 100) 
     : 0;
+
+  // Convert commits to timeline events for the heatmap
+  const heatmapEvents = recentCommits.map((c, i) => ({
+    id: `commit-${i}`,
+    projectId: "",
+    projectName: c.projectName,
+    type: "commit" as const,
+    message: c.message,
+    timestamp: c.date,
+  }));
 
   return (
     <div className="space-y-6">
@@ -56,10 +69,29 @@ export default function InsightsPanel({
         </div>
         
         <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">This Week</p>
-          <p className="text-3xl font-semibold mt-1">{recentCommits.length}</p>
-          <p className="text-xs text-[#555] mt-1">commits</p>
+          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Avg Health</p>
+          <p className="text-3xl font-semibold mt-1">{Math.round(avgHealthScore)}</p>
+          <div className="mt-2 h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
+            <div 
+              className={`h-full transition-all ${
+                avgHealthScore >= 70 ? "bg-green-400" : 
+                avgHealthScore >= 50 ? "bg-yellow-400" : "bg-red-400"
+              }`}
+              style={{ width: `${avgHealthScore}%` }}
+            />
+          </div>
         </div>
+      </div>
+
+      {/* Activity Heatmap */}
+      <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">
+            30-Day Activity
+          </p>
+          <p className="text-xs text-[#555]">{recentCommits.length} commits</p>
+        </div>
+        <ActivityHeatmap events={heatmapEvents} days={30} />
       </div>
 
       {/* Two Column Layout */}
@@ -92,7 +124,7 @@ export default function InsightsPanel({
                   </div>
                   <div className="mt-2 h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-[#7bdcff]"
+                      className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a]"
                       style={{ width: `${milestone.percent_complete}%` }}
                     />
                   </div>
@@ -111,8 +143,8 @@ export default function InsightsPanel({
           {recentCommits.length === 0 ? (
             <p className="text-sm text-[#8b8b8b]">No recent commits</p>
           ) : (
-            <div className="space-y-3">
-              {recentCommits.slice(0, 5).map((commit, idx) => (
+            <div className="space-y-3 max-h-[300px] overflow-y-auto">
+              {recentCommits.slice(0, 10).map((commit, idx) => (
                 <div 
                   key={idx}
                   className="p-3 rounded-xl hover:bg-[#111] transition"

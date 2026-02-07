@@ -1,15 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Project } from "@/lib/types";
+import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
+import { getHealthDotColor } from "@/lib/health";
 import ProjectGrid from "@/components/ProjectGrid";
 
 type Props = {
-  projects: Array<Project & { github?: GithubActivity | null }>;
+  projects: Array<Project & { 
+    github?: GithubActivity | null;
+    health?: ProjectHealth;
+  }>;
 };
 
-type SortOption = "updated" | "name" | "status" | "priority";
+type SortOption = "updated" | "name" | "status" | "priority" | "health";
 type FilterStatus = "all" | "active" | "paused" | "completed" | "archived";
 
 export default function ProjectDashboard({ projects }: Props) {
@@ -47,6 +51,11 @@ export default function ProjectDashboard({ projects }: Props) {
         case "priority": {
           const priorityOrder = { high: 0, medium: 1, low: 2 };
           return (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1);
+        }
+        case "health": {
+          const aHealth = a.health?.score ?? 50;
+          const bHealth = b.health?.score ?? 50;
+          return bHealth - aHealth; // Higher health first
         }
         case "updated":
         default:
@@ -144,6 +153,7 @@ export default function ProjectDashboard({ projects }: Props) {
           className="rounded-lg border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
         >
           <option value="updated">Recently Updated</option>
+          <option value="health">Health Score</option>
           <option value="name">Name A-Z</option>
           <option value="priority">Priority</option>
           <option value="status">Status</option>
@@ -168,11 +178,12 @@ export default function ProjectDashboard({ projects }: Props) {
         <ProjectGrid projects={filteredAndSortedProjects} />
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a]">
-          <table className="w-full min-w-[700px]">
+          <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-[#1c1c1c] text-left text-xs uppercase tracking-wider text-[#666]">
                 <th className="px-4 py-3 font-medium">Project</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Health</th>
                 <th className="px-4 py-3 font-medium">Activity</th>
                 <th className="px-4 py-3 font-medium">Issues</th>
                 <th className="px-4 py-3 font-medium">CI</th>
@@ -180,82 +191,105 @@ export default function ProjectDashboard({ projects }: Props) {
               </tr>
             </thead>
             <tbody>
-              {filteredAndSortedProjects.map((project) => (
-                <tr
-                  key={project.id}
-                  className="border-b border-[#1c1c1c] last:border-b-0 hover:bg-[#111] transition"
-                >
-                  <td className="px-4 py-4">
-                    <a 
-                      href={`/project/${project.id}`}
-                      className="font-medium hover:text-[#7bdcff] transition"
-                    >
-                      {project.name}
-                    </a>
-                    {project.description && (
-                      <p className="text-xs text-[#666] mt-0.5 truncate max-w-[200px]">
-                        {project.description}
-                      </p>
-                    )}
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className={`inline-block px-2 py-0.5 rounded text-xs capitalize ${
-                      project.status === "active" ? "bg-green-500/10 text-green-400" :
-                      project.status === "paused" ? "bg-yellow-500/10 text-yellow-400" :
-                      project.status === "completed" ? "bg-blue-500/10 text-blue-400" :
-                      "bg-[#1c1c1c] text-[#666]"
-                    }`}>
-                      {project.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-[#8b8b8b]">
-                    {project.github?.activityLabel ?? "—"}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-[#8b8b8b]">
-                    {project.github?.openIssues ?? "—"}
-                  </td>
-                  <td className="px-4 py-4">
-                    {project.github?.ciStatus && project.github.ciStatus !== "unknown" && (
-                      <span className={`inline-block px-2 py-0.5 rounded text-xs ${
-                        project.github.ciStatus === "success" ? "bg-green-500/10 text-green-400" :
-                        project.github.ciStatus === "failure" ? "bg-red-500/10 text-red-400" :
+              {filteredAndSortedProjects.map((project) => {
+                const healthDotColor = project.health ? getHealthDotColor(project.health) : "bg-[#555]";
+                return (
+                  <tr
+                    key={project.id}
+                    className="border-b border-[#1c1c1c] last:border-b-0 hover:bg-[#111] transition"
+                  >
+                    <td className="px-4 py-4">
+                      <a 
+                        href={`/project/${project.id}`}
+                        className="font-medium hover:text-[#7bdcff] transition"
+                      >
+                        {project.name}
+                      </a>
+                      {project.description && (
+                        <p className="text-xs text-[#666] mt-0.5 truncate max-w-[200px]">
+                          {project.description}
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className={`inline-block px-2 py-0.5 rounded text-xs capitalize ${
+                        project.status === "active" ? "bg-green-500/10 text-green-400" :
+                        project.status === "paused" ? "bg-yellow-500/10 text-yellow-400" :
+                        project.status === "completed" ? "bg-blue-500/10 text-blue-400" :
                         "bg-[#1c1c1c] text-[#666]"
                       }`}>
-                        {project.github.ciStatus}
+                        {project.status}
                       </span>
-                    )}
-                    {(!project.github?.ciStatus || project.github.ciStatus === "unknown") && (
-                      <span className="text-[#555]">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-2">
-                      {project.github_repo && (
-                        <a
-                          href={`https://github.com/${project.github_repo}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[#8b8b8b] hover:text-[#7bdcff] transition"
-                          title="GitHub"
-                        >
-                          🐙
-                        </a>
+                    </td>
+                    <td className="px-4 py-4">
+                      {project.health && (
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${healthDotColor}`} />
+                          <span className="text-sm font-medium">{project.health.score}</span>
+                        </div>
                       )}
-                      {project.live_url && (
-                        <a
-                          href={project.live_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[#8b8b8b] hover:text-[#d2ff5a] transition"
-                          title="Live Site"
-                        >
-                          🌐
-                        </a>
+                    </td>
+                    <td className="px-4 py-4">
+                      {project.github?.activityLabel && (
+                        <span className={`inline-block px-2 py-0.5 rounded text-xs ${
+                          project.github.activityLabel === "Hot" ? "bg-green-500/10 text-green-400" :
+                          project.github.activityLabel === "Warm" ? "bg-yellow-500/10 text-yellow-400" :
+                          project.github.activityLabel === "Cold" ? "bg-blue-500/10 text-blue-400" :
+                          "bg-[#1c1c1c] text-[#666]"
+                        }`}>
+                          {project.github.activityLabel}
+                        </span>
                       )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      {!project.github?.activityLabel && (
+                        <span className="text-[#555]">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-[#8b8b8b]">
+                      {project.github?.openIssues ?? "—"}
+                    </td>
+                    <td className="px-4 py-4">
+                      {project.github?.ciStatus && project.github.ciStatus !== "unknown" && (
+                        <span className={`inline-block px-2 py-0.5 rounded text-xs ${
+                          project.github.ciStatus === "success" ? "bg-green-500/10 text-green-400" :
+                          project.github.ciStatus === "failure" ? "bg-red-500/10 text-red-400" :
+                          "bg-[#1c1c1c] text-[#666]"
+                        }`}>
+                          {project.github.ciStatus}
+                        </span>
+                      )}
+                      {(!project.github?.ciStatus || project.github.ciStatus === "unknown") && (
+                        <span className="text-[#555]">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-2">
+                        {project.github_repo && (
+                          <a
+                            href={`https://github.com/${project.github_repo}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[#8b8b8b] hover:text-[#7bdcff] transition"
+                            title="GitHub"
+                          >
+                            🐙
+                          </a>
+                        )}
+                        {project.live_url && (
+                          <a
+                            href={project.live_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[#8b8b8b] hover:text-[#d2ff5a] transition"
+                            title="Live Site"
+                          >
+                            🌐
+                          </a>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

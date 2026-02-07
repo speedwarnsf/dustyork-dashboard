@@ -1,9 +1,9 @@
 "use client";
 
-import type { Project } from "@/lib/types";
+import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
 import { getGithubOpenGraphUrl } from "@/lib/github";
-import { differenceInDays } from "date-fns";
+import { getHealthDotColor, getHealthLabel } from "@/lib/health";
 import TimeAgo from "./TimeAgo";
 
 const statusStyles: Record<string, string> = {
@@ -20,35 +20,18 @@ const priorityDots: Record<string, string> = {
 };
 
 type ProjectCardProps = {
-  project: Project & { github?: GithubActivity | null };
+  project: Project & { 
+    github?: GithubActivity | null;
+    health?: ProjectHealth;
+  };
 };
-
-function getHealthIndicator(project: Project & { github?: GithubActivity | null }) {
-  const daysSinceUpdate = differenceInDays(new Date(), new Date(project.updated_at));
-  
-  if (project.status === "archived" || project.status === "completed") {
-    return { color: "bg-[#555]", label: "Inactive" };
-  }
-  
-  if (daysSinceUpdate > 30) {
-    return { color: "bg-red-400", label: "Stale" };
-  }
-  
-  if (daysSinceUpdate > 14) {
-    return { color: "bg-yellow-400", label: "Aging" };
-  }
-  
-  if (project.github?.ciStatus === "failure") {
-    return { color: "bg-red-400", label: "CI Failing" };
-  }
-  
-  return { color: "bg-green-400", label: "Healthy" };
-}
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const fallbackImage = getGithubOpenGraphUrl(project.github_repo);
   const imageUrl = project.screenshot_url || fallbackImage;
-  const health = getHealthIndicator(project);
+  const health = project.health;
+  const healthDotColor = health ? getHealthDotColor(health) : "bg-[#555]";
+  const healthLabel = health ? getHealthLabel(health) : "Unknown";
 
   return (
     <a
@@ -64,19 +47,29 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             alt={`${project.name} screenshot`}
             className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
           />
-          {/* Health indicator dot */}
-          <div 
-            className={`absolute top-3 right-3 w-2.5 h-2.5 rounded-full ${health.color} ring-2 ring-black`}
-            title={health.label}
-          />
+          {/* Health score badge */}
+          {health && (
+            <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/80 backdrop-blur-sm">
+              <span className={`w-2 h-2 rounded-full ${healthDotColor}`} />
+              <span className="text-xs font-medium">{health.score}</span>
+            </div>
+          )}
+          {/* Launched badge */}
+          {project.launched && (
+            <div className="absolute top-3 left-3 px-2 py-1 rounded-lg bg-[#d2ff5a] text-black text-xs font-medium">
+              🚀 Launched
+            </div>
+          )}
         </div>
       ) : (
         <div className="mb-4 h-44 rounded-2xl border border-dashed border-[#1c1c1c] bg-[#0a0a0a] flex items-center justify-center relative">
           <span className="text-4xl opacity-20">📁</span>
-          <div 
-            className={`absolute top-3 right-3 w-2.5 h-2.5 rounded-full ${health.color} ring-2 ring-[#0a0a0a]`}
-            title={health.label}
-          />
+          {health && (
+            <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[#111]">
+              <span className={`w-2 h-2 rounded-full ${healthDotColor}`} />
+              <span className="text-xs font-medium">{health.score}</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -106,16 +99,35 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {project.description || "No description yet."}
       </p>
 
+      {/* Health Alerts */}
+      {health && health.alerts.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1">
+          {health.alerts.slice(0, 2).map((alert, i) => (
+            <span
+              key={i}
+              className="px-2 py-0.5 rounded-full text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
+            >
+              {alert}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Meta info */}
       <div className="mt-4 pt-4 border-t border-[#1c1c1c]">
         <div className="flex items-center justify-between text-xs text-[#666]">
           <TimeAgo date={project.updated_at} prefix="Updated " />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {project.github?.openIssues != null && project.github.openIssues > 0 && (
               <span className="text-[#8b8b8b]">{project.github.openIssues} issues</span>
             )}
             {project.live_url && (
               <span className="text-[#7bdcff]">● Live</span>
+            )}
+            {health && (
+              <span className={`${healthDotColor.replace("bg-", "text-")}`}>
+                {healthLabel}
+              </span>
             )}
           </div>
         </div>
