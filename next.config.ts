@@ -27,20 +27,6 @@ const nextConfig: NextConfig = {
     ],
   },
   
-  // Rewrites for external app proxying
-  async rewrites() {
-    return [
-      {
-        source: "/zenspace",
-        destination: "https://zenspace-two.vercel.app/",
-      },
-      {
-        source: "/zenspace/:path*",
-        destination: "https://zenspace-two.vercel.app/:path*",
-      },
-    ];
-  },
-
   // Security and caching headers
   async headers() {
     return [
