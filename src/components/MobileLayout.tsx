@@ -142,16 +142,30 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                 onClick={() => {
                   if (item.href.startsWith("#")) {
                     // Handle special actions
-                    if (item.href === "#search") {
-                      // Trigger command palette
-                      const event = new KeyboardEvent('keydown', {
-                        key: 'k',
-                        metaKey: true,
-                        bubbles: true
-                      });
-                      window.dispatchEvent(event);
+                  if (item.href === "#search") {
+                      const target = document.querySelector(item.href);
+                      if (target instanceof HTMLElement) {
+                        target.scrollIntoView({ behavior: "smooth", block: "start" });
+                        const input = target.querySelector("input");
+                        if (input instanceof HTMLInputElement) {
+                          setTimeout(() => input.focus(), 300);
+                        }
+                      } else {
+                        // Trigger command palette fallback
+                        const event = new KeyboardEvent("keydown", {
+                          key: "k",
+                          metaKey: true,
+                          bubbles: true,
+                        });
+                        window.dispatchEvent(event);
+                      }
                     } else if (item.href === "#activity") {
-                      setIsBottomSheetOpen(true);
+                      const target = document.querySelector(item.href);
+                      if (target instanceof HTMLElement) {
+                        target.scrollIntoView({ behavior: "smooth", block: "start" });
+                      } else {
+                        setIsBottomSheetOpen(true);
+                      }
                     }
                   } else {
                     router.push(item.href);

@@ -47,7 +47,13 @@ export default async function DashboardLayout({
       />
       
       <MobileLayout>
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-black text-white relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(123,220,255,0.2)_0%,rgba(0,0,0,0)_60%)]" />
+            <div className="absolute top-1/3 -left-32 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(210,255,90,0.15)_0%,rgba(0,0,0,0)_65%)]" />
+            <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(123,220,255,0.12)_0%,rgba(0,0,0,0)_60%)]" />
+          </div>
+          <div className="relative">
           {/* Desktop Header */}
           <header className="sticky top-0 z-40 border-b border-[#1c1c1c] glass-strong hidden md:block">
             <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
@@ -55,7 +61,7 @@ export default async function DashboardLayout({
               
               <div className="flex items-center gap-4">
                 {/* User info */}
-                <div className="hidden sm:block text-right">
+                <div id="profile" className="hidden sm:block text-right">
                   <p className="text-sm font-medium">{user.email?.split("@")[0]}</p>
                   <p className="text-xs text-[#666]">{user.email}</p>
                 </div>
@@ -102,6 +108,7 @@ export default async function DashboardLayout({
               </div>
             </div>
           </footer>
+          </div>
         </div>
       </MobileLayout>
     </>

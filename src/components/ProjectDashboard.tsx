@@ -109,7 +109,7 @@ export default function ProjectDashboard({ projects }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div id="search" className="flex flex-wrap items-center gap-3 mb-6 scroll-mt-24">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <svg

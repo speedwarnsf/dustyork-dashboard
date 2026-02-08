@@ -1,6 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type, X-API-KEY",
+};
+
 function getSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   // Use service role key to bypass RLS (this is a public read-only endpoint)
@@ -13,10 +19,23 @@ function getSupabaseClient() {
   return createClient(url, key);
 }
 
+function withCors(response: NextResponse) {
+  Object.entries(CORS_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
+}
+
+export async function OPTIONS() {
+  return withCors(new NextResponse(null, { status: 204 }));
+}
+
 export async function GET() {
   const supabase = getSupabaseClient();
   if (!supabase) {
-    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: "Database not configured" }, { status: 500 })
+    );
   }
   // Fetch all projects with milestone and journal counts
   const { data: projects, error: projectsError } = await supabase
@@ -29,7 +48,9 @@ export async function GET() {
     .order("updated_at", { ascending: false });
 
   if (projectsError) {
-    return NextResponse.json({ error: projectsError.message }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: projectsError.message }, { status: 500 })
+    );
   }
 
   // Transform data to include stats
@@ -74,5 +95,5 @@ export async function GET() {
     };
   });
 
-  return NextResponse.json({ projects: projectsWithStats });
+  return withCors(NextResponse.json({ projects: projectsWithStats }));
 }

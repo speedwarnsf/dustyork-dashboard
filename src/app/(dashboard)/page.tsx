@@ -4,11 +4,12 @@ import ActivityFeed from "@/components/ActivityFeed";
 import NeedsAttention from "@/components/NeedsAttention";
 import SmartInsights from "@/components/SmartInsights";
 import ProjectTimeline from "@/components/ProjectTimeline";
+import ProgressOverview from "@/components/ProgressOverview";
 import { fetchGithubActivity } from "@/lib/github";
 import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Project, Milestone } from "@/lib/types";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, format, subDays } from "date-fns";
 
 export const revalidate = 60; // Revalidate every minute
 
@@ -173,6 +174,42 @@ export default async function DashboardPage() {
     .filter((p) => p.status === "active")
     .reduce((sum, p) => sum + p.health.score, 0) / Math.max(activeProjects, 1);
 
+  const milestoneStatusCounts = milestones.reduce(
+    (acc, milestone) => {
+      const status = milestone.status || "not_started";
+      if (status === "completed") acc.completed += 1;
+      else if (status === "in_progress") acc.inProgress += 1;
+      else acc.notStarted += 1;
+      acc.total += 1;
+      return acc;
+    },
+    { total: 0, completed: 0, inProgress: 0, notStarted: 0 }
+  );
+
+  const projectStatusCounts = projects.reduce(
+    (acc, project) => {
+      acc.total += 1;
+      if (project.status === "active") acc.active += 1;
+      else if (project.status === "paused") acc.paused += 1;
+      else if (project.status === "completed") acc.completed += 1;
+      else acc.archived += 1;
+      return acc;
+    },
+    { total: 0, active: 0, paused: 0, completed: 0, archived: 0 }
+  );
+
+  const now = new Date();
+  const weekAgo = subDays(now, 7);
+  const monthAgo = subDays(now, 30);
+  const weeklyActivityCount = activities.filter((activity) => {
+    const timestamp = new Date(activity.timestamp);
+    return timestamp >= weekAgo;
+  }).length;
+  const monthlyActivityCount = activities.filter((activity) => {
+    const timestamp = new Date(activity.timestamp);
+    return timestamp >= monthAgo;
+  }).length;
+
   return (
     <main>
       {/* Hero Section */}
@@ -202,7 +239,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
             <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Projects</p>
             <p className="text-3xl font-semibold mt-1">{projects.length}</p>
@@ -243,6 +280,21 @@ export default async function DashboardPage() {
         </div>
       </section>
 
+      <ProgressOverview
+        milestoneStats={{
+          total: milestoneStatusCounts.total,
+          completed: milestoneStatusCounts.completed,
+          inProgress: milestoneStatusCounts.inProgress,
+          notStarted: milestoneStatusCounts.notStarted,
+        }}
+        projectStats={projectStatusCounts}
+        activityStats={{
+          weekly: weeklyActivityCount,
+          monthly: monthlyActivityCount,
+        }}
+        avgHealthScore={avgHealthScore}
+      />
+
       {/* Insights + Timeline Section */}
       <section className="mx-auto w-full max-w-7xl px-6 py-6">
         <div className="grid gap-6 lg:grid-cols-2">
@@ -252,7 +304,7 @@ export default async function DashboardPage() {
       </section>
 
       {/* Activity + Attention Section */}
-      <section className="mx-auto w-full max-w-7xl px-6 py-6">
+      <section id="activity" className="mx-auto w-full max-w-7xl px-6 py-6 scroll-mt-24">
         <div className="grid gap-6 lg:grid-cols-2">
           <ActivityFeed activities={activities.slice(0, 10)} />
           <NeedsAttention projects={projectsWithActivity} />

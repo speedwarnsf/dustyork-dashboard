@@ -5,6 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 // Uses API key authentication
 // Default key for local dev - in production, set IO_API_KEY or DASHBOARD_API_KEY env var
 const DEFAULT_API_KEY = "003e91026ee5b01243615147a7fd740e96058bda86e7ea60fd1bc3724e415d1f";
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type, X-API-KEY",
+};
 
 function getApiKey(): string {
   // Read at runtime to ensure env vars are available
@@ -22,23 +27,45 @@ function getSupabaseClient(): SupabaseClient | null {
   return createClient(url, key);
 }
 
-function verifyApiKey(request: NextRequest): boolean {
+function getRequestToken(request: NextRequest): string | null {
   const authHeader = request.headers.get("authorization");
-  if (!authHeader) return false;
-  
-  const token = authHeader.replace("Bearer ", "");
+  if (authHeader) {
+    return authHeader.replace(/^Bearer\\s+/i, "").trim();
+  }
+  const apiHeader = request.headers.get("x-api-key");
+  return apiHeader?.trim() || null;
+}
+
+function verifyApiKey(request: NextRequest): boolean {
+  const token = getRequestToken(request);
+  if (!token) return false;
   return token === getApiKey();
+}
+
+function withCors(response: NextResponse) {
+  Object.entries(CORS_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
+}
+
+export async function OPTIONS() {
+  return withCors(new NextResponse(null, { status: 204 }));
 }
 
 // GET /api/io - Get all projects and recent activity
 export async function GET(request: NextRequest) {
   if (!verifyApiKey(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return withCors(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    );
   }
 
   const supabase = getSupabaseClient();
   if (!supabase) {
-    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: "Database not configured" }, { status: 500 })
+    );
   }
 
   // Fetch all projects
@@ -48,7 +75,9 @@ export async function GET(request: NextRequest) {
     .order("updated_at", { ascending: false });
 
   if (projectsError) {
-    return NextResponse.json({ error: projectsError.message }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: projectsError.message }, { status: 500 })
+    );
   }
 
   // Fetch recent journal entries
@@ -59,7 +88,9 @@ export async function GET(request: NextRequest) {
     .limit(20);
 
   if (journalError) {
-    return NextResponse.json({ error: journalError.message }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: journalError.message }, { status: 500 })
+    );
   }
 
   // Fetch milestones
@@ -68,23 +99,27 @@ export async function GET(request: NextRequest) {
     .select("*, projects(name)")
     .order("updated_at", { ascending: false });
 
-  return NextResponse.json({
+  return withCors(NextResponse.json({
     projects,
     recentJournal,
     milestones,
     timestamp: new Date().toISOString(),
-  });
+  }));
 }
 
 // POST /api/io - Post an update (journal entry, milestone update, etc.)
 export async function POST(request: NextRequest) {
   if (!verifyApiKey(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return withCors(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    );
   }
 
   const supabase = getSupabaseClient();
   if (!supabase) {
-    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: "Database not configured" }, { status: 500 })
+    );
   }
   
   try {
@@ -97,8 +132,9 @@ export async function POST(request: NextRequest) {
       const { data: project } = await supabase
         .from("projects")
         .select("id")
-        .ilike("name", projectName)
-        .single();
+        .ilike("name", `%${projectName}%`)
+        .limit(1)
+        .maybeSingle();
       
       if (project) {
         resolvedProjectId = project.id;
@@ -106,22 +142,25 @@ export async function POST(request: NextRequest) {
     }
 
     switch (action) {
-      case "journal": {
+      case "journal":
+      case "io_update":
+      case "update": {
         // Add a journal entry
-        const { content, entry_type = "io_update", metadata } = data;
+        const { content, message, entry_type = "io_update", metadata } = data;
+        const bodyContent = content || message;
         
-        if (!resolvedProjectId || !content) {
-          return NextResponse.json(
+        if (!resolvedProjectId || !bodyContent) {
+          return withCors(NextResponse.json(
             { error: "Missing projectId/projectName and content" },
             { status: 400 }
-          );
+          ));
         }
 
         const { data: entry, error } = await supabase
           .from("journal_entries")
           .insert({
             project_id: resolvedProjectId,
-            content,
+            content: bodyContent,
             entry_type,
             metadata: { ...metadata, source: "io" },
           })
@@ -129,7 +168,9 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (error) {
-          return NextResponse.json({ error: error.message }, { status: 500 });
+          return withCors(
+            NextResponse.json({ error: error.message }, { status: 500 })
+          );
         }
 
         // Update project's updated_at
@@ -138,7 +179,7 @@ export async function POST(request: NextRequest) {
           .update({ updated_at: new Date().toISOString() })
           .eq("id", resolvedProjectId);
 
-        return NextResponse.json({ success: true, entry });
+        return withCors(NextResponse.json({ success: true, entry }));
       }
 
       case "milestone": {
@@ -159,10 +200,12 @@ export async function POST(request: NextRequest) {
             .single();
 
           if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
+            return withCors(
+              NextResponse.json({ error: error.message }, { status: 500 })
+            );
           }
 
-          return NextResponse.json({ success: true, milestone });
+          return withCors(NextResponse.json({ success: true, milestone }));
         } else if (resolvedProjectId && name) {
           // Create new
           const { data: milestone, error } = await supabase
@@ -177,16 +220,18 @@ export async function POST(request: NextRequest) {
             .single();
 
           if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
+            return withCors(
+              NextResponse.json({ error: error.message }, { status: 500 })
+            );
           }
 
-          return NextResponse.json({ success: true, milestone });
+          return withCors(NextResponse.json({ success: true, milestone }));
         }
 
-        return NextResponse.json(
+        return withCors(NextResponse.json(
           { error: "Missing milestone data" },
           { status: 400 }
-        );
+        ));
       }
 
       case "status": {
@@ -194,10 +239,10 @@ export async function POST(request: NextRequest) {
         const { status } = data;
 
         if (!resolvedProjectId || !status) {
-          return NextResponse.json(
+          return withCors(NextResponse.json(
             { error: "Missing projectId and status" },
             { status: 400 }
-          );
+          ));
         }
 
         const { data: project, error } = await supabase
@@ -211,10 +256,12 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (error) {
-          return NextResponse.json({ error: error.message }, { status: 500 });
+          return withCors(
+            NextResponse.json({ error: error.message }, { status: 500 })
+          );
         }
 
-        return NextResponse.json({ success: true, project });
+        return withCors(NextResponse.json({ success: true, project }));
       }
 
       case "screenshot": {
@@ -222,10 +269,10 @@ export async function POST(request: NextRequest) {
         const { screenshot_url } = data;
 
         if (!resolvedProjectId || !screenshot_url) {
-          return NextResponse.json(
+          return withCors(NextResponse.json(
             { error: "Missing projectId and screenshot_url" },
             { status: 400 }
-          );
+          ));
         }
 
         const { data: project, error } = await supabase
@@ -239,10 +286,12 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (error) {
-          return NextResponse.json({ error: error.message }, { status: 500 });
+          return withCors(
+            NextResponse.json({ error: error.message }, { status: 500 })
+          );
         }
 
-        return NextResponse.json({ success: true, project });
+        return withCors(NextResponse.json({ success: true, project }));
       }
 
       case "create_project": {
@@ -250,10 +299,10 @@ export async function POST(request: NextRequest) {
         const { name, description, github_repo, live_url, screenshot_url, status = "active", priority = "medium", tags } = data;
 
         if (!name) {
-          return NextResponse.json(
+          return withCors(NextResponse.json(
             { error: "Missing project name" },
             { status: 400 }
-          );
+          ));
         }
 
         // Check if project already exists
@@ -264,10 +313,10 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (existing) {
-          return NextResponse.json(
+          return withCors(NextResponse.json(
             { error: `Project '${name}' already exists`, projectId: existing.id },
             { status: 409 }
-          );
+          ));
         }
 
         const { data: project, error } = await supabase
@@ -286,23 +335,25 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (error) {
-          return NextResponse.json({ error: error.message }, { status: 500 });
+          return withCors(
+            NextResponse.json({ error: error.message }, { status: 500 })
+          );
         }
 
-        return NextResponse.json({ success: true, project });
+        return withCors(NextResponse.json({ success: true, project }));
       }
 
       default:
-        return NextResponse.json(
+        return withCors(NextResponse.json(
           { error: `Unknown action: ${action}` },
           { status: 400 }
-        );
+        ));
     }
   } catch (err) {
     console.error("IO API error:", err);
-    return NextResponse.json(
+    return withCors(NextResponse.json(
       { error: "Invalid request body" },
       { status: 400 }
-    );
+    ));
   }
 }
