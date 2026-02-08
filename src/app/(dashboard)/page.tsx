@@ -20,7 +20,10 @@ export default async function DashboardPage() {
 
   try {
     const supabase = await createSupabaseServerClient();
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError) {
+      console.error("Auth error:", authError);
+    }
     user = authUser;
 
     // Fetch all projects
@@ -61,20 +64,26 @@ export default async function DashboardPage() {
   }
 
   // Fetch GitHub activity for all projects (with error handling for each)
-  const projectsWithGithub = await Promise.all(
-    projects.map(async (project) => {
-      if (!project.github_repo) {
-        return { ...project, github: null };
-      }
-      try {
-        const github = await fetchGithubActivity(project.github_repo);
-        return { ...project, github };
-      } catch (err) {
-        console.error(`GitHub fetch error for ${project.name}:`, err);
-        return { ...project, github: null };
-      }
-    })
-  );
+  let projectsWithGithub: Array<Project & { github: any }> = [];
+  try {
+    projectsWithGithub = await Promise.all(
+      projects.map(async (project) => {
+        if (!project.github_repo) {
+          return { ...project, github: null };
+        }
+        try {
+          const github = await fetchGithubActivity(project.github_repo);
+          return { ...project, github };
+        } catch (err) {
+          console.error(`GitHub fetch error for ${project.name}:`, err);
+          return { ...project, github: null };
+        }
+      })
+    );
+  } catch (err) {
+    console.error("GitHub batch fetch error:", err);
+    projectsWithGithub = projects.map(p => ({ ...p, github: null }));
+  }
 
   // Calculate health scores for all projects
   const projectsWithHealth = projectsWithGithub.map((p) => ({
