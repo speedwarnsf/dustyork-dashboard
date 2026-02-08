@@ -80,25 +80,25 @@ export default function HealthScore({ health, size = "md", showFactors = false }
             label="Commit Activity"
             value={health.factors.commitActivity}
             max={25}
-            icon="🔨"
+            icon="edit"
           />
           <FactorBar
             label="Deployment"
             value={health.factors.deploymentStatus}
             max={25}
-            icon="rocket"
+            icon="upload"
           />
           <FactorBar
             label="Issue Health"
             value={health.factors.issueHealth}
             max={25}
-            icon="🐛"
+            icon="chat"
           />
           <FactorBar
             label="CI/CD"
             value={health.factors.ciStatus}
             max={25}
-            icon="⚙️"
+            icon="settings"
           />
         </div>
       )}
@@ -141,7 +141,7 @@ function FactorBar({
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm w-5">{icon}</span>
+      <span className="text-sm w-5"><Icon name={icon} size={14} /></span>
       <div className="flex-1">
         <div className="flex items-center justify-between text-xs mb-1">
           <span className="text-[#8b8b8b]">{label}</span>

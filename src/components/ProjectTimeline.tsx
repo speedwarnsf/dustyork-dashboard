@@ -19,12 +19,12 @@ type Props = {
 };
 
 const eventStyles: Record<string, { bg: string; border: string; icon: string }> = {
-  commit: { bg: "bg-green-400", border: "border-green-400", icon: "🔨" },
-  journal: { bg: "bg-blue-400", border: "border-blue-400", icon: "📝" },
-  deploy: { bg: "bg-purple-400", border: "border-purple-400", icon: "rocket" },
-  milestone: { bg: "bg-yellow-400", border: "border-yellow-400", icon: "🎯" },
-  status_change: { bg: "bg-orange-400", border: "border-orange-400", icon: "🔄" },
-  io_update: { bg: "bg-cyan-400", border: "border-cyan-400", icon: "🌙" },
+  commit: { bg: "bg-green-400", border: "border-green-400", icon: "edit" },
+  journal: { bg: "bg-blue-400", border: "border-blue-400", icon: "briefs" },
+  deploy: { bg: "bg-purple-400", border: "border-purple-400", icon: "upload" },
+  milestone: { bg: "bg-yellow-400", border: "border-yellow-400", icon: "star" },
+  status_change: { bg: "bg-orange-400", border: "border-orange-400", icon: "settings" },
+  io_update: { bg: "bg-cyan-400", border: "border-cyan-400", icon: "intelligence" },
 };
 
 export default function ProjectTimeline({ events, days = 14 }: Props) {
@@ -172,7 +172,7 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
                     href={`/project/${event.projectId}`}
                     className="flex items-start gap-3 p-2 rounded-lg hover:bg-[#111] transition"
                   >
-                    <span className="text-sm">{style.icon}</span>
+                    <span className="text-sm"><Icon name={style.icon} size={16} /></span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span

@@ -20,7 +20,7 @@ const typeStyles: Record<SmartInsight["type"], { icon: string; border: string; b
     bg: "bg-green-500/5",
   },
   completion: {
-    icon: "🎯",
+    icon: "star",
     border: "border-cyan-500/30",
     bg: "bg-cyan-500/5",
   },
@@ -89,7 +89,7 @@ export default function SmartInsights({ insights }: Props) {
               }}
             >
               <div className="flex items-start gap-3">
-                <span className="text-xl">{style.icon}</span>
+                <span className="text-xl"><Icon name={style.icon} size={20} /></span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm">{insight.title}</p>
@@ -146,7 +146,7 @@ export function SmartInsightsCompact({ insights }: Props) {
             typeStyles[insight.type].bg
           } ${typeStyles[insight.type].border} border`}
         >
-          <span>{typeStyles[insight.type].icon}</span>
+          <span><Icon name={typeStyles[insight.type].icon} size={14} /></span>
           <span className="truncate max-w-[200px]">{insight.title}</span>
         </div>
       ))}

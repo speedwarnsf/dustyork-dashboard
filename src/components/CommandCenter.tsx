@@ -104,7 +104,7 @@ What would you like to work on?`;
     // For now, simulate deployment
     await new Promise((r) => setTimeout(r, 2000));
     
-    addToast("✅ Deploy triggered! Check Vercel for status.", "success");
+    addToast("Deploy triggered! Check Vercel for status.", "success");
     setIsDeploying(false);
   };
 
@@ -145,7 +145,7 @@ Focus on quick wins that improve quality.`;
       });
 
       if (res.ok) {
-        addToast("📝 Journal entry added!", "success");
+        addToast("Journal entry added!", "success");
         setJournalContent("");
         setShowJournalForm(false);
         onJournalAdded?.();
@@ -202,7 +202,7 @@ Focus on quick wins that improve quality.`;
           onClick={() => setShowJournalForm(!showJournalForm)}
           className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
-          <span>📝</span>
+          <Icon name="briefs" size={16} />
           Quick Note
         </button>
 
@@ -211,7 +211,7 @@ Focus on quick wins that improve quality.`;
             onClick={handleSpawnPolishAgent}
             className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#d2ff5a] hover:text-[#d2ff5a]"
           >
-            <span>✨</span>
+            <Icon name="star" size={16} />
             Polish Agent
           </button>
         )}

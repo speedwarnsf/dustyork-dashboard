@@ -1,6 +1,7 @@
 "use client";
 
 import TimeAgo from "./TimeAgo";
+import { Icon } from "./Icon";
 
 type ActivityItem = {
   id: string;
@@ -17,11 +18,11 @@ type Props = {
 };
 
 const iconMap: Record<string, string> = {
-  commit: "🔨",
-  journal: "📝",
-  milestone: "🎯",
-  status_change: "🔄",
-  io_update: "🌙",
+  commit: "edit",
+  journal: "briefs",
+  milestone: "star",
+  status_change: "settings",
+  io_update: "intelligence",
 };
 
 const colorMap: Record<string, string> = {
@@ -54,7 +55,9 @@ export default function ActivityFeed({ activities }: Props) {
             href={`/project/${activity.projectId}`}
             className="flex items-start gap-3 p-3 rounded-xl hover:bg-[#111] transition group"
           >
-            <span className="text-xl">{iconMap[activity.type] || "📌"}</span>
+            <span className={`${colorMap[activity.type] || "text-white"}`}>
+              <Icon name={iconMap[activity.type] || "info"} size={20} />
+            </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm">
                 <span className={`font-medium ${colorMap[activity.type] || "text-white"}`}>

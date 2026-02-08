@@ -25,37 +25,37 @@ const DEFAULT_CHECKS: Omit<ChecklistItem, "status">[] = [
     type: "ssl",
     label: "SSL Certificate",
     description: "HTTPS is enabled and valid",
-    icon: "🔒",
+    icon: "lock",
   },
   {
     type: "mobile",
     label: "Mobile Responsive",
     description: "Works well on mobile devices",
-    icon: "📱",
+    icon: "layout",
   },
   {
     type: "performance",
     label: "Performance",
     description: "Fast loading times (Lighthouse)",
-    icon: "⚡",
+    icon: "stopwatch",
   },
   {
     type: "seo",
     label: "SEO Basics",
     description: "Meta tags, titles, descriptions",
-    icon: "🔍",
+    icon: "search",
   },
   {
     type: "analytics",
     label: "Analytics",
     description: "Tracking is configured",
-    icon: "📊",
+    icon: "chart",
   },
   {
     type: "accessibility",
     label: "Accessibility",
     description: "WCAG compliant basics",
-    icon: "♿",
+    icon: "user",
   },
 ];
 
@@ -168,7 +168,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
             className="flex items-center gap-4 p-3 rounded-xl border border-[#1c1c1c] hover:border-[#2c2c2c] transition"
           >
             {/* Icon */}
-            <span className="text-xl">{check.icon}</span>
+            <span className="text-xl"><Icon name={check.icon} size={20} /></span>
 
             {/* Info */}
             <div className="flex-1 min-w-0">

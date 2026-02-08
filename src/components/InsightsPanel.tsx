@@ -3,6 +3,7 @@
 import type { Milestone } from "@/lib/types";
 import TimeAgo from "./TimeAgo";
 import { ActivityHeatmap } from "./ProjectTimeline";
+import { Icon } from "./Icon";
 
 type Props = {
   totalProjects: number;
@@ -99,7 +100,7 @@ export default function InsightsPanel({
         {/* Upcoming Milestones */}
         <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl">🎯</span>
+            <Icon name="star" size={20} className="text-yellow-400" />
             <h3 className="text-lg font-semibold">Upcoming Milestones</h3>
           </div>
           {upcomingMilestones.length === 0 ? (
@@ -137,7 +138,7 @@ export default function InsightsPanel({
         {/* Recent Commits */}
         <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl">🔨</span>
+            <Icon name="edit" size={20} className="text-green-400" />
             <h3 className="text-lg font-semibold">Recent Commits</h3>
           </div>
           {recentCommits.length === 0 ? (

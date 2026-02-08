@@ -88,7 +88,7 @@ export default function CommandPalette() {
       id: "dashboard",
       name: "Dashboard",
       description: "Go to main dashboard",
-      icon: "🏠",
+      icon: "home",
       category: "Navigation",
       action: () => router.push("/"),
     },
@@ -96,7 +96,7 @@ export default function CommandPalette() {
       id: "new-project",
       name: "New Project",
       description: "Create a new project",
-      icon: "➕",
+      icon: "add",
       category: "Actions",
       action: () => router.push("/project/new"),
     },
@@ -109,7 +109,7 @@ export default function CommandPalette() {
         id: `view-${project.id}`,
         name: project.name,
         description: `Open ${project.name}`,
-        icon: "📁",
+        icon: "folder",
         category: "Projects",
         action: () => router.push(`/project/${project.id}`),
       },
@@ -120,7 +120,7 @@ export default function CommandPalette() {
         id: `github-${project.id}`,
         name: `${project.name} → GitHub`,
         description: `Open ${project.github_repo} on GitHub`,
-        icon: "🐙",
+        icon: "entities",
         category: "External",
         action: () => window.open(`https://github.com/${project.github_repo}`, "_blank"),
       });
@@ -131,7 +131,7 @@ export default function CommandPalette() {
         id: `live-${project.id}`,
         name: `${project.name} → Live Site`,
         description: `Open ${project.live_url}`,
-        icon: "🌐",
+        icon: "cloud",
         category: "External",
         action: () => window.open(project.live_url!, "_blank"),
       });
@@ -146,7 +146,7 @@ export default function CommandPalette() {
       id: "github-profile",
       name: "GitHub Profile",
       description: "Open speedwarnsf on GitHub",
-      icon: "🐙",
+      icon: "entities",
       category: "Quick Links",
       action: () => window.open("https://github.com/speedwarnsf", "_blank"),
     },
@@ -154,7 +154,7 @@ export default function CommandPalette() {
       id: "vercel-dashboard",
       name: "Vercel Dashboard",
       description: "Open Vercel deployments",
-      icon: "▲",
+      icon: "upload",
       category: "Quick Links",
       action: () => window.open("https://vercel.com/dashboard", "_blank"),
     },
@@ -162,7 +162,7 @@ export default function CommandPalette() {
       id: "supabase-dashboard",
       name: "Supabase Dashboard",
       description: "Open Supabase project",
-      icon: "⚡",
+      icon: "jobs",
       category: "Quick Links",
       action: () => window.open("https://supabase.com/dashboard/project/vqkoxfenyjomillmxawh", "_blank"),
     },
@@ -301,7 +301,9 @@ export default function CommandPalette() {
                         }
                       `}
                     >
-                      <span className="text-xl w-8 text-center">{action.icon}</span>
+                      <span className="w-8 text-center text-[#8b8b8b]">
+                        <Icon name={action.icon || "file"} size={18} />
+                      </span>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{action.name}</div>
                         {action.description && (
