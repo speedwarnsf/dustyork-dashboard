@@ -183,7 +183,7 @@ Focus on quick wins that improve quality.`;
           onClick={handleCopyContext}
           className="flex items-center gap-2 rounded-xl bg-[#7bdcff] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
         >
-          <span>🤖</span>
+          <Icon name="intelligence" size={16} />
           Resume with AI
         </button>
 
@@ -251,7 +251,7 @@ Focus on quick wins that improve quality.`;
           onClick={openVercel}
           className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
         >
-          <span>▲</span>
+          <Icon name="upload" size={14} />
           Vercel
         </button>
 
@@ -260,7 +260,7 @@ Focus on quick wins that improve quality.`;
             onClick={openGitHub}
             className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
           >
-            <span>🐙</span>
+            <Icon name="entities" size={14} />
             GitHub
           </button>
         )}
@@ -270,7 +270,7 @@ Focus on quick wins that improve quality.`;
             onClick={openLiveSite}
             className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
           >
-            <span>🌐</span>
+            <Icon name="cloud" size={14} />
             Live Site
           </button>
         )}
@@ -286,7 +286,7 @@ Focus on quick wins that improve quality.`;
               }
               className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
             >
-              <span>⚙️</span>
+              <Icon name="settings" size={14} />
               Actions
             </button>
 
@@ -299,7 +299,7 @@ Focus on quick wins that improve quality.`;
               }
               className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
             >
-              <span>🐛</span>
+              <Icon name="chat" size={14} />
               Issues
             </button>
           </>

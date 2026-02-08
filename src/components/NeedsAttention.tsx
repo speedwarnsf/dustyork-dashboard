@@ -24,7 +24,7 @@ export default function NeedsAttention({ projects }: Props) {
     return (
       <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-xl">✨</span>
+          <Icon name="star" size={20} className="text-[#d2ff5a]" />
           <h3 className="text-lg font-semibold">All Good!</h3>
         </div>
         <p className="text-sm text-[#8b8b8b]">

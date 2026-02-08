@@ -53,7 +53,7 @@ export default function SmartInsights({ insights }: Props) {
           <h3 className="text-lg font-semibold">Smart Insights</h3>
         </div>
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <span className="text-4xl mb-3">✨</span>
+          <Icon name="star" size={40} className="mb-3 text-[#d2ff5a]" />
           <p className="text-[#8b8b8b]">All caught up!</p>
           <p className="text-sm text-[#555] mt-1">No actionable insights right now.</p>
         </div>

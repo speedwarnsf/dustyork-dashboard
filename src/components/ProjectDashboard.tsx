@@ -5,6 +5,7 @@ import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
 import { getHealthDotColor } from "@/lib/health";
 import ProjectGrid from "@/components/ProjectGrid";
+import { Icon } from "./Icon";
 
 type Props = {
   projects: Array<Project & { 
@@ -271,7 +272,7 @@ export default function ProjectDashboard({ projects }: Props) {
                             className="text-[#8b8b8b] hover:text-[#7bdcff] transition"
                             title="GitHub"
                           >
-                            🐙
+                            <Icon name="entities" size={16} />
                           </a>
                         )}
                         {project.live_url && (
@@ -282,7 +283,7 @@ export default function ProjectDashboard({ projects }: Props) {
                             className="text-[#8b8b8b] hover:text-[#d2ff5a] transition"
                             title="Live Site"
                           >
-                            🌐
+                            <Icon name="cloud" size={16} />
                           </a>
                         )}
                       </div>

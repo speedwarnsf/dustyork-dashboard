@@ -210,13 +210,15 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
         <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-[#d2ff5a]/10 to-[#7bdcff]/10 border border-[#d2ff5a]/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-[#d2ff5a]">✨ Ready for Launch!</p>
+              <p className="font-medium text-[#d2ff5a] flex items-center gap-2">
+                <Icon name="star" size={16} /> Ready for Launch!
+              </p>
               <p className="text-sm text-[#8b8b8b] mt-1">
                 All checks passed. Time to share with the world.
               </p>
             </div>
-            <button className="px-4 py-2 text-sm font-medium rounded-xl bg-[#d2ff5a] text-black hover:bg-[#e5ff8a] transition">
-              🎉 Mark as Launched
+            <button className="px-4 py-2 text-sm font-medium rounded-xl bg-[#d2ff5a] text-black hover:bg-[#e5ff8a] transition flex items-center gap-2">
+              <Icon name="star" size={14} /> Mark as Launched
             </button>
           </div>
         </div>

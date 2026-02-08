@@ -1,6 +1,7 @@
 "use client";
 
 import { useToast } from "./Toast";
+import { Icon } from "./Icon";
 
 type QuickActionsProps = {
   project: {
@@ -112,7 +113,7 @@ What would you like to work on?`;
         onClick={handleCopyContext}
         className="flex items-center gap-2 rounded-xl bg-[#7bdcff] px-4 py-2 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
       >
-        <span>🤖</span>
+        <Icon name="intelligence" size={16} />
         Resume with AI
       </button>
 
@@ -120,7 +121,7 @@ What would you like to work on?`;
         onClick={openVercel}
         className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
       >
-        <span>▲</span>
+        <Icon name="upload" size={16} />
         Vercel
       </button>
 
@@ -129,7 +130,7 @@ What would you like to work on?`;
           onClick={openGitHub}
           className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
-          <span>🐙</span>
+          <Icon name="entities" size={16} />
           GitHub
         </button>
       )}
@@ -139,7 +140,7 @@ What would you like to work on?`;
           onClick={visitLiveSite}
           className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
-          <span>🌐</span>
+          <Icon name="cloud" size={16} />
           Live Site
         </button>
       )}
