@@ -30,7 +30,7 @@ function getSupabaseClient(): SupabaseClient | null {
 function getRequestToken(request: NextRequest): string | null {
   const authHeader = request.headers.get("authorization");
   if (authHeader) {
-    return authHeader.replace(/^Bearer\\s+/i, "").trim();
+    return authHeader.replace(/^Bearer\s+/i, "").trim();
   }
   const apiHeader = request.headers.get("x-api-key");
   return apiHeader?.trim() || null;
