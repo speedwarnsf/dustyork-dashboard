@@ -1,24 +1,11 @@
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'ZenSpace - Ambient Focus Environment',
-  description: 'Immersive ambient environments for focus and relaxation',
+  title: 'ZenSpace - AI Room Organization',
+  description: 'Upload a photo of any messy room. Get a step-by-step plan and AI visualization.',
 };
 
 export default function ZenSpacePage() {
-  return (
-    <iframe
-      src="https://zenspace-two.vercel.app"
-      style={{
-        width: '100vw',
-        height: '100vh',
-        border: 'none',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: 9999,
-      }}
-      allow="autoplay; fullscreen"
-    />
-  );
+  redirect('https://zenspace-two.vercel.app');
 }
