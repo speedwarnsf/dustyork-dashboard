@@ -57,11 +57,11 @@
         .btn-pink { background: linear-gradient(135deg, var(--hot-pink), var(--pink)); }
         .btn-cyan { background: linear-gradient(135deg, var(--cyan), #00A8B5); }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
-        header { background-color: transparent; padding: 25px 0; position: sticky; top: 0; z-index: 1000; }
-        header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 179px; background: var(--off-dark); z-index: -1; pointer-events: none; }
-        header::after { content: ''; position: absolute; left: 0; right: 0; top: 179px; height: 85px; background: var(--off-dark); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none; z-index: -1; }
+        header { background-color: transparent; padding: 7px 0; position: sticky; top: 0; z-index: 1000; }
+        header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 156px; background: var(--off-dark); z-index: -1; pointer-events: none; }
+        header::after { content: ''; position: absolute; left: 0; right: 0; top: 156px; height: 85px; background: var(--off-dark); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none; z-index: -1; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .logo { width: 185px; height: auto; }
+        .logo { width: 161px; height: auto; }
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .hamburger { background: none; border: none; color: var(--hot-pink); font-size: 1.8rem; cursor: pointer; display: none; width: 56px; height: 56px; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
         .hero-turnup { width: 100%; max-width: 655px; height: auto; margin: 0 auto 20px; display: block; }
@@ -203,10 +203,14 @@
         .modal-close:hover { background: var(--cyan); transform: rotate(90deg); }
         .video-modal iframe { width: 100%; aspect-ratio: 16/9; display: block; }
         .popup-img { width: 100%; height: auto; display: block; }
+
+        .swipe-hint { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--cyan); font-size: 0.85rem; margin-bottom: 15px; opacity: 0.7; animation: swipeHint 2s ease-in-out infinite; }
+        .swipe-hint i { font-size: 1.1rem; }
+        @keyframes swipeHint { 0%,100% { transform: translateX(0); } 50% { transform: translateX(10px); } }
         @media (max-width: 768px) {
             .hamburger { display: flex; }
-            .header-top { flex-wrap: wrap; }
-            .mobile-menu { display: none; }
+            .header-top { flex-wrap: nowrap; }
+            .mobile-menu { display: block; left: -100%; }
             .action-grid { grid-template-columns: 1fr; }
             .quick-grid { grid-template-columns: repeat(3, 1fr); }
             .faq-question { font-size: 0.85rem; }
@@ -282,6 +286,7 @@
     <section class="more-videos" id="more-videos">
         <div class="container">
             <h2>More Stories</h2>
+            <div class="swipe-hint"><span>Swipe to explore</span><i class="fas fa-arrow-right"></i></div>
             <div class="videos-scroll">
                 <div class="video-card" onclick="playVideo('https://www.loveleadshere.org/wp-content/uploads/2025/05/Testing.mp4')">
                     <div class="video-card-thumb">
@@ -411,6 +416,7 @@
     <section class="campaigns" id="campaigns">
         <div class="container">
             <h2>Campaigns</h2>
+            <div class="swipe-hint"><span>Swipe to explore</span><i class="fas fa-arrow-right"></i></div>
             <div class="campaigns-scroll">
                 <a href="https://www.loveleadshere.org/future" target="_blank" class="campaign-card">
                     <img src="https://www.loveleadshere.org/wp-content/themes/LoveLeadsHere/images/future.jpg" alt="Future" class="campaign-img">

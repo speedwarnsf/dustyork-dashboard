@@ -22,12 +22,17 @@
             padding: 0;
             box-sizing: border-box;
         }
+
+        html {
+            overflow-x: hidden;
+        }
         
         body {
             font-family: 'Source Sans 3', sans-serif;
             background: linear-gradient(135deg, #E8DFD0 0%, #ddd2c8 100%);
             color: #333;
             line-height: 1.6;
+            overflow-x: hidden;
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -253,10 +258,16 @@
             margin: -30px -20px;
             padding: 0;
             line-height: 0;
-            overflow: visible;
+            overflow: hidden;
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
         }
         .divider img {
-            width: calc(100% + 40px);
+            width: 100%;
             height: auto;
             display: block;
             mix-blend-mode: darken;
@@ -267,9 +278,11 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
+            overflow: hidden;
         }
         
         section h2 {
+            margin-top: 50px;
             margin-bottom: 30px;
             color: #1E1A16;
         }
@@ -860,7 +873,7 @@
         
         /* Turn Up typographic animation — v2 */
         .subtitle {
-            overflow: visible;
+            overflow: hidden;
             padding: 10px 0 20px;
             perspective: 800px;
         }
@@ -1121,7 +1134,7 @@
 
         /* Varied section colors */
         #videos h2 { color: #00C9DB; }
-        #theplan h2 { color: #00C9DB; }
+        #theplan h2 { color: #00C9DB; margin-top: 0; margin-bottom: 15px; }
         #campaigns h2 { color: #00C9DB; }
         #faqs h2 { color: #00C9DB; }
         #resources h2 { color: #00C9DB; }
