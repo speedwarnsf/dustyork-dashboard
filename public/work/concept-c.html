@@ -42,7 +42,7 @@
         a:hover { color: var(--cyan); }
         .btn {
             display: inline-block;
-            padding: 12px 28px;
+            padding: 10px 14px;
             background: linear-gradient(135deg, var(--hot-pink), var(--orange));
             color: var(--white);
             border: none;
@@ -52,24 +52,26 @@
             letter-spacing: 1px;
             transition: all 0.3s ease;
             font-size: 0.95rem;
+            white-space: nowrap;
+            font-size: clamp(0.65rem, 2.5vw, 0.95rem);
         }
         .btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 20, 147, 0.5); }
         .btn-pink { background: linear-gradient(135deg, var(--hot-pink), var(--pink)); }
         .btn-cyan { background: linear-gradient(135deg, var(--cyan), #00A8B5); }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
         header { background-color: transparent; padding: 7px 0; position: sticky; top: 0; z-index: 1000; }
-        header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 156px; background: var(--off-dark); z-index: -1; pointer-events: none; }
-        header::after { content: ''; position: absolute; left: 0; right: 0; top: 156px; height: 85px; background: var(--off-dark); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none; z-index: -1; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .logo { width: 161px; height: auto; }
-        .header-actions { display: flex; gap: 15px; align-items: center; }
+        header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 156px; background: rgba(13,13,13,0.82); backdrop-filter: blur(18px) brightness(0.3); -webkit-backdrop-filter: blur(18px) brightness(0.3); z-index: -1; pointer-events: none; }
+        header::after { content: ''; position: absolute; left: 0; right: 0; top: 156px; height: 85px; background: rgba(13,13,13,0.82); backdrop-filter: blur(18px) brightness(0.3); -webkit-backdrop-filter: blur(18px) brightness(0.3); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none; z-index: -1; }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0; margin-top: -15px; }
+        .logo { width: 140px; height: auto; }
+        .header-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
         .hamburger { background: none; border: none; color: var(--hot-pink); font-size: 1.8rem; cursor: pointer; display: none; width: 56px; height: 56px; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
         .hero-turnup { width: 100%; max-width: 655px; height: auto; margin: 0 auto 20px; display: block; }
-        .mobile-menu { display: none; position: fixed; left: -100%; top: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.95); z-index: 999; padding: 60px 20px; transition: left 0.3s ease; overflow-y: auto; }
+        .mobile-menu { display: none; position: fixed; left: -100%; top: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.95); z-index: 1100; padding: 60px 20px; transition: left 0.3s ease; overflow-y: auto; }
         .mobile-menu.active { left: 0; }
         .mobile-menu a { display: block; color: var(--white); padding: 15px; font-size: 1.2rem; border-bottom: 1px solid var(--off-dark); text-decoration: none; }
         .mobile-menu a:hover { color: var(--hot-pink); background-color: rgba(255,20,147,0.1); }
-        .hero { background: var(--dark); padding: 0 20px 60px; text-align: center; position: relative; overflow: hidden; }
+        .hero { background: var(--dark); padding: 0 20px 60px; text-align: center; position: relative; overflow: hidden; margin-top: -23px; }
         .hero::before { content: ''; position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,20,147,0.1) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
         .hero-content { position: relative; z-index: 2; }
         .hero h1 { color: var(--hot-pink); margin-bottom: 20px; line-height: 1.2; }

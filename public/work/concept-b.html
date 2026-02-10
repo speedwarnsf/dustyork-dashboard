@@ -86,18 +86,20 @@
             padding: 0 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
         }
         
         .logo img {
             height: 236px;
             width: auto;
+            margin-top: -10px;
         }
         
         .header-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+            margin-top: 15px;
         }
         
         .cta-button {
@@ -188,13 +190,13 @@
         /* TurnUp Graphic */
         .turnup-section {
             max-width: 1200px;
-            margin: 0 auto;
+            margin: -30px auto 0;
             padding: 0 20px;
         }
         
         .turnup-graphic {
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             height: auto;
         }
         
@@ -258,16 +260,10 @@
             margin: -30px -20px;
             padding: 0;
             line-height: 0;
-            overflow: hidden;
-            width: 100vw;
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
+            overflow: visible;
         }
         .divider img {
-            width: 100%;
+            width: calc(100% + 40px);
             height: auto;
             display: block;
             mix-blend-mode: darken;
@@ -282,15 +278,15 @@
         }
         
         section h2 {
-            margin-top: 50px;
-            margin-bottom: 30px;
+            margin-top: 30px;
+            margin-bottom: 25px;
             color: #1E1A16;
         }
         
         /* VIDEO STORIES SECTION */
         .video-stories-intro {
             background: rgba(255,250,240,0.65); backdrop-filter: blur(4px);
-            padding: 25px;
+            padding: 15px;
             border-radius: 10px;
             margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
