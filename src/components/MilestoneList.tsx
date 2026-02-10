@@ -19,14 +19,20 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
   return (
     <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <h3 className="text-lg font-semibold">Milestones</h3>
+      {milestones.length === 0 && (
+        <div className="mt-6 rounded-2xl border border-dashed border-[#1c1c1c] p-8 text-center">
+          <span className="text-4xl mb-3 block">🎯</span>
+          <p className="text-sm text-[#8b8b8b]">No milestones yet. Add one below to track progress.</p>
+        </div>
+      )}
       <div className="mt-6 space-y-6">
         {milestones.map((milestone) => (
           <div
             key={milestone.id}
             className="rounded-2xl border border-[#1c1c1c] bg-black p-5"
           >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
+            <div className="flex flex-col sm:flex-row flex-wrap items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
                 <h4 className="text-base font-semibold">{milestone.name}</h4>
                 <p className="mt-1 text-sm text-[#8b8b8b]">
                   {milestone.description || "No description."}
@@ -35,6 +41,12 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                   Target: {milestone.target_date || "No date"} · {milestone.percent_complete}%
                   complete
                 </p>
+                <div className="mt-3 h-1.5 bg-[#1c1c1c] rounded-full overflow-hidden max-w-xs">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a] rounded-full transition-all duration-500"
+                    style={{ width: `${milestone.percent_complete}%` }}
+                  />
+                </div>
               </div>
               <form
                 action={updateMilestone.bind(null, milestone.id, projectId)}

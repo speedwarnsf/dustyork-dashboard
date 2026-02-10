@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronUp, Search, Bell, User, Home, Plus, Activity } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -21,31 +21,12 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("/");
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     setActiveTab(pathname);
   }, [pathname]);
-
-  const handlePullToRefresh = (event: any, info: PanInfo) => {
-    if (info.offset.y > 100 && info.velocity.y > 0) {
-      setIsRefreshing(true);
-      // Simulate refresh
-      setTimeout(() => {
-        setIsRefreshing(false);
-        window.location.reload();
-      }, 1500);
-    }
-  };
-
-  const handleSwipeLeft = (event: any, info: PanInfo) => {
-    if (info.offset.x < -100 && Math.abs(info.velocity.x) > 500) {
-      // Quick actions swipe
-      setIsBottomSheetOpen(true);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
@@ -83,46 +64,10 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
         </div>
       </motion.header>
 
-      {/* Pull to refresh indicator */}
-      <AnimatePresence>
-        {isRefreshing && (
-          <motion.div 
-            className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 md:hidden"
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-          >
-            <div className="glass-strong rounded-full px-4 py-2 flex items-center gap-2">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              >
-                <div className="w-4 h-4 border-2 border-[#7bdcff] border-t-transparent rounded-full" />
-              </motion.div>
-              <span className="text-sm text-[#7bdcff]">Refreshing...</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main content with gesture support */}
-      <motion.main 
-        className="pb-20 md:pb-0"
-        drag="y"
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.2}
-        onDragEnd={handlePullToRefresh}
-      >
-        <motion.div
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.2}
-          onDragEnd={handleSwipeLeft}
-          className="mobile-swipe"
-        >
-          {children}
-        </motion.div>
-      </motion.main>
+      {/* Main content */}
+      <div className="pb-20 md:pb-0">
+        {children}
+      </div>
 
       {/* Bottom navigation (mobile only) */}
       <motion.nav 

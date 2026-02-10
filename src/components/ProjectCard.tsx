@@ -24,7 +24,10 @@ const priorityDots: Record<string, string> = {
 };
 
 // Progress Ring Component
+let ringIdCounter = 0;
+
 const ProgressRing = ({ progress, size = 40, strokeWidth = 3 }: { progress: number; size?: number; strokeWidth?: number }) => {
+  const [gradientId] = useState(() => `progress-gradient-${ringIdCounter++}`);
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDasharray = `${circumference} ${circumference}`;
@@ -45,7 +48,7 @@ const ProgressRing = ({ progress, size = 40, strokeWidth = 3 }: { progress: numb
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="url(#gradient)"
+          stroke={`url(#${gradientId})`}
           strokeWidth={strokeWidth}
           fill="transparent"
           strokeDasharray={strokeDasharray}
@@ -55,7 +58,7 @@ const ProgressRing = ({ progress, size = 40, strokeWidth = 3 }: { progress: numb
           strokeLinecap="round"
         />
         <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#7bdcff" />
             <stop offset="100%" stopColor="#d2ff5a" />
           </linearGradient>
