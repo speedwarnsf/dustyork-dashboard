@@ -29,7 +29,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="overflow-x-hidden">
       {/* Mobile header */}
       <motion.header 
         className="sticky top-0 z-40 glass-strong border-b border-[#1c1c1c]/50 px-4 py-3 md:hidden"
@@ -178,8 +178,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                   {[
                     { label: "Dashboard", href: "/" },
                     { label: "New Project", href: "/project/new" },
-                    { label: "Settings", href: "/settings" },
-                    { label: "Help", href: "/help" },
+                    { label: "Activity", href: "#activity" },
                   ].map((item) => (
                     <motion.a
                       key={item.href}

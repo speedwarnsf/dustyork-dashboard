@@ -14,8 +14,18 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "D's Project Command Center v2",
-  description: "Personal project command center with GitHub intelligence.",
+  title: "D's Project Command Center",
+  description: "Personal project dashboard with GitHub intelligence, milestones, and activity tracking.",
+  openGraph: {
+    title: "D's Project Command Center",
+    description: "Personal project dashboard with GitHub intelligence, milestones, and activity tracking.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "D's Project Command Center",
+    description: "Personal project dashboard with GitHub intelligence, milestones, and activity tracking.",
+  },
 };
 
 export default function RootLayout({

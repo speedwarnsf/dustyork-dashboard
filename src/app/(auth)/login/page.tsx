@@ -1,12 +1,15 @@
-import { signIn, signUp } from "../actions";
+"use client";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string; message?: string }>;
-}) {
-  const { error, message } = await searchParams;
-  
+import { useActionState } from "react";
+import { signIn, signUp } from "../actions";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
+  const message = searchParams.get("message");
+
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-8 shadow-[0_0_40px_rgba(123,220,255,0.08)]">
@@ -37,14 +40,14 @@ export default async function LoginPage({
             type="email"
             required
             placeholder="Email"
-            className="w-full rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555]"
+            className="w-full rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
           />
           <input
             name="password"
             type="password"
             required
             placeholder="Password"
-            className="w-full rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555]"
+            className="w-full rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
           />
           <button
             type="submit"
@@ -54,8 +57,20 @@ export default async function LoginPage({
           </button>
         </form>
         <form action={signUp} className="mt-4">
+          <input type="hidden" name="email" id="signup-email" />
+          <input type="hidden" name="password" id="signup-password" />
           <button
             type="submit"
+            onClick={(e) => {
+              const form = (e.target as HTMLElement).closest("form")!;
+              const parent = form.parentElement!;
+              const emailInput = parent.querySelector<HTMLInputElement>('input[name="email"]');
+              const passwordInput = parent.querySelector<HTMLInputElement>('input[name="password"]');
+              const hiddenEmail = form.querySelector<HTMLInputElement>("#signup-email");
+              const hiddenPassword = form.querySelector<HTMLInputElement>("#signup-password");
+              if (hiddenEmail && emailInput) hiddenEmail.value = emailInput.value;
+              if (hiddenPassword && passwordInput) hiddenPassword.value = passwordInput.value;
+            }}
             className="w-full rounded-2xl border border-[#1c1c1c] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
           >
             Create Account
@@ -63,5 +78,19 @@ export default async function LoginPage({
         </form>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <div className="text-[#8b8b8b]">Loading...</div>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

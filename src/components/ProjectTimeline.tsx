@@ -36,7 +36,8 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
 
   const dateRange = useMemo(
     () => eachDayOfInterval({ start: startDate, end: today }),
-    [days]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [startDate.getTime(), today.getTime()]
   );
 
   // Group events by day

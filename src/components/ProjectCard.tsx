@@ -1,7 +1,7 @@
 "use client";
 import { Icon } from "./Icon";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { ExternalLink, Github, Globe, Clock, AlertTriangle, CheckCircle, Activity } from "lucide-react";
 
 import type { Project, ProjectHealth } from "@/lib/types";
@@ -24,10 +24,8 @@ const priorityDots: Record<string, string> = {
 };
 
 // Progress Ring Component
-let ringIdCounter = 0;
-
 const ProgressRing = ({ progress, size = 40, strokeWidth = 3 }: { progress: number; size?: number; strokeWidth?: number }) => {
-  const [gradientId] = useState(() => `progress-gradient-${ringIdCounter++}`);
+  const gradientId = useId();
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDasharray = `${circumference} ${circumference}`;

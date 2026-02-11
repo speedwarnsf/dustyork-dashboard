@@ -268,8 +268,8 @@ export default async function DashboardPage() {
           
           <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
             <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">This Week</p>
-            <p className="text-3xl font-semibold mt-1">{recentCommits.length}</p>
-            <p className="text-xs text-[#555] mt-1">commits</p>
+            <p className="text-3xl font-semibold mt-1">{weeklyActivityCount}</p>
+            <p className="text-xs text-[#555] mt-1">events</p>
           </div>
 
           <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
