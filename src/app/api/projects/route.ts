@@ -16,7 +16,7 @@ function getSupabaseClient() {
     return null;
   }
   
-  return createClient(url, key);
+  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 }
 
 function withCors(response: NextResponse) {
