@@ -10,12 +10,15 @@ import { calculateProjectHealth } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { JournalEntry, Milestone, Project, Task } from "@/lib/types";
 import MilestoneList from "@/components/MilestoneList";
+import MilestoneTimeline from "@/components/MilestoneTimeline";
+import RecentCommits from "@/components/RecentCommits";
 import JournalEntryCard from "@/components/JournalEntry";
 import CommandCenter from "@/components/CommandCenter";
 import ProjectStats from "@/components/ProjectStats";
 import HealthScore from "@/components/HealthScore";
 import LaunchChecklist from "@/components/LaunchChecklist";
 import LaunchAnnouncement from "@/components/LaunchAnnouncement";
+import { fetchRecentCommits } from "@/lib/github";
 
 type MilestoneWithTasks = Milestone & { tasks: Task[] };
 
@@ -75,9 +78,10 @@ export default async function ProjectDetailPage({
     .eq("project_id", id)
     .order("created_at", { ascending: false });
 
-  const github = project.github_repo
-    ? await fetchGithubActivity(project.github_repo)
-    : null;
+  const [github, recentCommits] = await Promise.all([
+    project.github_repo ? fetchGithubActivity(project.github_repo) : null,
+    project.github_repo ? fetchRecentCommits(project.github_repo, 15) : [],
+  ]);
 
   const typedProject = project as Project;
   const fallbackScreenshot = getGithubOpenGraphUrl(typedProject.github_repo);
@@ -279,6 +283,15 @@ export default async function ProjectDetailPage({
           />
         </section>
       )}
+
+      {/* Timeline + Commits Section */}
+      <section className="mt-8 grid gap-6 lg:grid-cols-2">
+        <MilestoneTimeline milestones={milestones} />
+        <RecentCommits
+          commits={recentCommits || []}
+          repoUrl={github?.repoUrl || null}
+        />
+      </section>
 
       {/* Milestones + Journal Section */}
       <section className="mt-10 grid gap-6 lg:grid-cols-[1.4fr_1fr]">

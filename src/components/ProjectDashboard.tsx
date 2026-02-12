@@ -197,6 +197,7 @@ export default function ProjectDashboard({ projects }: Props) {
                 return (
                   <tr
                     key={project.id}
+                    data-project-id={project.id}
                     className="border-b border-[#1c1c1c] last:border-b-0 hover:bg-[#111] transition"
                   >
                     <td className="px-4 py-4">

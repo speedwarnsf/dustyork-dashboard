@@ -267,15 +267,21 @@ export default async function DashboardPage() {
           </div>
           
           <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">This Week</p>
-            <p className="text-3xl font-semibold mt-1">{weeklyActivityCount}</p>
-            <p className="text-xs text-[#555] mt-1">events</p>
+            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Active This Week</p>
+            <p className="text-3xl font-semibold mt-1">
+              {projectsWithActivity.filter(p => p.daysSinceActivity <= 7 && p.status === "active").length}
+            </p>
+            <p className="text-xs text-[#555] mt-1">
+              of {activeProjects} active · {weeklyActivityCount} events
+            </p>
           </div>
 
           <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Today</p>
-            <p className="text-lg font-semibold mt-1">{format(new Date(), "EEE, MMM d")}</p>
-            <p className="text-xs text-[#555] mt-1">{format(new Date(), "h:mm a")}</p>
+            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">This Month</p>
+            <p className="text-3xl font-semibold mt-1">{monthlyActivityCount}</p>
+            <p className="text-xs text-[#555] mt-1">
+              events · {commitActivities.filter(a => new Date(a.timestamp) >= monthAgo).length} commits
+            </p>
           </div>
         </div>
       </section>
@@ -306,7 +312,7 @@ export default async function DashboardPage() {
       {/* Activity + Attention Section */}
       <section id="activity" className="mx-auto w-full max-w-7xl px-6 py-6 scroll-mt-24">
         <div className="grid gap-6 lg:grid-cols-2">
-          <ActivityFeed activities={activities.slice(0, 10)} />
+          <ActivityFeed activities={activities.slice(0, 25)} showProjectFilter />
           <NeedsAttention projects={projectsWithActivity} />
         </div>
       </section>

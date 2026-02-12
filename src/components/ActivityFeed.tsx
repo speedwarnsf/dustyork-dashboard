@@ -18,6 +18,7 @@ type ActivityItem = {
 
 type Props = {
   activities: ActivityItem[];
+  showProjectFilter?: boolean;
 };
 
 type ActivityConfig = {
@@ -72,18 +73,31 @@ const getTimePeriod = (timestamp: string) => {
   return "Earlier";
 };
 
-export default function ActivityFeed({ activities }: Props) {
+export default function ActivityFeed({ activities, showProjectFilter = true }: Props) {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
+  const [selectedProject, setSelectedProject] = useState<string>("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   
   const activityTypes = Object.keys(activityConfig);
   
-  // Filter activities
+  // Get unique project names for filter
+  const projectNames = useMemo(() => {
+    const names = new Set(activities.map(a => a.projectName));
+    return Array.from(names).sort();
+  }, [activities]);
+  
+  // Filter activities by type AND project
   const filteredActivities = useMemo(() => {
-    if (selectedFilter === "all") return activities;
-    return activities.filter(activity => activity.type === selectedFilter);
-  }, [activities, selectedFilter]);
+    let result = activities;
+    if (selectedFilter !== "all") {
+      result = result.filter(activity => activity.type === selectedFilter);
+    }
+    if (selectedProject !== "all") {
+      result = result.filter(activity => activity.projectName === selectedProject);
+    }
+    return result;
+  }, [activities, selectedFilter, selectedProject]);
   
   // Group activities by time period
   const groupedActivities = useMemo(() => {
@@ -166,7 +180,21 @@ export default function ActivityFeed({ activities }: Props) {
         </h3>
         
         <div className="flex items-center gap-2">
-          {/* Filter dropdown */}
+          {/* Project filter */}
+          {showProjectFilter && projectNames.length > 1 && (
+            <select
+              value={selectedProject}
+              onChange={(e) => setSelectedProject(e.target.value)}
+              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-lg px-3 py-1 text-xs text-white focus:outline-none focus:border-[#7bdcff] transition-colors max-w-[120px]"
+            >
+              <option value="all">All Projects</option>
+              {projectNames.map(name => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
+          )}
+          
+          {/* Type filter dropdown */}
           <div className="relative">
             <select
               value={selectedFilter}
@@ -251,9 +279,18 @@ export default function ActivityFeed({ activities }: Props) {
                           </span>
                         </p>
                         
-                        <p className="text-sm text-[#8b8b8b] group-hover:text-white transition-colors">
-                          {activity.message}
-                        </p>
+                        {activity.type === "commit" ? (
+                          <div className="text-sm text-[#8b8b8b] group-hover:text-white transition-colors">
+                            <code className="text-xs font-mono text-[#7bdcff]/50 mr-2">
+                              {activity.id.replace("commit-", "").slice(0, 7)}
+                            </code>
+                            {activity.message}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-[#8b8b8b] group-hover:text-white transition-colors">
+                            {activity.message}
+                          </p>
+                        )}
                         
                         <p className="text-xs text-[#666] mt-1 flex items-center gap-1">
                           <TimeAgo date={activity.timestamp} />

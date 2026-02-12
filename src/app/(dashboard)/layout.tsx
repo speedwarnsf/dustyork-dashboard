@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { signOut } from "../(auth)/actions";
 import CommandPalette from "@/components/CommandPalette";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import Header from "@/components/Header";
 import MobileLayout from "@/components/MobileLayout";
 import { Toaster } from "react-hot-toast";
@@ -20,10 +21,17 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  // Fetch projects for keyboard shortcuts
+  const { data: projectsForNav } = await supabase
+    .from("projects")
+    .select("id, name")
+    .order("updated_at", { ascending: false });
+
   return (
     <>
       {/* Global Components */}
       <CommandPalette />
+      <KeyboardShortcuts projects={(projectsForNav || []).map(p => ({ id: p.id, name: p.name }))} />
       <Toaster 
         position="top-right"
         toastOptions={{

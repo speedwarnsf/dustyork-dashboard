@@ -35,6 +35,38 @@ const computeActivity = (dateIso: string | null) => {
   return "Frozen" as const;
 };
 
+export type GithubCommit = {
+  sha: string;
+  message: string;
+  date: string;
+  author: string;
+  url: string;
+};
+
+export const fetchRecentCommits = async (repo: string, count: number = 10): Promise<GithubCommit[]> => {
+  const parsed = parseRepo(repo);
+  if (!parsed) return [];
+
+  try {
+    const token = process.env.GITHUB_TOKEN;
+    const headers: HeadersInit = token ? { Authorization: `token ${token}` } : {};
+    const base = `https://api.github.com/repos/${parsed.owner}/${parsed.name}`;
+    const res = await fetch(`${base}/commits?per_page=${count}`, { headers, next: { revalidate: 300 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.map((c: any) => ({
+      sha: c.sha?.slice(0, 7) || "",
+      message: c.commit?.message?.split("\n")[0] || "",
+      date: c.commit?.author?.date || "",
+      author: c.commit?.author?.name || c.author?.login || "Unknown",
+      url: c.html_url || `https://github.com/${parsed.owner}/${parsed.name}/commit/${c.sha}`,
+    }));
+  } catch {
+    return [];
+  }
+};
+
 export const fetchGithubActivity = async (repo: string): Promise<GithubActivity> => {
   const parsed = parseRepo(repo);
   if (!parsed) {

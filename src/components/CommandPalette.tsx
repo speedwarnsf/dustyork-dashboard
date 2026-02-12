@@ -336,6 +336,7 @@ export default function CommandPalette() {
 
         {/* Enhanced modal */}
         <motion.div 
+          data-command-palette
           className="relative w-full max-w-2xl glass-strong rounded-3xl shadow-2xl overflow-hidden"
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
