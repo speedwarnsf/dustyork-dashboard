@@ -230,7 +230,61 @@ export default function CommandPalette() {
     },
   ];
 
-  const allActions = [...navigationActions, ...projectActions, ...quickLinks];
+  // Quick actions for power users
+  const utilityActions: Action[] = [
+    {
+      id: "scroll-activity",
+      name: "Jump to Activity Feed",
+      description: "Scroll to activity section",
+      icon: "clock",
+      category: "Quick Actions",
+      priority: 85,
+      keywords: ["activity", "feed", "recent", "scroll"],
+      action: () => {
+        const el = document.getElementById("activity");
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      },
+    },
+    {
+      id: "scroll-projects",
+      name: "Jump to Projects",
+      description: "Scroll to project grid",
+      icon: "folder",
+      category: "Quick Actions",
+      priority: 85,
+      keywords: ["projects", "grid", "cards", "scroll"],
+      action: () => {
+        const el = document.getElementById("search");
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      },
+    },
+    {
+      id: "keyboard-shortcuts",
+      name: "Keyboard Shortcuts",
+      description: "Show all keyboard shortcuts",
+      icon: "settings",
+      category: "Quick Actions",
+      priority: 75,
+      keywords: ["keyboard", "shortcuts", "help", "keys"],
+      shortcut: "?",
+      action: () => {
+        window.dispatchEvent(new KeyboardEvent("keydown", { key: "?", bubbles: true }));
+      },
+    },
+    {
+      id: "refresh-page",
+      name: "Refresh Dashboard",
+      description: "Reload data from GitHub and database",
+      icon: "settings",
+      category: "Quick Actions",
+      priority: 70,
+      keywords: ["refresh", "reload", "update", "sync"],
+      shortcut: "⌘R",
+      action: () => window.location.reload(),
+    },
+  ];
+
+  const allActions = [...navigationActions, ...utilityActions, ...projectActions, ...quickLinks];
 
   // Setup fuzzy search
   const fuse = new Fuse(allActions, {

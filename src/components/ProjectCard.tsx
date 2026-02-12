@@ -2,7 +2,7 @@
 import { Icon } from "./Icon";
 import { motion } from "framer-motion";
 import { useId, useState } from "react";
-import { ExternalLink, Github, Globe, Clock, AlertTriangle, CheckCircle, Activity } from "lucide-react";
+import { ExternalLink, Github, GitCommit, Globe, Clock, AlertTriangle, CheckCircle, Activity } from "lucide-react";
 
 import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
@@ -217,6 +217,23 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           {project.description || "No description yet."}
         </p>
 
+        {/* Tags */}
+        {project.tags && project.tags.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {project.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-0.5 rounded-full text-[10px] bg-[#1c1c1c] text-[#8b8b8b] border border-[#333]/30"
+              >
+                {tag}
+              </span>
+            ))}
+            {project.tags.length > 3 && (
+              <span className="text-[10px] text-[#555] self-center">+{project.tags.length - 3}</span>
+            )}
+          </div>
+        )}
+
         {/* Health Alerts with enhanced styling */}
         {health && health.alerts.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1">
@@ -232,6 +249,16 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 {alert}
               </motion.span>
             ))}
+          </div>
+        )}
+
+        {/* Last commit message */}
+        {project.github?.lastCommitMessage && (
+          <div className="mt-3 flex items-start gap-2 px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#1c1c1c]/50">
+            <GitCommit size={12} className="text-green-400 mt-0.5 shrink-0" />
+            <p className="text-[11px] text-[#8b8b8b] line-clamp-1 font-mono">
+              {project.github.lastCommitMessage}
+            </p>
           </div>
         )}
 

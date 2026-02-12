@@ -168,4 +168,34 @@ main {
   .grid.lg\:grid-cols-\[1\.4fr_1fr\] {
     grid-template-columns: 1fr;
   }
+
+  /* Mobile hero section adjustments */
+  section h1 {
+    font-size: 1.75rem;
+  }
+
+  /* Better card layout on small screens */
+  .glass-strong {
+    border-radius: 1.25rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 380px) {
+  section h1 {
+    font-size: 1.5rem;
+  }
+  
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

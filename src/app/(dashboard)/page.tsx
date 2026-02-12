@@ -9,7 +9,8 @@ import { fetchGithubActivity } from "@/lib/github";
 import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Project, Milestone } from "@/lib/types";
-import { differenceInDays, format, subDays } from "date-fns";
+import { differenceInDays, format, subDays, eachDayOfInterval, startOfDay, isSameDay } from "date-fns";
+import StatsRow from "@/components/StatsRow";
 
 export const revalidate = 60; // Revalidate every minute
 
@@ -210,6 +211,28 @@ export default async function DashboardPage() {
     return timestamp >= monthAgo;
   }).length;
 
+  // Build daily activity sparkline (last 14 days)
+  const sparklineDays = 14;
+  const sparklineStart = subDays(now, sparklineDays - 1);
+  const sparklineDateRange = eachDayOfInterval({ start: sparklineStart, end: now });
+  const dailyActivityCounts = sparklineDateRange.map((day) => {
+    const dayStart = startOfDay(day);
+    return activities.filter((a) => {
+      const aDate = startOfDay(new Date(a.timestamp));
+      return isSameDay(aDate, dayStart);
+    }).length;
+  });
+
+  // Calculate activity streak (consecutive days with activity, counting back from today)
+  let streak = 0;
+  for (let i = dailyActivityCounts.length - 1; i >= 0; i--) {
+    if (dailyActivityCounts[i] > 0) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
   return (
     <main>
       {/* Hero Section */}
@@ -239,51 +262,19 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-          <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Projects</p>
-            <p className="text-3xl font-semibold mt-1">{projects.length}</p>
-            <p className="text-xs text-[#555] mt-1">{activeProjects} active</p>
-          </div>
-          
-          <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Milestones</p>
-            <p className="text-3xl font-semibold mt-1">{totalMilestones}</p>
-            <p className="text-xs text-[#555] mt-1">{completedMilestones} completed</p>
-          </div>
-          
-          <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Avg Health</p>
-            <p className="text-3xl font-semibold mt-1">{Math.round(avgHealthScore)}</p>
-            <div className="mt-2 h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
-              <div 
-                className={`h-full transition-all ${
-                  avgHealthScore >= 70 ? "bg-green-400" : 
-                  avgHealthScore >= 50 ? "bg-yellow-400" : "bg-red-400"
-                }`}
-                style={{ width: `${avgHealthScore}%` }}
-              />
-            </div>
-          </div>
-          
-          <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Active This Week</p>
-            <p className="text-3xl font-semibold mt-1">
-              {projectsWithActivity.filter(p => p.daysSinceActivity <= 7 && p.status === "active").length}
-            </p>
-            <p className="text-xs text-[#555] mt-1">
-              of {activeProjects} active · {weeklyActivityCount} events
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
-            <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">This Month</p>
-            <p className="text-3xl font-semibold mt-1">{monthlyActivityCount}</p>
-            <p className="text-xs text-[#555] mt-1">
-              events · {commitActivities.filter(a => new Date(a.timestamp) >= monthAgo).length} commits
-            </p>
-          </div>
-        </div>
+        <StatsRow
+          projects={projects.length}
+          activeProjects={activeProjects}
+          totalMilestones={totalMilestones}
+          completedMilestones={completedMilestones}
+          avgHealthScore={avgHealthScore}
+          activeThisWeek={projectsWithActivity.filter(p => p.daysSinceActivity <= 7 && p.status === "active").length}
+          weeklyActivityCount={weeklyActivityCount}
+          monthlyActivityCount={monthlyActivityCount}
+          commitCount={commitActivities.filter(a => new Date(a.timestamp) >= monthAgo).length}
+          streak={streak}
+          sparklineData={dailyActivityCounts}
+        />
       </section>
 
       <ProgressOverview
