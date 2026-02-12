@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronUp, Search, Bell, User, Home, Plus, Activity } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, useAnimation } from "framer-motion";
+import { Menu, X, ChevronUp, Search, Bell, User, Home, Plus, Activity, RefreshCw } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
 type MobileLayoutProps = {
@@ -21,12 +21,46 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("/");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const pullY = useMotionValue(0);
+  const pullOpacity = useTransform(pullY, [0, 60], [0, 1]);
+  const pullRotation = useTransform(pullY, [0, 60], [0, 360]);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef(0);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     setActiveTab(pathname);
   }, [pathname]);
+
+  // Pull to refresh handler
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (contentRef.current && contentRef.current.scrollTop === 0) {
+      touchStartY.current = e.touches[0].clientY;
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (contentRef.current && contentRef.current.scrollTop === 0 && !isRefreshing) {
+      const deltaY = e.touches[0].clientY - touchStartY.current;
+      if (deltaY > 0) {
+        pullY.set(Math.min(deltaY * 0.5, 80));
+      }
+    }
+  }, [isRefreshing, pullY]);
+
+  const handleTouchEnd = useCallback(async () => {
+    if (pullY.get() > 50 && !isRefreshing) {
+      setIsRefreshing(true);
+      pullY.set(60);
+      // Actual refresh
+      router.refresh();
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsRefreshing(false);
+    }
+    pullY.set(0);
+  }, [pullY, isRefreshing, router]);
 
   return (
     <div className="overflow-x-hidden">
@@ -64,8 +98,24 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
         </div>
       </motion.header>
 
+      {/* Pull to refresh indicator (mobile only) */}
+      <motion.div 
+        className="flex items-center justify-center py-2 md:hidden overflow-hidden"
+        style={{ height: pullY, opacity: pullOpacity }}
+      >
+        <motion.div style={{ rotate: pullRotation }}>
+          <RefreshCw size={20} className={`text-[#7bdcff] ${isRefreshing ? "animate-spin" : ""}`} />
+        </motion.div>
+      </motion.div>
+
       {/* Main content */}
-      <div className="pb-20 md:pb-0">
+      <div 
+        ref={contentRef}
+        className="pb-20 md:pb-0"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {children}
       </div>
 

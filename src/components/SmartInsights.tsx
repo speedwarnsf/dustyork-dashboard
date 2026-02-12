@@ -1,6 +1,7 @@
 "use client";
 import { Icon } from "./Icon";
 
+import { motion } from "framer-motion";
 import type { SmartInsight } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
@@ -74,12 +75,16 @@ export default function SmartInsights({ insights }: Props) {
       </div>
 
       <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-        {insights.map((insight) => {
+        {insights.map((insight, index) => {
           const style = typeStyles[insight.type];
           return (
-            <div
+            <motion.div
               key={insight.id}
               className={`p-4 rounded-xl border ${style.border} ${style.bg} transition hover:border-[#7bdcff]/30 cursor-pointer`}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.08, duration: 0.3 }}
+              whileHover={{ scale: 1.01, x: 4 }}
               onClick={() => {
                 if (insight.projectId) {
                   router.push(`/project/${insight.projectId}`);
@@ -122,7 +127,7 @@ export default function SmartInsights({ insights }: Props) {
                   )}
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>

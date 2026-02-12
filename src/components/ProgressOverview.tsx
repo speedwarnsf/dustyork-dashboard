@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Icon } from "@/components/Icon";
 
 const statusColors = {
@@ -48,7 +51,12 @@ export default function ProgressOverview({
   const monthlyActivity = Math.max(activityStats.monthly, 1);
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-6 py-6">
+    <motion.section 
+      className="mx-auto w-full max-w-7xl px-6 py-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
       <div className="rounded-[32px] border border-[#1c1c1c] bg-[#0a0a0a]/90 p-6 md:p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0f1d12]/40 via-transparent to-[#0c1b24]/40 pointer-events-none" />
         <div className="relative">
@@ -80,17 +88,23 @@ export default function ProgressOverview({
                 <span className="text-xs text-[#8b8b8b]">{milestoneCompletion}% complete</span>
               </div>
               <div className="mt-4 h-3 rounded-full bg-[#1c1c1c] overflow-hidden flex">
-                <div
+                <motion.div
                   className={statusColors.completed}
-                  style={{ width: `${(milestoneStats.completed / totalMilestones) * 100}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(milestoneStats.completed / totalMilestones) * 100}%` }}
+                  transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
                 />
-                <div
+                <motion.div
                   className={statusColors.in_progress}
-                  style={{ width: `${(milestoneStats.inProgress / totalMilestones) * 100}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(milestoneStats.inProgress / totalMilestones) * 100}%` }}
+                  transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
                 />
-                <div
+                <motion.div
                   className={statusColors.not_started}
-                  style={{ width: `${(milestoneStats.notStarted / totalMilestones) * 100}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(milestoneStats.notStarted / totalMilestones) * 100}%` }}
+                  transition={{ duration: 1, ease: "easeOut", delay: 0.7 }}
                 />
               </div>
               <div className="mt-4 grid grid-cols-3 text-xs text-[#8b8b8b]">
@@ -121,9 +135,11 @@ export default function ProgressOverview({
                     <span>{activityStats.weekly} events</span>
                   </div>
                   <div className="mt-2 h-2 rounded-full bg-[#1c1c1c] overflow-hidden">
-                    <div
+                    <motion.div
                       className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a]"
-                      style={{ width: `${Math.min(100, (activityStats.weekly / monthlyActivity) * 100)}%` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, (activityStats.weekly / monthlyActivity) * 100)}%` }}
+                      transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }}
                     />
                   </div>
                 </div>
@@ -133,9 +149,11 @@ export default function ProgressOverview({
                     <span>{activityStats.monthly} events</span>
                   </div>
                   <div className="mt-2 h-2 rounded-full bg-[#1c1c1c] overflow-hidden">
-                    <div
+                    <motion.div
                       className="h-full bg-[#7bdcff]/60"
-                      style={{ width: "100%" }}
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 1.2, ease: "easeOut", delay: 0.6 }}
                     />
                   </div>
                 </div>
@@ -163,16 +181,18 @@ export default function ProgressOverview({
                   ["paused", projectStats.paused],
                   ["completed", projectStats.completed],
                   ["archived", projectStats.archived],
-                ] as Array<[keyof typeof projectStatusColors, number]>).map(([status, value]) => (
+                ] as Array<[keyof typeof projectStatusColors, number]>).map(([status, value], index) => (
                   <div key={status}>
                     <div className="flex items-center justify-between text-xs text-[#8b8b8b]">
                       <span className="capitalize">{status}</span>
                       <span>{value}</span>
                     </div>
                     <div className="mt-2 h-2 rounded-full bg-[#1c1c1c] overflow-hidden">
-                      <div
+                      <motion.div
                         className={`h-full ${projectStatusColors[status]}`}
-                        style={{ width: `${(value / totalProjects) * 100}%` }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(value / totalProjects) * 100}%` }}
+                        transition={{ duration: 1, ease: "easeOut", delay: 0.3 + index * 0.15 }}
                       />
                     </div>
                   </div>
@@ -182,6 +202,6 @@ export default function ProgressOverview({
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
