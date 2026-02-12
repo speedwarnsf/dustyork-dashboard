@@ -91,7 +91,7 @@ export default async function ProjectDetailPage({
   const health = calculateProjectHealth({ ...typedProject, github });
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-6 py-10 text-white">
+    <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-6 sm:py-10 text-white">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -104,7 +104,7 @@ export default async function ProjectDetailPage({
               </span>
             )}
           </div>
-          <h2 className="mt-2 text-3xl font-semibold">{typedProject.name}</h2>
+          <h2 className="mt-2 text-2xl sm:text-3xl font-semibold">{typedProject.name}</h2>
           <p className="mt-2 max-w-2xl text-sm text-[#8b8b8b]">
             {typedProject.description || "No description yet."}
           </p>
@@ -114,24 +114,24 @@ export default async function ProjectDetailPage({
           <div className="hidden sm:block">
             <HealthScore health={health} size="sm" />
           </div>
-          <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.3em]">
+          <div className="flex flex-wrap gap-2 sm:gap-3 text-xs uppercase tracking-[0.3em]">
             <Link
               href={`/project/${typedProject.id}/edit`}
-              className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+              className="rounded-full border border-[#1c1c1c] px-4 py-2.5 sm:py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
             >
               Edit
             </Link>
             <form action={archiveProject.bind(null, typedProject.id)}>
               <button
                 type="submit"
-                className="rounded-full border border-[#2a2a2a] px-4 py-2 text-[#8b8b8b] transition hover:border-[#f4b26a] hover:text-[#f4b26a]"
+                className="rounded-full border border-[#2a2a2a] px-4 py-2.5 sm:py-2 text-[#8b8b8b] transition hover:border-[#f4b26a] hover:text-[#f4b26a]"
               >
                 Archive
               </button>
             </form>
             <Link
               href="/"
-              className="rounded-full border border-[#1c1c1c] px-4 py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+              className="rounded-full border border-[#1c1c1c] px-4 py-2.5 sm:py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
             >
               Back
             </Link>

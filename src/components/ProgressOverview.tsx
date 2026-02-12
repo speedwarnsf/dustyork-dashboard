@@ -52,31 +52,31 @@ export default function ProgressOverview({
 
   return (
     <motion.section 
-      className="mx-auto w-full max-w-7xl px-6 py-6"
+      className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <div className="rounded-[32px] border border-[#1c1c1c] bg-[#0a0a0a]/90 p-6 md:p-8 relative overflow-hidden">
+      <div className="rounded-2xl sm:rounded-[32px] border border-[#1c1c1c] bg-[#0a0a0a]/90 p-4 sm:p-6 md:p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0f1d12]/40 via-transparent to-[#0c1b24]/40 pointer-events-none" />
         <div className="relative">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
               <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff]">Progress Pulse</p>
-              <h2 className="text-2xl font-semibold mt-2">Momentum + Milestone Clarity</h2>
-              <p className="text-sm text-[#8b8b8b] mt-2 max-w-xl">
+              <h2 className="text-xl sm:text-2xl font-semibold mt-2">Momentum + Milestone Clarity</h2>
+              <p className="text-sm text-[#8b8b8b] mt-2 max-w-xl hidden sm:block">
                 A quick read on delivery pace, health average, and the project mix.
               </p>
             </div>
-            <div className="flex items-center gap-3 text-xs text-[#8b8b8b]">
-              <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#d2ff5a]" /> Completed
+            <div className="flex flex-wrap items-center gap-3 text-xs text-[#8b8b8b]">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#d2ff5a] shrink-0" /> Completed
               </span>
-              <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#7bdcff]" /> In progress
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#7bdcff] shrink-0" /> In progress
               </span>
-              <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#444]" /> Not started
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#444] shrink-0" /> Not started
               </span>
             </div>
           </div>

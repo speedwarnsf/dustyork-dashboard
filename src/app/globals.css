@@ -180,6 +180,13 @@ main {
   }
 }
 
+/* Prevent iOS zoom on input focus — inputs must be >= 16px */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* Extra small screens */
 @media (max-width: 380px) {
   section h1 {

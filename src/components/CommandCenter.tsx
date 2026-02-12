@@ -178,7 +178,7 @@ Focus on quick wins that improve quality.`;
   return (
     <div className="space-y-4">
       {/* Primary Actions */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2 sm:gap-3">
         <button
           onClick={handleCopyContext}
           className="flex items-center gap-2 rounded-xl bg-[#7bdcff] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"

@@ -88,7 +88,7 @@ export default async function DashboardLayout({
           </header>
           
           {/* Main content */}
-          <main className="pb-16 md:pb-8">
+          <main className="pb-20 md:pb-8">
             {children}
           </main>
           

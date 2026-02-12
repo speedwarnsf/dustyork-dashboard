@@ -165,7 +165,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
       layout
     >
       {/* Enhanced header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <motion.div
             animate={isRefreshing ? { rotate: 360 } : {}}
@@ -179,13 +179,13 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
           </span>
         </h3>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Project filter */}
           {showProjectFilter && projectNames.length > 1 && (
             <select
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
-              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-lg px-3 py-1 text-xs text-white focus:outline-none focus:border-[#7bdcff] transition-colors max-w-[120px]"
+              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors max-w-[140px]"
             >
               <option value="all">All Projects</option>
               {projectNames.map(name => (
@@ -199,7 +199,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
             <select
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
-              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-lg px-3 py-1 text-xs text-white focus:outline-none focus:border-[#7bdcff] transition-colors"
+              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors"
             >
               <option value="all">All Types</option>
               {activityTypes.map(type => (

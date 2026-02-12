@@ -11,8 +11,8 @@ function LoginForm() {
   const message = searchParams.get("message");
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-md rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-8 shadow-[0_0_40px_rgba(123,220,255,0.08)]">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 sm:px-6 py-12">
+      <div className="w-full max-w-md rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6 sm:p-8 shadow-[0_0_40px_rgba(123,220,255,0.08)]">
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff]">
             D&apos;s Command Center

@@ -202,7 +202,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           
           {/* Enhanced status badge */}
           <motion.div
-            className={`rounded-full border px-3 py-1 text-[9px] uppercase tracking-[0.2em] flex items-center gap-1.5 ${
+            className={`rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] flex items-center gap-1 shrink-0 ${
               statusConfig.bg
             } ${statusConfig.text} ${statusConfig.border}`}
             whileHover={{ scale: 1.05 }}

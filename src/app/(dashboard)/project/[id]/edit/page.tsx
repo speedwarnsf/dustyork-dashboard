@@ -21,8 +21,8 @@ export default async function EditProjectPage({
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-6 py-12 text-white">
-      <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-8">
+    <main className="mx-auto w-full max-w-4xl px-4 sm:px-6 py-8 sm:py-12 text-white">
+      <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-5 sm:p-8">
         <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff]">
           Edit Project
         </p>

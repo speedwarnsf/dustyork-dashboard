@@ -68,7 +68,7 @@ export default function ProjectDashboard({ projects }: Props) {
   }, [projects, search, sortBy, filterStatus]);
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-6 py-10">
+    <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-10">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
@@ -109,9 +109,9 @@ export default function ProjectDashboard({ projects }: Props) {
       </div>
 
       {/* Filters */}
-      <div id="search" className="flex flex-wrap items-center gap-3 mb-6 scroll-mt-24">
+      <div id="search" className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6 scroll-mt-24">
         {/* Search */}
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
+        <div className="relative flex-1 min-w-0 sm:min-w-[200px] max-w-sm">
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666]"
             fill="none"

@@ -41,7 +41,7 @@ export default function StatsRow({
   sparklineData,
 }: StatsRowProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
       {/* Projects */}
       <motion.div
         className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
@@ -148,7 +148,7 @@ export default function StatsRow({
 
       {/* Streak + Monthly */}
       <motion.div
-        className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#f97316]/30 transition-colors"
+        className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#f97316]/30 transition-colors col-span-2 sm:col-span-1"
         custom={4}
         variants={cardVariants}
         initial="hidden"

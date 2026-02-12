@@ -236,7 +236,7 @@ export default async function DashboardPage() {
   return (
     <main>
       {/* Hero Section */}
-      <section className="mx-auto w-full max-w-7xl px-6 py-8">
+      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-8">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
           <div>
             <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff] mb-2">
@@ -247,8 +247,10 @@ export default async function DashboardPage() {
             </h1>
             <p className="mt-2 text-[#8b8b8b] max-w-xl">
               Track your projects, monitor GitHub activity, and keep the momentum going.
-              Press <kbd className="px-1.5 py-0.5 text-xs rounded bg-[#1c1c1c] text-[#7bdcff]">⌘K</kbd> to
-              quickly navigate.
+              <span className="hidden sm:inline">
+                {" "}Press <kbd className="px-1.5 py-0.5 text-xs rounded bg-[#1c1c1c] text-[#7bdcff]">⌘K</kbd> to
+                quickly navigate.
+              </span>
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -293,7 +295,7 @@ export default async function DashboardPage() {
       />
 
       {/* Insights + Timeline Section */}
-      <section className="mx-auto w-full max-w-7xl px-6 py-6">
+      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6">
         <div className="grid gap-6 lg:grid-cols-2">
           <SmartInsights insights={insights} />
           <ProjectTimeline events={timelineEvents.slice(0, 100)} days={14} />
@@ -301,7 +303,7 @@ export default async function DashboardPage() {
       </section>
 
       {/* Activity + Attention Section */}
-      <section id="activity" className="mx-auto w-full max-w-7xl px-6 py-6 scroll-mt-24">
+      <section id="activity" className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6 scroll-mt-24">
         <div className="grid gap-6 lg:grid-cols-2">
           <ActivityFeed activities={activities.slice(0, 25)} showProjectFilter />
           <NeedsAttention projects={projectsWithActivity} />
@@ -310,7 +312,7 @@ export default async function DashboardPage() {
 
       {/* Upcoming Milestones */}
       {upcomingMilestones.length > 0 && (
-        <section className="mx-auto w-full max-w-7xl px-6 py-6">
+        <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6">
           <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-xl">🎯</span>
