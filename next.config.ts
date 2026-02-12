@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
         hostname: "vqkoxfenyjomillmxawh.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        hostname: "api.microlink.io",
+      },
+      {
+        protocol: "https",
+        hostname: "opengraph.githubassets.com",
+      },
     ],
   },
   

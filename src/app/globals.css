@@ -152,11 +152,15 @@ main {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Better mobile tap targets */
+/* Better mobile tap targets — only for standalone interactive elements */
 @media (max-width: 768px) {
-  button, a, [role="button"] {
+  nav button,
+  nav a,
+  form button,
+  header button,
+  header a,
+  footer a {
     min-height: 44px;
-    min-width: 44px;
   }
   
   /* Stack project detail grid on mobile */

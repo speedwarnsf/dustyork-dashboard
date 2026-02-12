@@ -258,6 +258,15 @@ export function getHealthDotColor(health: ProjectHealth | number): string {
   return "bg-red-400";
 }
 
+export function getHealthTextColor(health: ProjectHealth | number): string {
+  const score = typeof health === "number" ? health : health.score;
+  if (score >= 85) return "text-green-400";
+  if (score >= 70) return "text-cyan-400";
+  if (score >= 50) return "text-yellow-400";
+  if (score >= 30) return "text-orange-400";
+  return "text-red-400";
+}
+
 export function getHealthLabel(health: ProjectHealth | number): string {
   const score = typeof health === "number" ? health : health.score;
   if (score >= 85) return "Excellent";

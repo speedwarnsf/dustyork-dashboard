@@ -7,7 +7,7 @@ import { ExternalLink, Github, Globe, Clock, AlertTriangle, CheckCircle, Activit
 import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
 import { getGithubOpenGraphUrl } from "@/lib/github";
-import { getHealthDotColor, getHealthLabel } from "@/lib/health";
+import { getHealthDotColor, getHealthLabel, getHealthTextColor } from "@/lib/health";
 import TimeAgo from "./TimeAgo";
 
 const statusStyles: Record<string, { bg: string; text: string; border: string; icon: React.ComponentType<any> }> = {
@@ -255,7 +255,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 </span>
               )}
               {health && (
-                <span className={`${healthDotColor.replace("bg-", "text-")} flex items-center gap-1`}>
+                <span className={`${health ? getHealthTextColor(health) : "text-[#555]"} flex items-center gap-1`}>
                   <div className={`w-2 h-2 rounded-full ${healthDotColor}`} />
                   {healthLabel}
                 </span>
