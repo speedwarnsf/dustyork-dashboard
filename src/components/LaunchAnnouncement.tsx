@@ -26,7 +26,7 @@ const platformConfig: Record<
 };
 
 const templates: Record<Platform, (project: Props["project"]) => string> = {
-  twitter: (p) => `🚀 Just launched: ${p.name}!
+  twitter: (p) => `Just launched: ${p.name}!
 
 ${p.description || "Check it out!"}
 
@@ -100,7 +100,7 @@ export default function LaunchAnnouncement({ project }: Props) {
   };
 
   return (
-    <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Icon name="megaphone" size={20} />
@@ -114,7 +114,7 @@ export default function LaunchAnnouncement({ project }: Props) {
           <button
             key={p}
             onClick={() => handlePlatformChange(p)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            className={`px-4 py-2 rounded-none text-sm font-medium transition ${
               platform === p
                 ? "bg-white text-black"
                 : "bg-[#1c1c1c] text-[#8b8b8b] hover:text-white"
@@ -132,7 +132,7 @@ export default function LaunchAnnouncement({ project }: Props) {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className={`w-full h-48 p-4 rounded-xl border bg-[#111] text-sm resize-none focus:outline-none focus:border-[#7bdcff] ${
+            className={`w-full h-48 p-4 rounded-none border bg-[#111] text-sm resize-none focus:outline-none focus:border-[#7bdcff] ${
               isOverLimit ? "border-red-500" : "border-[#1c1c1c]"
             }`}
             autoFocus
@@ -140,7 +140,7 @@ export default function LaunchAnnouncement({ project }: Props) {
         ) : (
           <div
             onClick={() => setIsEditing(true)}
-            className="p-4 rounded-xl border border-[#1c1c1c] bg-[#111] min-h-[192px] cursor-pointer hover:border-[#2c2c2c] transition"
+            className="p-4 rounded-none border border-[#1c1c1c] bg-[#111] min-h-[192px] cursor-pointer hover:border-[#2c2c2c] transition"
           >
             <p className="text-sm whitespace-pre-wrap">{content}</p>
           </div>
@@ -167,14 +167,14 @@ export default function LaunchAnnouncement({ project }: Props) {
         <div className="flex gap-2">
           <button
             onClick={handleCopy}
-            className="px-4 py-2 text-sm font-medium rounded-xl border border-[#1c1c1c] hover:border-[#7bdcff] hover:text-[#7bdcff] transition"
+            className="px-4 py-2 text-sm font-medium rounded-none border border-[#1c1c1c] hover:border-[#7bdcff] hover:text-[#7bdcff] transition"
           >
             Copy
           </button>
           <button
             onClick={handlePost}
             disabled={isOverLimit}
-            className="px-4 py-2 text-sm font-medium rounded-xl bg-[#7bdcff] text-black hover:bg-[#a5ebff] disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 text-sm font-medium rounded-none bg-[#7bdcff] text-black hover:bg-[#a5ebff] disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             Open {config.name}
           </button>
@@ -182,7 +182,7 @@ export default function LaunchAnnouncement({ project }: Props) {
       </div>
 
       {/* Tips */}
-      <div className="mt-6 p-4 rounded-xl bg-[#111] border border-[#1c1c1c]">
+      <div className="mt-6 p-4 rounded-none bg-[#111] border border-[#1c1c1c]">
         <p className="text-xs font-medium text-[#8b8b8b] mb-2">
           <Icon name="info" size={16} /> Tips for {config.name}
         </p>

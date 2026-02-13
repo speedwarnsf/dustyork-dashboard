@@ -17,11 +17,10 @@ type MilestoneListProps = {
 
 export default function MilestoneList({ milestones, projectId }: MilestoneListProps) {
   return (
-    <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <h3 className="text-lg font-semibold">Milestones</h3>
       {milestones.length === 0 && (
-        <div className="mt-6 rounded-2xl border border-dashed border-[#1c1c1c] p-8 text-center">
-          <span className="text-4xl mb-3 block"></span>
+        <div className="mt-6 rounded-none border border-dashed border-[#1c1c1c] p-8 text-center">
           <p className="text-sm text-[#8b8b8b]">No milestones yet. Add one below to track progress.</p>
         </div>
       )}
@@ -29,7 +28,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
         {milestones.map((milestone) => (
           <div
             key={milestone.id}
-            className="rounded-2xl border border-[#1c1c1c] bg-black p-5"
+            className="rounded-none border border-[#1c1c1c] bg-black p-5"
           >
             <div className="flex flex-col sm:flex-row flex-wrap items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -41,9 +40,9 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                   Target: {milestone.target_date || "No date"} · {milestone.percent_complete}%
                   complete
                 </p>
-                <div className="mt-3 h-1.5 bg-[#1c1c1c] rounded-full overflow-hidden max-w-xs">
+                <div className="mt-3 h-1.5 bg-[#1c1c1c] rounded-none overflow-hidden max-w-xs">
                   <div
-                    className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a] rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a] rounded-none transition-all duration-500"
                     style={{ width: `${milestone.percent_complete}%` }}
                   />
                 </div>
@@ -55,7 +54,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                 <select
                   name="status"
                   defaultValue={milestone.status}
-                  className="rounded-full border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
+                  className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
                 >
                   <option value="not_started">Not started</option>
                   <option value="in_progress">In progress</option>
@@ -67,11 +66,11 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                   min={0}
                   max={100}
                   defaultValue={milestone.percent_complete}
-                  className="rounded-full border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
+                  className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
                 />
                 <button
                   type="submit"
-                  className="rounded-full border border-[#1c1c1c] px-3 py-2 text-xs transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+                  className="rounded-none border border-[#1c1c1c] px-3 py-2 text-xs transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
                 >
                   Update
                 </button>
@@ -92,7 +91,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
               {milestone.tasks.map((task) => (
                 <div
                   key={task.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#1c1c1c] bg-[#0a0a0a] px-4 py-3 text-sm"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-[#1c1c1c] bg-[#0a0a0a] px-4 py-3 text-sm"
                 >
                   <div>
                     <p className="font-semibold">{task.name}</p>
@@ -107,7 +106,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                     <select
                       name="status"
                       defaultValue={task.status}
-                      className="rounded-full border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
+                      className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
                     >
                       <option value="todo">Todo</option>
                       <option value="in_progress">In progress</option>
@@ -115,7 +114,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                     </select>
                     <button
                       type="submit"
-                      className="rounded-full border border-[#1c1c1c] px-3 py-2 text-xs transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+                      className="rounded-none border border-[#1c1c1c] px-3 py-2 text-xs transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
                     >
                       Save
                     </button>
@@ -134,22 +133,22 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
 
             <form
               action={addTask.bind(null, milestone.id, projectId)}
-              className="mt-4 grid gap-3 rounded-2xl border border-dashed border-[#1c1c1c] p-4 text-sm"
+              className="mt-4 grid gap-3 rounded-none border border-dashed border-[#1c1c1c] p-4 text-sm"
             >
               <input
                 name="name"
                 required
                 placeholder="New task name"
-                className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+                className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
               />
               <input
                 name="description"
                 placeholder="Task description"
-                className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+                className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
               />
               <select
                 name="status"
-                className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+                className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
               >
                 <option value="todo">Todo</option>
                 <option value="in_progress">In progress</option>
@@ -157,7 +156,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
               </select>
               <button
                 type="submit"
-                className="rounded-full border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+                className="rounded-none border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
               >
                 Add task
               </button>
@@ -168,7 +167,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
 
       <form
         action={addMilestone.bind(null, projectId)}
-        className="mt-6 grid gap-3 rounded-2xl border border-dashed border-[#1c1c1c] p-5 text-sm"
+        className="mt-6 grid gap-3 rounded-none border border-dashed border-[#1c1c1c] p-5 text-sm"
       >
         <h4 className="text-sm font-semibold uppercase tracking-[0.3em] text-[#8b8b8b]">
           New milestone
@@ -177,21 +176,21 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
           name="name"
           required
           placeholder="Milestone name"
-          className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+          className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <input
           name="description"
           placeholder="Description"
-          className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+          className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <input
           name="target_date"
           type="date"
-          className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+          className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <select
           name="status"
-          className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+          className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         >
           <option value="not_started">Not started</option>
           <option value="in_progress">In progress</option>
@@ -203,11 +202,11 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
           min={0}
           max={100}
           defaultValue={0}
-          className="rounded-xl border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
+          className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <button
           type="submit"
-          className="rounded-full border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+          className="rounded-none border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
           Add milestone
         </button>

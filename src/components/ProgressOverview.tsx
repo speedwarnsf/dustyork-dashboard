@@ -57,7 +57,7 @@ export default function ProgressOverview({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <div className="rounded-2xl sm:rounded-[32px] border border-[#1c1c1c] bg-[#0a0a0a]/90 p-4 sm:p-6 md:p-8 relative overflow-hidden">
+      <div className="rounded-none sm:rounded-none border border-[#1c1c1c] bg-[#0a0a0a]/90 p-4 sm:p-6 md:p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0f1d12]/40 via-transparent to-[#0c1b24]/40 pointer-events-none" />
         <div className="relative">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -70,24 +70,24 @@ export default function ProgressOverview({
             </div>
             <div className="flex flex-wrap items-center gap-3 text-xs text-[#8b8b8b]">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#d2ff5a] shrink-0" /> Completed
+                <span className="h-2 w-2 rounded-none bg-[#d2ff5a] shrink-0" /> Completed
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#7bdcff] shrink-0" /> In progress
+                <span className="h-2 w-2 rounded-none bg-[#7bdcff] shrink-0" /> In progress
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#444] shrink-0" /> Not started
+                <span className="h-2 w-2 rounded-none bg-[#444] shrink-0" /> Not started
               </span>
             </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-3">
-            <div className="rounded-2xl border border-[#1c1c1c] bg-[#080808] p-5">
+            <div className="rounded-none border border-[#1c1c1c] bg-[#080808] p-5">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">Milestone Progress</p>
                 <span className="text-xs text-[#8b8b8b]">{milestoneCompletion}% complete</span>
               </div>
-              <div className="mt-4 h-3 rounded-full bg-[#1c1c1c] overflow-hidden flex">
+              <div className="mt-4 h-3 rounded-none bg-[#1c1c1c] overflow-hidden flex">
                 <motion.div
                   className={statusColors.completed}
                   initial={{ width: 0 }}
@@ -123,7 +123,7 @@ export default function ProgressOverview({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#1c1c1c] bg-[#080808] p-5">
+            <div className="rounded-none border border-[#1c1c1c] bg-[#080808] p-5">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">Momentum</p>
                 <span className="text-xs text-[#8b8b8b]">Last 30 days</span>
@@ -134,7 +134,7 @@ export default function ProgressOverview({
                     <span>Weekly activity</span>
                     <span>{activityStats.weekly} events</span>
                   </div>
-                  <div className="mt-2 h-2 rounded-full bg-[#1c1c1c] overflow-hidden">
+                  <div className="mt-2 h-2 rounded-none bg-[#1c1c1c] overflow-hidden">
                     <motion.div
                       className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a]"
                       initial={{ width: 0 }}
@@ -148,7 +148,7 @@ export default function ProgressOverview({
                     <span>Monthly activity</span>
                     <span>{activityStats.monthly} events</span>
                   </div>
-                  <div className="mt-2 h-2 rounded-full bg-[#1c1c1c] overflow-hidden">
+                  <div className="mt-2 h-2 rounded-none bg-[#1c1c1c] overflow-hidden">
                     <motion.div
                       className="h-full bg-[#7bdcff]/60"
                       initial={{ width: 0 }}
@@ -158,7 +158,7 @@ export default function ProgressOverview({
                   </div>
                 </div>
               </div>
-              <div className="mt-5 rounded-xl border border-[#1c1c1c] bg-[#0c0c0c] px-4 py-3 flex items-center justify-between">
+              <div className="mt-5 rounded-none border border-[#1c1c1c] bg-[#0c0c0c] px-4 py-3 flex items-center justify-between">
                 <div>
                   <p className="text-xs text-[#8b8b8b]">Avg health</p>
                   <p className="text-lg font-semibold text-[#d2ff5a]">{Math.round(avgHealthScore)}</p>
@@ -170,7 +170,7 @@ export default function ProgressOverview({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#1c1c1c] bg-[#080808] p-5">
+            <div className="rounded-none border border-[#1c1c1c] bg-[#080808] p-5">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">Project Mix</p>
                 <span className="text-xs text-[#8b8b8b]">{projectStats.total} total</span>
@@ -187,7 +187,7 @@ export default function ProgressOverview({
                       <span className="capitalize">{status}</span>
                       <span>{value}</span>
                     </div>
-                    <div className="mt-2 h-2 rounded-full bg-[#1c1c1c] overflow-hidden">
+                    <div className="mt-2 h-2 rounded-none bg-[#1c1c1c] overflow-hidden">
                       <motion.div
                         className={`h-full ${projectStatusColors[status]}`}
                         initial={{ width: 0 }}

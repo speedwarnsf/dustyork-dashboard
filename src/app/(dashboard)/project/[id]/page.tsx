@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   addJournalEntry,
@@ -99,8 +100,8 @@ export default async function ProjectDetailPage({
               Project Overview
             </p>
             {typedProject.launched && (
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#d2ff5a] text-black">
-                🚀 Launched
+              <span className="px-2 py-0.5 rounded-none text-xs font-medium bg-[#d2ff5a] text-black">
+                Launched
               </span>
             )}
           </div>
@@ -117,21 +118,21 @@ export default async function ProjectDetailPage({
           <div className="flex flex-wrap gap-2 sm:gap-3 text-xs uppercase tracking-[0.3em]">
             <Link
               href={`/project/${typedProject.id}/edit`}
-              className="rounded-full border border-[#1c1c1c] px-4 py-2.5 sm:py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+              className="rounded-none border border-[#1c1c1c] px-4 py-2.5 sm:py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
             >
               Edit
             </Link>
             <form action={archiveProject.bind(null, typedProject.id)}>
               <button
                 type="submit"
-                className="rounded-full border border-[#2a2a2a] px-4 py-2.5 sm:py-2 text-[#8b8b8b] transition hover:border-[#f4b26a] hover:text-[#f4b26a]"
+                className="rounded-none border border-[#2a2a2a] px-4 py-2.5 sm:py-2 text-[#8b8b8b] transition hover:border-[#f4b26a] hover:text-[#f4b26a]"
               >
                 Archive
               </button>
             </form>
             <Link
               href="/"
-              className="rounded-full border border-[#1c1c1c] px-4 py-2.5 sm:py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+              className="rounded-none border border-[#1c1c1c] px-4 py-2.5 sm:py-2 transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
             >
               Back
             </Link>
@@ -175,18 +176,20 @@ export default async function ProjectDetailPage({
 
       {/* Screenshot + GitHub + Health Section */}
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-        <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           {screenshotUrl ? (
-            <div className="overflow-hidden rounded-2xl border border-[#1c1c1c] bg-black">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+            <div className="overflow-hidden rounded-none border border-[#1c1c1c] bg-black">
+              <Image
                 src={screenshotUrl}
                 alt={`${typedProject.name} screenshot`}
+                width={800}
+                height={256}
                 className="h-64 w-full object-cover"
+                unoptimized={screenshotUrl.startsWith("http")}
               />
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-[#1c1c1c] p-10 text-center text-sm text-[#8b8b8b]">
+            <div className="rounded-none border border-dashed border-[#1c1c1c] p-10 text-center text-sm text-[#8b8b8b]">
               No screenshot yet. Capture a fresh view from the live URL.
             </div>
           )}
@@ -196,7 +199,7 @@ export default async function ProjectDetailPage({
                 href={typedProject.live_url}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#d2ff5a] hover:text-[#d2ff5a]"
+                className="rounded-none border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#d2ff5a] hover:text-[#d2ff5a]"
               >
                 Live site
               </a>
@@ -207,7 +210,7 @@ export default async function ProjectDetailPage({
               >
                 <button
                   type="submit"
-                  className="rounded-full border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+                  className="rounded-none border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
                 >
                   Refresh screenshot
                 </button>
@@ -218,13 +221,13 @@ export default async function ProjectDetailPage({
 
         <div className="space-y-6">
           {/* Health Score Panel */}
-          <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+          <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
             <h3 className="text-lg font-semibold mb-4">Project Health</h3>
             <HealthScore health={health} size="md" showFactors />
           </div>
 
           {/* GitHub Intelligence */}
-          <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+          <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
             <h3 className="text-lg font-semibold">GitHub Intelligence</h3>
             {github ? (
               <div className="mt-4 space-y-3 text-sm text-[#8b8b8b]">
@@ -241,7 +244,7 @@ export default async function ProjectDetailPage({
                 </p>
                 <div className="flex items-center gap-2">
                   <span>Activity:</span>
-                  <span className={`px-2 py-0.5 rounded text-xs ${
+                  <span className={`px-2 py-0.5 rounded-none text-xs ${
                     github.activityLabel === "Hot" ? "bg-green-500/10 text-green-400" :
                     github.activityLabel === "Warm" ? "bg-yellow-500/10 text-yellow-400" :
                     github.activityLabel === "Cold" ? "bg-blue-500/10 text-blue-400" :
@@ -256,7 +259,7 @@ export default async function ProjectDetailPage({
                 <p>Open issues: {github.openIssues ?? "—"}</p>
                 <div className="flex items-center gap-2">
                   <span>CI:</span>
-                  <span className={`px-2 py-0.5 rounded text-xs ${
+                  <span className={`px-2 py-0.5 rounded-none text-xs ${
                     github.ciStatus === "success" ? "bg-green-500/10 text-green-400" :
                     github.ciStatus === "failure" ? "bg-red-500/10 text-red-400" :
                     "bg-[#1c1c1c] text-[#666]"
@@ -297,7 +300,7 @@ export default async function ProjectDetailPage({
       <section className="mt-10 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <MilestoneList milestones={milestones} projectId={typedProject.id} />
 
-        <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           <h3 className="text-lg font-semibold">Progress Journal</h3>
           <form
             action={addJournalEntry.bind(null, typedProject.id)}
@@ -308,11 +311,11 @@ export default async function ProjectDetailPage({
               required
               rows={4}
               placeholder="Log progress, blockers, or insights..."
-              className="rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm focus:outline-none focus:border-[#7bdcff]"
+              className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm focus:outline-none focus:border-[#7bdcff]"
             />
             <select
               name="entry_type"
-              className="rounded-2xl border border-[#1c1c1c] bg-black px-4 py-2 text-sm"
+              className="rounded-none border border-[#1c1c1c] bg-black px-4 py-2 text-sm"
             >
               <option value="note">Note</option>
               <option value="milestone">Milestone</option>
@@ -320,7 +323,7 @@ export default async function ProjectDetailPage({
             </select>
             <button
               type="submit"
-              className="rounded-full border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+              className="rounded-none border border-[#1c1c1c] px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
             >
               Add entry
             </button>
@@ -354,12 +357,12 @@ export default async function ProjectDetailPage({
 
       {/* Project Meta */}
       <section className="mt-10">
-        <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           <h3 className="text-lg font-semibold mb-4">Project Details</h3>
           <div className="grid gap-4 sm:grid-cols-3 text-sm">
             <div>
               <p className="text-xs uppercase tracking-wider text-[#666] mb-1">Status</p>
-              <span className={`inline-block px-2 py-0.5 rounded text-xs capitalize ${
+              <span className={`inline-block px-2 py-0.5 rounded-none text-xs capitalize ${
                 typedProject.status === "active" ? "bg-green-500/10 text-green-400" :
                 typedProject.status === "paused" ? "bg-yellow-500/10 text-yellow-400" :
                 typedProject.status === "completed" ? "bg-blue-500/10 text-blue-400" :
@@ -370,7 +373,7 @@ export default async function ProjectDetailPage({
             </div>
             <div>
               <p className="text-xs uppercase tracking-wider text-[#666] mb-1">Priority</p>
-              <span className={`inline-block px-2 py-0.5 rounded text-xs capitalize ${
+              <span className={`inline-block px-2 py-0.5 rounded-none text-xs capitalize ${
                 typedProject.priority === "high" ? "bg-red-500/10 text-red-400" :
                 typedProject.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" :
                 "bg-green-500/10 text-green-400"
@@ -383,7 +386,7 @@ export default async function ProjectDetailPage({
               <div className="flex flex-wrap gap-1">
                 {typedProject.tags && typedProject.tags.length ? (
                   typedProject.tags.map((tag) => (
-                    <span key={tag} className="px-2 py-0.5 rounded text-xs bg-[#1c1c1c] text-[#8b8b8b]">
+                    <span key={tag} className="px-2 py-0.5 rounded-none text-xs bg-[#1c1c1c] text-[#8b8b8b]">
                       {tag}
                     </span>
                   ))

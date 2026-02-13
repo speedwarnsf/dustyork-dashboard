@@ -85,11 +85,11 @@ export default function ProjectDashboard({ projects }: Props) {
           </h2>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] bg-[#0a0a0a] p-1 text-xs">
+          <div className="flex items-center gap-2 rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-1 text-xs">
             <button
               type="button"
               onClick={() => setView("grid")}
-              className={`rounded-lg px-4 py-2 transition ${
+              className={`rounded-none px-4 py-2 transition ${
                 view === "grid" ? "bg-white text-black font-medium" : "text-[#8b8b8b] hover:text-white"
               }`}
             >
@@ -98,7 +98,7 @@ export default function ProjectDashboard({ projects }: Props) {
             <button
               type="button"
               onClick={() => setView("list")}
-              className={`rounded-lg px-4 py-2 transition ${
+              className={`rounded-none px-4 py-2 transition ${
                 view === "list" ? "bg-white text-black font-medium" : "text-[#8b8b8b] hover:text-white"
               }`}
             >
@@ -130,7 +130,7 @@ export default function ProjectDashboard({ projects }: Props) {
             placeholder="Search projects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-[#1c1c1c] bg-[#0a0a0a] pl-10 pr-4 py-2 text-sm placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
+            className="w-full rounded-none border border-[#1c1c1c] bg-[#0a0a0a] pl-10 pr-4 py-2 text-sm placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
           />
         </div>
 
@@ -138,7 +138,7 @@ export default function ProjectDashboard({ projects }: Props) {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-          className="rounded-lg border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
+          className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
         >
           <option value="all">All Status</option>
           <option value="active">Active</option>
@@ -151,7 +151,7 @@ export default function ProjectDashboard({ projects }: Props) {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortOption)}
-          className="rounded-lg border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
+          className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
         >
           <option value="updated">Recently Updated</option>
           <option value="health">Health Score</option>
@@ -178,7 +178,7 @@ export default function ProjectDashboard({ projects }: Props) {
       {view === "grid" ? (
         <ProjectGrid projects={filteredAndSortedProjects} />
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a]">
+        <div className="overflow-x-auto rounded-none border border-[#1c1c1c] bg-[#0a0a0a]">
           <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-[#1c1c1c] text-left text-xs uppercase tracking-wider text-[#666]">
@@ -214,7 +214,7 @@ export default function ProjectDashboard({ projects }: Props) {
                       )}
                     </td>
                     <td className="px-4 py-4">
-                      <span className={`inline-block px-2 py-0.5 rounded text-xs capitalize ${
+                      <span className={`inline-block px-2 py-0.5 rounded-none text-xs capitalize ${
                         project.status === "active" ? "bg-green-500/10 text-green-400" :
                         project.status === "paused" ? "bg-yellow-500/10 text-yellow-400" :
                         project.status === "completed" ? "bg-blue-500/10 text-blue-400" :
@@ -226,14 +226,14 @@ export default function ProjectDashboard({ projects }: Props) {
                     <td className="px-4 py-4">
                       {project.health && (
                         <div className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${healthDotColor}`} />
+                          <span className={`w-2 h-2 rounded-none ${healthDotColor}`} />
                           <span className="text-sm font-medium">{project.health.score}</span>
                         </div>
                       )}
                     </td>
                     <td className="px-4 py-4">
                       {project.github?.activityLabel && (
-                        <span className={`inline-block px-2 py-0.5 rounded text-xs ${
+                        <span className={`inline-block px-2 py-0.5 rounded-none text-xs ${
                           project.github.activityLabel === "Hot" ? "bg-green-500/10 text-green-400" :
                           project.github.activityLabel === "Warm" ? "bg-yellow-500/10 text-yellow-400" :
                           project.github.activityLabel === "Cold" ? "bg-blue-500/10 text-blue-400" :
@@ -251,7 +251,7 @@ export default function ProjectDashboard({ projects }: Props) {
                     </td>
                     <td className="px-4 py-4">
                       {project.github?.ciStatus && project.github.ciStatus !== "unknown" && (
-                        <span className={`inline-block px-2 py-0.5 rounded text-xs ${
+                        <span className={`inline-block px-2 py-0.5 rounded-none text-xs ${
                           project.github.ciStatus === "success" ? "bg-green-500/10 text-green-400" :
                           project.github.ciStatus === "failure" ? "bg-red-500/10 text-red-400" :
                           "bg-[#1c1c1c] text-[#666]"

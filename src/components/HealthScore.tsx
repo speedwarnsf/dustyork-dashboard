@@ -105,7 +105,7 @@ export default function HealthScore({ health, size = "md", showFactors = false }
 
       {/* Alerts */}
       {showFactors && health.alerts.length > 0 && (
-        <div className="mt-4 p-3 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+        <div className="mt-4 p-3 rounded-none bg-yellow-500/5 border border-yellow-500/20">
           <p className="text-xs font-medium text-yellow-400 mb-2"><Icon name="warning" size={16} /> Attention Needed</p>
           <ul className="text-xs text-[#8b8b8b] space-y-1">
             {health.alerts.map((alert, i) => (
@@ -147,9 +147,9 @@ function FactorBar({
           <span className="text-[#8b8b8b]">{label}</span>
           <span className="text-[#666]">{value}/{max}</span>
         </div>
-        <div className="h-1.5 bg-[#1c1c1c] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#1c1c1c] rounded-none overflow-hidden">
           <div
-            className={`h-full ${color} rounded-full transition-all`}
+            className={`h-full ${color} rounded-none transition-all`}
             style={{ width: `${percentage}%` }}
           />
         </div>

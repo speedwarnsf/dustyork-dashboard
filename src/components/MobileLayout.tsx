@@ -73,7 +73,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
         <div className="flex items-center justify-between">
           <motion.button
             onClick={() => setIsMenuOpen(true)}
-            className="p-2 rounded-xl hover:bg-[#1c1c1c] transition-colors"
+            className="p-2 rounded-none hover:bg-[#1c1c1c] transition-colors"
             whileTap={{ scale: 0.95 }}
           >
             <Menu size={20} />
@@ -88,11 +88,11 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
           
           <div className="flex items-center gap-2">
             <motion.button
-              className="p-2 rounded-xl hover:bg-[#1c1c1c] transition-colors relative"
+              className="p-2 rounded-none hover:bg-[#1c1c1c] transition-colors relative"
               whileTap={{ scale: 0.95 }}
             >
               <Bell size={18} />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d2ff5a] rounded-full"></span>
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d2ff5a] rounded-none"></span>
             </motion.button>
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                     setActiveTab(item.href);
                   }
                 }}
-                className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all ${
+                className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-none transition-all ${
                   isActive 
                     ? "text-[#7bdcff] bg-[#7bdcff]/10" 
                     : "text-[#8b8b8b] hover:text-white"
@@ -183,7 +183,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                 <span className="text-[10px] font-medium">{item.label}</span>
                 {isActive && (
                   <motion.div 
-                    className="w-1 h-1 bg-[#7bdcff] rounded-full"
+                    className="w-1 h-1 bg-[#7bdcff] rounded-none"
                     layoutId="bottom-nav-indicator"
                   />
                 )}
@@ -216,7 +216,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                   <h2 className="text-xl font-semibold">Menu</h2>
                   <motion.button
                     onClick={() => setIsMenuOpen(false)}
-                    className="p-2 rounded-xl hover:bg-[#1c1c1c] transition-colors"
+                    className="p-2 rounded-none hover:bg-[#1c1c1c] transition-colors"
                     whileTap={{ scale: 0.95 }}
                   >
                     <X size={20} />
@@ -233,7 +233,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                     <motion.a
                       key={item.href}
                       href={item.href}
-                      className="block p-3 rounded-xl hover:bg-[#1c1c1c] transition-colors"
+                      className="block p-3 rounded-none hover:bg-[#1c1c1c] transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                       whileHover={{ x: 4 }}
                     >
@@ -259,7 +259,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
               onClick={() => setIsBottomSheetOpen(false)}
             />
             <motion.div
-              className="fixed bottom-0 left-0 right-0 z-50 glass-strong rounded-t-3xl max-h-[80vh] md:hidden"
+              className="fixed bottom-0 left-0 right-0 z-50 glass-strong rounded-none max-h-[80vh] md:hidden"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -275,7 +275,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
             >
               <div className="p-6">
                 {/* Handle */}
-                <div className="w-12 h-1 bg-[#333] rounded-full mx-auto mb-4" />
+                <div className="w-12 h-1 bg-[#333] rounded-none mx-auto mb-4" />
                 
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <ChevronUp size={18} />
@@ -297,7 +297,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                           item.action();
                           setIsBottomSheetOpen(false);
                         }}
-                        className="p-4 rounded-2xl bg-[#1c1c1c] hover:bg-[#333] transition-colors flex flex-col items-center gap-2"
+                        className="p-4 rounded-none bg-[#1c1c1c] hover:bg-[#333] transition-colors flex flex-col items-center gap-2"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >

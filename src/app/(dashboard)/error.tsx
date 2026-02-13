@@ -30,13 +30,13 @@ export default function DashboardError({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => reset()}
-            className="rounded-xl bg-[#7bdcff] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
+            className="rounded-none bg-[#7bdcff] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
           >
             Try again
           </button>
           <button
             onClick={() => window.location.href = "/"}
-            className="rounded-xl border border-[#1c1c1c] px-6 py-3 text-sm font-medium transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+            className="rounded-none border border-[#1c1c1c] px-6 py-3 text-sm font-medium transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
           >
             Go to dashboard
           </button>

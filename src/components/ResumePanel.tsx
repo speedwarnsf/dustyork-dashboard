@@ -22,7 +22,7 @@ export default function ResumePanel() {
   };
 
   return (
-    <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <p className="text-xs uppercase tracking-[0.4em] text-[#d2ff5a]">
         LLM Resume
       </p>
@@ -35,7 +35,7 @@ export default function ResumePanel() {
         <button
           type="button"
           onClick={handleCopy}
-          className="rounded-full border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#d2ff5a] hover:text-[#d2ff5a]"
+          className="rounded-none border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#d2ff5a] hover:text-[#d2ff5a]"
         >
           {copied ? "Copied" : "Copy prompt"}
         </button>
@@ -43,7 +43,7 @@ export default function ResumePanel() {
           href="https://chat.openai.com/"
           target="_blank"
           rel="noreferrer"
-          className="rounded-full border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+          className="rounded-none border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
           ChatGPT
         </a>
@@ -51,7 +51,7 @@ export default function ResumePanel() {
           href="https://claude.ai/"
           target="_blank"
           rel="noreferrer"
-          className="rounded-full border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+          className="rounded-none border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
           Claude
         </a>
@@ -59,7 +59,7 @@ export default function ResumePanel() {
           href="https://gemini.google.com/"
           target="_blank"
           rel="noreferrer"
-          className="rounded-full border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+          className="rounded-none border border-[#1c1c1c] px-4 py-2 text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
           Gemini
         </a>

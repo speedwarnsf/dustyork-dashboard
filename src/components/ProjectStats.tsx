@@ -45,12 +45,12 @@ export default function ProjectStats({
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
       {/* Progress */}
-      <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
         <div className="text-xs uppercase tracking-[0.3em] text-[#8b8b8b]">
           Progress
         </div>
         <div className="mt-2 text-2xl font-semibold text-[#7bdcff]">{progress}%</div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#1c1c1c]">
+        <div className="mt-2 h-2 overflow-hidden rounded-none bg-[#1c1c1c]">
           <div
             className="h-full bg-[#7bdcff] transition-all duration-500"
             style={{ width: `${progress}%` }}
@@ -59,7 +59,7 @@ export default function ProjectStats({
       </div>
 
       {/* Milestones */}
-      <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
         <div className="text-xs uppercase tracking-[0.3em] text-[#8b8b8b]">
           Milestones
         </div>
@@ -70,7 +70,7 @@ export default function ProjectStats({
       </div>
 
       {/* Journal */}
-      <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
         <div className="text-xs uppercase tracking-[0.3em] text-[#8b8b8b]">
           Journal
         </div>
@@ -79,11 +79,11 @@ export default function ProjectStats({
       </div>
 
       {/* Activity */}
-      <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
         <div className="text-xs uppercase tracking-[0.3em] text-[#8b8b8b]">
           Activity
         </div>
-        <div className={`mt-2 inline-block rounded-full border px-3 py-1 text-sm font-medium ${activityStatus.color}`}>
+        <div className={`mt-2 inline-block rounded-none border px-3 py-1 text-sm font-medium ${activityStatus.color}`}>
           {activityStatus.label}
         </div>
         <div className="mt-1 text-xs text-[#555]">{daysSinceUpdate}d ago</div>

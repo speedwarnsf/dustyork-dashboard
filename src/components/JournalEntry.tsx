@@ -9,7 +9,7 @@ type JournalEntryProps = {
 
 export default function JournalEntry({ entry, projectId }: JournalEntryProps) {
   return (
-    <div className="rounded-2xl border border-[#1c1c1c] bg-black p-4">
+    <div className="rounded-none border border-[#1c1c1c] bg-black p-4">
       <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-[#8b8b8b]">
         <span>{entry.entry_type}</span>
         <span>{new Date(entry.created_at).toLocaleDateString()}</span>

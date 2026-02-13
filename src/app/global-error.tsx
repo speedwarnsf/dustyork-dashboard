@@ -26,7 +26,7 @@ export default function GlobalError({
           )}
           <button
             onClick={() => reset()}
-            className="rounded-xl bg-[#7bdcff] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
+            className="rounded-none bg-[#7bdcff] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
           >
             Try again
           </button>

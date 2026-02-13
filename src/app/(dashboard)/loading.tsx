@@ -11,7 +11,7 @@ export default function DashboardLoading() {
             <Skeleton width="320px" height="36px" className="mb-2" />
             <Skeleton width="400px" height="16px" />
           </div>
-          <Skeleton width="140px" height="40px" className="rounded-xl" />
+          <Skeleton width="140px" height="40px" className="rounded-none" />
         </div>
 
         {/* Stats Row Skeleton */}

@@ -64,7 +64,7 @@ function ToastContainer({
         <div
           key={toast.id}
           className={`
-            rounded-xl px-4 py-3 text-sm font-medium shadow-lg
+            rounded-none px-4 py-3 text-sm font-medium shadow-lg
             animate-in slide-in-from-right-5 duration-200
             ${toast.type === "success" ? "bg-[#0f1d12] text-[#d2ff5a] border border-[#20381f]" : ""}
             ${toast.type === "error" ? "bg-[#1d0f0f] text-[#ff5a5a] border border-[#381f1f]" : ""}

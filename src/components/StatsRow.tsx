@@ -44,7 +44,7 @@ export default function StatsRow({
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
       {/* Projects */}
       <motion.div
-        className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
+        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
         custom={0}
         variants={cardVariants}
         initial="hidden"
@@ -60,7 +60,7 @@ export default function StatsRow({
 
       {/* Milestones */}
       <motion.div
-        className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#d2ff5a]/30 transition-colors"
+        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#d2ff5a]/30 transition-colors"
         custom={1}
         variants={cardVariants}
         initial="hidden"
@@ -74,7 +74,7 @@ export default function StatsRow({
         <div className="flex items-center gap-2 mt-1">
           <p className="text-xs text-[#555]">{completedMilestones} completed</p>
           {totalMilestones > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#d2ff5a]/10 text-[#d2ff5a]">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[#d2ff5a]/10 text-[#d2ff5a]">
               {Math.round((completedMilestones / totalMilestones) * 100)}%
             </span>
           )}
@@ -83,7 +83,7 @@ export default function StatsRow({
 
       {/* Avg Health */}
       <motion.div
-        className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
+        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
         custom={2}
         variants={cardVariants}
         initial="hidden"
@@ -95,16 +95,16 @@ export default function StatsRow({
         </div>
         <div className="flex items-center gap-3">
           <p className="text-3xl font-semibold mt-1">{Math.round(avgHealthScore)}</p>
-          <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+          <span className={`text-xs px-1.5 py-0.5 rounded-none ${
             avgHealthScore >= 70 ? "bg-green-400/10 text-green-400" :
             avgHealthScore >= 50 ? "bg-yellow-400/10 text-yellow-400" : "bg-red-400/10 text-red-400"
           }`}>
             {avgHealthScore >= 70 ? "Good" : avgHealthScore >= 50 ? "Fair" : "Low"}
           </span>
         </div>
-        <div className="mt-2 h-1.5 bg-[#1c1c1c] rounded-full overflow-hidden">
+        <div className="mt-2 h-1.5 bg-[#1c1c1c] rounded-none overflow-hidden">
           <motion.div
-            className={`h-full rounded-full ${
+            className={`h-full rounded-none ${
               avgHealthScore >= 70 ? "bg-gradient-to-r from-green-400 to-green-300" :
               avgHealthScore >= 50 ? "bg-gradient-to-r from-yellow-400 to-yellow-300" : "bg-gradient-to-r from-red-400 to-red-300"
             }`}
@@ -117,7 +117,7 @@ export default function StatsRow({
 
       {/* Active This Week + Sparkline */}
       <motion.div
-        className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
+        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
         custom={3}
         variants={cardVariants}
         initial="hidden"
@@ -148,7 +148,7 @@ export default function StatsRow({
 
       {/* Streak + Monthly */}
       <motion.div
-        className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#f97316]/30 transition-colors col-span-2 sm:col-span-1"
+        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#f97316]/30 transition-colors col-span-2 sm:col-span-1"
         custom={4}
         variants={cardVariants}
         initial="hidden"
@@ -160,15 +160,6 @@ export default function StatsRow({
         </div>
         <div className="flex items-center gap-2 mt-1">
           <p className="text-3xl font-semibold">{streak}</p>
-          {streak > 0 && (
-            <motion.span
-              className="text-lg"
-              animate={streak >= 5 ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              
-            </motion.span>
-          )}
         </div>
         <p className="text-xs text-[#555] mt-1">
           {streak === 0 ? "Start building!" : streak === 1 ? "day" : "days"} · {monthlyActivityCount} this month

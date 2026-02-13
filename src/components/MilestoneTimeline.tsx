@@ -28,7 +28,7 @@ export default function MilestoneTimeline({ milestones }: Props) {
   });
 
   return (
-    <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center gap-2 mb-6">
         <Target size={18} className="text-[#d2ff5a]" />
         <h3 className="text-lg font-semibold">Milestone Timeline</h3>
@@ -51,7 +51,7 @@ export default function MilestoneTimeline({ milestones }: Props) {
               {/* Timeline line & dot */}
               <div className="flex flex-col items-center">
                 <motion.div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
+                  className={`w-8 h-8 rounded-none flex items-center justify-center border-2 ${
                     milestone.status === "completed"
                       ? "border-green-400 bg-green-400/10"
                       : milestone.status === "in_progress"
@@ -85,7 +85,7 @@ export default function MilestoneTimeline({ milestones }: Props) {
 
                 {/* Progress bar */}
                 <div className="mt-2 flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-[#1c1c1c] rounded-full overflow-hidden max-w-[200px]">
+                  <div className="flex-1 h-1.5 bg-[#1c1c1c] rounded-none overflow-hidden max-w-[200px]">
                     <motion.div
                       className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a]"
                       initial={{ width: 0 }}

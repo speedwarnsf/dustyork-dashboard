@@ -48,7 +48,7 @@ export default function SmartInsights({ insights }: Props) {
 
   if (insights.length === 0) {
     return (
-      <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
         <div className="flex items-center gap-2 mb-4">
           <Icon name="info" size={20} />
           <h3 className="text-lg font-semibold">Smart Insights</h3>
@@ -63,13 +63,13 @@ export default function SmartInsights({ insights }: Props) {
   }
 
   return (
-    <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Icon name="info" size={20} />
           <h3 className="text-lg font-semibold">Smart Insights</h3>
         </div>
-        <span className="text-xs text-[#666] px-2 py-1 rounded-full bg-[#1c1c1c]">
+        <span className="text-xs text-[#666] px-2 py-1 rounded-none bg-[#1c1c1c]">
           {insights.length} insight{insights.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -80,7 +80,7 @@ export default function SmartInsights({ insights }: Props) {
           return (
             <motion.div
               key={insight.id}
-              className={`p-4 rounded-xl border ${style.border} ${style.bg} transition hover:border-[#7bdcff]/30 cursor-pointer`}
+              className={`p-4 rounded-none border ${style.border} ${style.bg} transition hover:border-[#7bdcff]/30 cursor-pointer`}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.08, duration: 0.3 }}
@@ -99,7 +99,7 @@ export default function SmartInsights({ insights }: Props) {
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm">{insight.title}</p>
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${
+                      className={`w-1.5 h-1.5 rounded-none ${
                         insight.priority === "high"
                           ? "bg-red-400"
                           : insight.priority === "medium"
@@ -147,7 +147,7 @@ export function SmartInsightsCompact({ insights }: Props) {
       {displayInsights.map((insight) => (
         <div
           key={insight.id}
-          className={`px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 ${
+          className={`px-3 py-1.5 rounded-none text-xs flex items-center gap-2 ${
             typeStyles[insight.type].bg
           } ${typeStyles[insight.type].border} border`}
         >

@@ -46,22 +46,22 @@ export default function InsightsPanel({
     <div className="space-y-6">
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
           <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Projects</p>
           <p className="text-3xl font-semibold mt-1">{totalProjects}</p>
           <p className="text-xs text-[#555] mt-1">{activeProjects} active</p>
         </div>
         
-        <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
           <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Milestones</p>
           <p className="text-3xl font-semibold mt-1">{totalMilestones}</p>
           <p className="text-xs text-[#555] mt-1">{completedMilestones} completed</p>
         </div>
         
-        <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
           <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Completion</p>
           <p className="text-3xl font-semibold mt-1">{completionRate}%</p>
-          <div className="mt-2 h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
+          <div className="mt-2 h-1 bg-[#1c1c1c] rounded-none overflow-hidden">
             <div 
               className="h-full bg-[#7bdcff] transition-all"
               style={{ width: `${completionRate}%` }}
@@ -69,10 +69,10 @@ export default function InsightsPanel({
           </div>
         </div>
         
-        <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
           <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Avg Health</p>
           <p className="text-3xl font-semibold mt-1">{Math.round(avgHealthScore)}</p>
-          <div className="mt-2 h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
+          <div className="mt-2 h-1 bg-[#1c1c1c] rounded-none overflow-hidden">
             <div 
               className={`h-full transition-all ${
                 avgHealthScore >= 70 ? "bg-green-400" : 
@@ -85,7 +85,7 @@ export default function InsightsPanel({
       </div>
 
       {/* Activity Heatmap */}
-      <div className="rounded-2xl border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4">
         <div className="flex items-center justify-between mb-3">
           <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">
             30-Day Activity
@@ -98,7 +98,7 @@ export default function InsightsPanel({
       {/* Two Column Layout */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Upcoming Milestones */}
-        <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           <div className="flex items-center gap-2 mb-4">
             <Icon name="star" size={20} className="text-yellow-400" />
             <h3 className="text-lg font-semibold">Upcoming Milestones</h3>
@@ -110,7 +110,7 @@ export default function InsightsPanel({
               {upcomingMilestones.slice(0, 5).map((milestone) => (
                 <div 
                   key={milestone.id}
-                  className="p-3 rounded-xl bg-[#111] border border-[#1c1c1c]"
+                  className="p-3 rounded-none bg-[#111] border border-[#1c1c1c]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -123,7 +123,7 @@ export default function InsightsPanel({
                         : "No date"}
                     </span>
                   </div>
-                  <div className="mt-2 h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
+                  <div className="mt-2 h-1 bg-[#1c1c1c] rounded-none overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a]"
                       style={{ width: `${milestone.percent_complete}%` }}
@@ -136,7 +136,7 @@ export default function InsightsPanel({
         </div>
 
         {/* Recent Commits */}
-        <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+        <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
           <div className="flex items-center gap-2 mb-4">
             <Icon name="edit" size={20} className="text-green-400" />
             <h3 className="text-lg font-semibold">Recent Commits</h3>
@@ -148,7 +148,7 @@ export default function InsightsPanel({
               {recentCommits.slice(0, 10).map((commit, idx) => (
                 <div 
                   key={idx}
-                  className="p-3 rounded-xl hover:bg-[#111] transition"
+                  className="p-3 rounded-none hover:bg-[#111] transition"
                 >
                   <p className="text-sm truncate">{commit.message}</p>
                   <div className="flex items-center gap-2 mt-1">

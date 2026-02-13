@@ -157,7 +157,7 @@ export default function KeyboardShortcuts({ projects }: Props) {
               onClick={() => setShowHelp(false)}
             />
             <motion.div
-              className="relative w-full max-w-md rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-8 shadow-2xl"
+              className="relative w-full max-w-md rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-8 shadow-2xl"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
@@ -169,7 +169,7 @@ export default function KeyboardShortcuts({ projects }: Props) {
                 </div>
                 <button
                   onClick={() => setShowHelp(false)}
-                  className="p-1 rounded-lg hover:bg-[#1c1c1c] transition"
+                  className="p-1 rounded-none hover:bg-[#1c1c1c] transition"
                 >
                   <X size={18} className="text-[#666]" />
                 </button>
@@ -186,7 +186,7 @@ export default function KeyboardShortcuts({ projects }: Props) {
                 ].map(({ key, desc }) => (
                   <div key={key} className="flex items-center justify-between text-sm">
                     <span className="text-[#8b8b8b]">{desc}</span>
-                    <kbd className="px-2 py-1 text-xs rounded bg-[#1c1c1c] text-[#7bdcff] border border-[#333] font-mono">
+                    <kbd className="px-2 py-1 text-xs rounded-none bg-[#1c1c1c] text-[#7bdcff] border border-[#333] font-mono">
                       {key}
                     </kbd>
                   </div>
@@ -211,7 +211,7 @@ export default function KeyboardShortcuts({ projects }: Props) {
               onClick={() => setShowJournalModal(false)}
             />
             <motion.div
-              className="relative w-full max-w-lg rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6 shadow-2xl"
+              className="relative w-full max-w-lg rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6 shadow-2xl"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
@@ -220,7 +220,7 @@ export default function KeyboardShortcuts({ projects }: Props) {
               <select
                 value={journalProjectId}
                 onChange={(e) => setJournalProjectId(e.target.value)}
-                className="w-full mb-3 rounded-xl border border-[#1c1c1c] bg-black px-4 py-2 text-sm focus:outline-none focus:border-[#7bdcff]"
+                className="w-full mb-3 rounded-none border border-[#1c1c1c] bg-black px-4 py-2 text-sm focus:outline-none focus:border-[#7bdcff]"
               >
                 {projects.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -234,7 +234,7 @@ export default function KeyboardShortcuts({ projects }: Props) {
                 onChange={(e) => setJournalContent(e.target.value)}
                 rows={4}
                 placeholder="Log progress, blockers, or insights..."
-                className="w-full rounded-xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm focus:outline-none focus:border-[#7bdcff]"
+                className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm focus:outline-none focus:border-[#7bdcff]"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault();
@@ -247,14 +247,14 @@ export default function KeyboardShortcuts({ projects }: Props) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowJournalModal(false)}
-                    className="px-4 py-2 text-sm rounded-xl border border-[#1c1c1c] text-[#8b8b8b] hover:text-white transition"
+                    className="px-4 py-2 text-sm rounded-none border border-[#1c1c1c] text-[#8b8b8b] hover:text-white transition"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleJournalSubmit}
                     disabled={isSubmitting || !journalContent.trim()}
-                    className="px-4 py-2 text-sm rounded-xl bg-[#7bdcff] text-black font-medium disabled:opacity-50 hover:bg-[#a5ebff] transition"
+                    className="px-4 py-2 text-sm rounded-none bg-[#7bdcff] text-black font-medium disabled:opacity-50 hover:bg-[#a5ebff] transition"
                   >
                     {isSubmitting ? "Adding..." : "Add Entry"}
                   </button>
@@ -269,7 +269,7 @@ export default function KeyboardShortcuts({ projects }: Props) {
       <div className="fixed bottom-6 right-6 z-30 hidden md:block">
         <button
           onClick={() => setShowHelp(true)}
-          className="px-3 py-2 rounded-xl border border-[#1c1c1c] bg-[#0a0a0a]/80 backdrop-blur text-xs text-[#555] hover:text-[#7bdcff] hover:border-[#7bdcff]/30 transition flex items-center gap-2"
+          className="px-3 py-2 rounded-none border border-[#1c1c1c] bg-[#0a0a0a]/80 backdrop-blur text-xs text-[#555] hover:text-[#7bdcff] hover:border-[#7bdcff]/30 transition flex items-center gap-2"
         >
           <Keyboard size={14} />
           <span>Press <kbd className="text-[#7bdcff]">?</kbd> for shortcuts</span>

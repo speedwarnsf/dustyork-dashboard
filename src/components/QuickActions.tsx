@@ -111,7 +111,7 @@ What would you like to work on?`;
     <div className="flex flex-wrap gap-3">
       <button
         onClick={handleCopyContext}
-        className="flex items-center gap-2 rounded-xl bg-[#7bdcff] px-4 py-2 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
+        className="flex items-center gap-2 rounded-none bg-[#7bdcff] px-4 py-2 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
       >
         <Icon name="intelligence" size={16} />
         Resume with AI
@@ -119,7 +119,7 @@ What would you like to work on?`;
 
       <button
         onClick={openVercel}
-        className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+        className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
       >
         <Icon name="upload" size={16} />
         Vercel
@@ -128,7 +128,7 @@ What would you like to work on?`;
       {project.github_repo && (
         <button
           onClick={openGitHub}
-          className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+          className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
           <Icon name="entities" size={16} />
           GitHub
@@ -138,7 +138,7 @@ What would you like to work on?`;
       {project.live_url && (
         <button
           onClick={visitLiveSite}
-          className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+          className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
           <Icon name="cloud" size={16} />
           Live Site

@@ -114,7 +114,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
   };
 
   return (
-    <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -135,7 +135,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
             <button
               onClick={runAllChecks}
               disabled={running !== null}
-              className="px-4 py-2 text-sm font-medium rounded-xl bg-[#7bdcff] text-black hover:bg-[#a5ebff] disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="px-4 py-2 text-sm font-medium rounded-none bg-[#7bdcff] text-black hover:bg-[#a5ebff] disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {running ? "Running..." : "Run All"}
             </button>
@@ -144,7 +144,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 bg-[#1c1c1c] rounded-full overflow-hidden mb-6">
+      <div className="h-2 bg-[#1c1c1c] rounded-none overflow-hidden mb-6">
         <div
           className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a] transition-all duration-500"
           style={{ width: `${progress}%` }}
@@ -153,7 +153,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
 
       {/* No live URL warning */}
       {!liveUrl && (
-        <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 mb-4">
+        <div className="p-4 rounded-none bg-yellow-500/10 border border-yellow-500/20 mb-4">
           <p className="text-sm text-yellow-400">
             <Icon name="warning" size={16} /> Add a live URL to run automated checks
           </p>
@@ -165,7 +165,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
         {checks.map((check) => (
           <div
             key={check.type}
-            className="flex items-center gap-4 p-3 rounded-xl border border-[#1c1c1c] hover:border-[#2c2c2c] transition"
+            className="flex items-center gap-4 p-3 rounded-none border border-[#1c1c1c] hover:border-[#2c2c2c] transition"
           >
             {/* Icon */}
             <span className="text-xl"><Icon name={check.icon} size={20} /></span>
@@ -186,7 +186,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
             {/* Status */}
             <div className="flex items-center gap-2">
               {running === check.type ? (
-                <div className="w-5 h-5 border-2 border-[#7bdcff] border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[#7bdcff] border-t-transparent rounded-none animate-spin" />
               ) : (
                 <StatusBadge status={check.status} />
               )}
@@ -207,7 +207,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
 
       {/* Launch Ready CTA */}
       {progress === 100 && (
-        <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-[#d2ff5a]/10 to-[#7bdcff]/10 border border-[#d2ff5a]/20">
+        <div className="mt-6 p-4 rounded-none bg-gradient-to-r from-[#d2ff5a]/10 to-[#7bdcff]/10 border border-[#d2ff5a]/20">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-[#d2ff5a] flex items-center gap-2">
@@ -217,7 +217,7 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
                 All checks passed. Time to share with the world.
               </p>
             </div>
-            <button className="px-4 py-2 text-sm font-medium rounded-xl bg-[#d2ff5a] text-black hover:bg-[#e5ff8a] transition flex items-center gap-2">
+            <button className="px-4 py-2 text-sm font-medium rounded-none bg-[#d2ff5a] text-black hover:bg-[#e5ff8a] transition flex items-center gap-2">
               <Icon name="star" size={14} /> Mark as Launched
             </button>
           </div>
@@ -238,7 +238,7 @@ function StatusBadge({ status }: { status: CheckStatus }) {
   const style = styles[status];
   return (
     <span
-      className={`px-2 py-0.5 rounded text-xs font-medium ${style.bg} ${style.text}`}
+      className={`px-2 py-0.5 rounded-none text-xs font-medium ${style.bg} ${style.text}`}
     >
       {style.label}
     </span>

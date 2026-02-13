@@ -1,10 +1,15 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import ProjectDashboard from "@/components/ProjectDashboard";
-import ActivityFeed from "@/components/ActivityFeed";
-import NeedsAttention from "@/components/NeedsAttention";
-import SmartInsights from "@/components/SmartInsights";
-import ProjectTimeline from "@/components/ProjectTimeline";
-import ProgressOverview from "@/components/ProgressOverview";
+import { ActivityFeedSkeleton } from "@/components/SkeletonLoader";
+
+const ActivityFeed = dynamic(() => import("@/components/ActivityFeed"), {
+  loading: () => <ActivityFeedSkeleton />,
+});
+const NeedsAttention = dynamic(() => import("@/components/NeedsAttention"));
+const SmartInsights = dynamic(() => import("@/components/SmartInsights"));
+const ProjectTimeline = dynamic(() => import("@/components/ProjectTimeline"));
+const ProgressOverview = dynamic(() => import("@/components/ProgressOverview"));
 import { fetchGithubActivity } from "@/lib/github";
 import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -248,7 +253,7 @@ export default async function DashboardPage() {
             <p className="mt-2 text-[#8b8b8b] max-w-xl">
               Track your projects, monitor GitHub activity, and keep the momentum going.
               <span className="hidden sm:inline">
-                {" "}Press <kbd className="px-1.5 py-0.5 text-xs rounded bg-[#1c1c1c] text-[#7bdcff]">⌘K</kbd> to
+                {" "}Press <kbd className="px-1.5 py-0.5 text-xs rounded-none bg-[#1c1c1c] text-[#7bdcff]">⌘K</kbd> to
                 quickly navigate.
               </span>
             </p>
@@ -256,7 +261,7 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/project/new"
-              className="rounded-xl bg-[#7bdcff] px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
+              className="rounded-none bg-[#7bdcff] px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
             >
               + New Project
             </Link>
@@ -313,16 +318,15 @@ export default async function DashboardPage() {
       {/* Upcoming Milestones */}
       {upcomingMilestones.length > 0 && (
         <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6">
-          <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+          <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl"></span>
               <h3 className="text-lg font-semibold">Upcoming Milestones</h3>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {upcomingMilestones.map((milestone) => (
                 <div 
                   key={milestone.id}
-                  className="p-4 rounded-xl bg-[#111] border border-[#1c1c1c]"
+                  className="p-4 rounded-none bg-[#111] border border-[#1c1c1c]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -335,7 +339,7 @@ export default async function DashboardPage() {
                       </span>
                     )}
                   </div>
-                  <div className="mt-3 h-1.5 bg-[#1c1c1c] rounded-full overflow-hidden">
+                  <div className="mt-3 h-1.5 bg-[#1c1c1c] rounded-none overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a]"
                       style={{ width: `${milestone.percent_complete}%` }}

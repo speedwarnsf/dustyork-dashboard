@@ -39,7 +39,7 @@ export default async function DashboardLayout({
             background: '#0a0a0a',
             color: '#f5f5f5',
             border: '1px solid #1c1c1c',
-            borderRadius: '12px',
+            borderRadius: '0',
           },
           success: {
             style: {
@@ -57,9 +57,9 @@ export default async function DashboardLayout({
       <MobileLayout>
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(123,220,255,0.2)_0%,rgba(0,0,0,0)_60%)]" />
-            <div className="absolute top-1/3 -left-32 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(210,255,90,0.15)_0%,rgba(0,0,0,0)_65%)]" />
-            <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(123,220,255,0.12)_0%,rgba(0,0,0,0)_60%)]" />
+            <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-none bg-[radial-gradient(circle,rgba(123,220,255,0.2)_0%,rgba(0,0,0,0)_60%)]" />
+            <div className="absolute top-1/3 -left-32 h-[420px] w-[420px] rounded-none bg-[radial-gradient(circle,rgba(210,255,90,0.15)_0%,rgba(0,0,0,0)_65%)]" />
+            <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-none bg-[radial-gradient(circle,rgba(123,220,255,0.12)_0%,rgba(0,0,0,0)_60%)]" />
           </div>
           <div className="relative">
           {/* Desktop Header */}
@@ -78,7 +78,7 @@ export default async function DashboardLayout({
                 <form action={signOut}>
                   <button
                     type="submit"
-                    className="rounded-lg border border-[#1c1c1c] px-3 py-2 text-xs text-[#8b8b8b] transition hover:border-red-500/50 hover:text-red-400"
+                    className="rounded-none border border-[#1c1c1c] px-3 py-2 text-xs text-[#8b8b8b] transition hover:border-red-500/50 hover:text-red-400"
                   >
                     Sign Out
                   </button>
@@ -95,7 +95,7 @@ export default async function DashboardLayout({
           {/* Desktop Footer */}
           <footer className="border-t border-[#1c1c1c] py-6 hidden md:block">
             <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-xs text-[#555]">
-              <p>Built with 🌙 by Io</p>
+              <p>Built with -- by Io</p>
               <div className="flex items-center gap-4">
                 <a 
                   href="https://github.com/speedwarnsf" 

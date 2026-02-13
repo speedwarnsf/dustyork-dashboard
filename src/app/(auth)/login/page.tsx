@@ -12,7 +12,7 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 sm:px-6 py-12">
-      <div className="w-full max-w-md rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6 sm:p-8 shadow-[0_0_40px_rgba(123,220,255,0.08)]">
+      <div className="w-full max-w-md rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6 sm:p-8 shadow-[0_0_40px_rgba(123,220,255,0.08)]">
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff]">
             D&apos;s Command Center
@@ -25,12 +25,12 @@ function LoginForm() {
           </p>
         </div>
         {error && (
-          <div className="mb-4 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
+          <div className="mb-4 rounded-none bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
             {error}
           </div>
         )}
         {message && (
-          <div className="mb-4 rounded-xl bg-green-500/10 border border-green-500/30 px-4 py-3 text-sm text-green-400">
+          <div className="mb-4 rounded-none bg-green-500/10 border border-green-500/30 px-4 py-3 text-sm text-green-400">
             {message}
           </div>
         )}
@@ -40,18 +40,18 @@ function LoginForm() {
             type="email"
             required
             placeholder="Email"
-            className="w-full rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
+            className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
           />
           <input
             name="password"
             type="password"
             required
             placeholder="Password"
-            className="w-full rounded-2xl border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
+            className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
           />
           <button
             type="submit"
-            className="w-full rounded-2xl bg-[#7bdcff] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
+            className="w-full rounded-none bg-[#7bdcff] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
           >
             Sign In
           </button>
@@ -71,7 +71,7 @@ function LoginForm() {
               if (hiddenEmail && emailInput) hiddenEmail.value = emailInput.value;
               if (hiddenPassword && passwordInput) hiddenPassword.value = passwordInput.value;
             }}
-            className="w-full rounded-2xl border border-[#1c1c1c] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+            className="w-full rounded-none border border-[#1c1c1c] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
           >
             Create Account
           </button>

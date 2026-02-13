@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
       
       return (
-        <div className="rounded-3xl border border-red-500/30 bg-red-500/5 p-6 text-center">
+        <div className="rounded-none border border-red-500/30 bg-red-500/5 p-6 text-center">
           <div className="mb-4"><Icon name="warning" size={48} /></div>
           <h2 className="text-lg font-semibold text-red-400 mb-2">
             Something went wrong
@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
           </p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="rounded-xl border border-red-500/30 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition"
+            className="rounded-none border border-red-500/30 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition"
           >
             Try again
           </button>
@@ -67,14 +67,14 @@ export function ErrorCard({
   onRetry?: () => void;
 }) {
   return (
-    <div className="rounded-3xl border border-red-500/30 bg-red-500/5 p-6 text-center">
+    <div className="rounded-none border border-red-500/30 bg-red-500/5 p-6 text-center">
       <div className="mb-4"><Icon name="warning" size={48} /></div>
       <h2 className="text-lg font-semibold text-red-400 mb-2">{title}</h2>
       <p className="text-sm text-[#8b8b8b] mb-4">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="rounded-xl border border-red-500/30 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition"
+          className="rounded-none border border-red-500/30 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition"
         >
           Try again
         </button>

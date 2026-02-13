@@ -391,7 +391,7 @@ export default function CommandPalette() {
         {/* Enhanced modal */}
         <motion.div 
           data-command-palette
-          className="relative w-full max-w-2xl glass-strong rounded-3xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-2xl glass-strong rounded-none shadow-2xl overflow-hidden"
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.9, y: 20 }}
@@ -425,7 +425,7 @@ export default function CommandPalette() {
               {query && (
                 <motion.button
                   onClick={() => setQuery("")}
-                  className="px-2 py-1 text-xs rounded bg-[#1c1c1c] text-[#8b8b8b] hover:text-white transition-colors"
+                  className="px-2 py-1 text-xs rounded-none bg-[#1c1c1c] text-[#8b8b8b] hover:text-white transition-colors"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                 >
@@ -433,7 +433,7 @@ export default function CommandPalette() {
                 </motion.button>
               )}
               
-              <kbd className="hidden sm:block px-2 py-1 text-xs rounded bg-[#1c1c1c] text-[#666] border border-[#333]">
+              <kbd className="hidden sm:block px-2 py-1 text-xs rounded-none bg-[#1c1c1c] text-[#666] border border-[#333]">
                 ESC
               </kbd>
             </div>
@@ -448,7 +448,7 @@ export default function CommandPalette() {
                 animate={{ opacity: 1 }}
               >
                 <motion.div
-                  className="inline-block w-8 h-8 border-3 border-[#7bdcff] border-t-transparent rounded-full mb-4"
+                  className="inline-block w-8 h-8 border-3 border-[#7bdcff] border-t-transparent rounded-none mb-4"
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 />
@@ -523,7 +523,7 @@ export default function CommandPalette() {
                             <div className="font-medium truncate flex items-center gap-2">
                               {action.name}
                               {isRecent && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#7bdcff]/20 text-[#7bdcff]">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[#7bdcff]/20 text-[#7bdcff]">
                                   Recent
                                 </span>
                               )}
@@ -537,7 +537,7 @@ export default function CommandPalette() {
                           
                           <div className="flex items-center gap-2">
                             {action.shortcut && (
-                              <kbd className="px-2 py-1 text-xs rounded bg-[#1c1c1c] text-[#666] border border-[#333]">
+                              <kbd className="px-2 py-1 text-xs rounded-none bg-[#1c1c1c] text-[#666] border border-[#333]">
                                 {action.shortcut}
                               </kbd>
                             )}
@@ -572,7 +572,7 @@ export default function CommandPalette() {
                 <span>select</span>
               </div>
               <div className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 text-[10px] rounded bg-[#1c1c1c] border border-[#333]">ESC</kbd>
+                <kbd className="px-1 py-0.5 text-[10px] rounded-none bg-[#1c1c1c] border border-[#333]">ESC</kbd>
                 <span>close</span>
               </div>
             </div>
@@ -580,7 +580,7 @@ export default function CommandPalette() {
             <div className="flex items-center gap-2">
               <span>⌘K to toggle</span>
               {filteredActions.length > 0 && (
-                <span className="px-2 py-1 rounded bg-[#1c1c1c] text-[#7bdcff]">
+                <span className="px-2 py-1 rounded-none bg-[#1c1c1c] text-[#7bdcff]">
                   {filteredActions.length} results
                 </span>
               )}

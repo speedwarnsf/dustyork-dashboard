@@ -181,7 +181,7 @@ Focus on quick wins that improve quality.`;
       <div className="flex flex-wrap gap-2 sm:gap-3">
         <button
           onClick={handleCopyContext}
-          className="flex items-center gap-2 rounded-xl bg-[#7bdcff] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
+          className="flex items-center gap-2 rounded-none bg-[#7bdcff] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
         >
           <Icon name="intelligence" size={16} />
           Resume with AI
@@ -191,7 +191,7 @@ Focus on quick wins that improve quality.`;
           <button
             onClick={handleDeploy}
             disabled={isDeploying}
-            className="flex items-center gap-2 rounded-xl bg-[#d2ff5a] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#e5ff8a] disabled:opacity-50"
+            className="flex items-center gap-2 rounded-none bg-[#d2ff5a] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#e5ff8a] disabled:opacity-50"
           >
             <span>{isDeploying ? <Icon name="hourglass" size={16} /> : <Icon name="deploy" size={16} />}</span>
             {isDeploying ? "Deploying..." : "Deploy"}
@@ -200,7 +200,7 @@ Focus on quick wins that improve quality.`;
 
         <button
           onClick={() => setShowJournalForm(!showJournalForm)}
-          className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+          className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
         >
           <Icon name="briefs" size={16} />
           Quick Note
@@ -209,7 +209,7 @@ Focus on quick wins that improve quality.`;
         {project.github_repo && (
           <button
             onClick={handleSpawnPolishAgent}
-            className="flex items-center gap-2 rounded-xl border border-[#1c1c1c] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#d2ff5a] hover:text-[#d2ff5a]"
+            className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#d2ff5a] hover:text-[#d2ff5a]"
           >
             <Icon name="star" size={16} />
             Polish Agent
@@ -219,7 +219,7 @@ Focus on quick wins that improve quality.`;
 
       {/* Quick Journal Form */}
       {showJournalForm && (
-        <div className="p-4 rounded-xl border border-[#1c1c1c] bg-[#111]">
+        <div className="p-4 rounded-none border border-[#1c1c1c] bg-[#111]">
           <textarea
             value={journalContent}
             onChange={(e) => setJournalContent(e.target.value)}
@@ -237,7 +237,7 @@ Focus on quick wins that improve quality.`;
             <button
               onClick={handleAddJournal}
               disabled={!journalContent.trim() || isAddingJournal}
-              className="px-4 py-1.5 text-sm font-medium rounded-lg bg-[#7bdcff] text-black hover:bg-[#a5ebff] disabled:opacity-50 transition"
+              className="px-4 py-1.5 text-sm font-medium rounded-none bg-[#7bdcff] text-black hover:bg-[#a5ebff] disabled:opacity-50 transition"
             >
               {isAddingJournal ? "Saving..." : "Save"}
             </button>
@@ -249,7 +249,7 @@ Focus on quick wins that improve quality.`;
       <div className="flex flex-wrap gap-2">
         <button
           onClick={openVercel}
-          className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
+          className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
         >
           <Icon name="upload" size={14} />
           Vercel
@@ -258,7 +258,7 @@ Focus on quick wins that improve quality.`;
         {project.github_repo && (
           <button
             onClick={openGitHub}
-            className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
+            className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
           >
             <Icon name="entities" size={14} />
             GitHub
@@ -268,7 +268,7 @@ Focus on quick wins that improve quality.`;
         {project.live_url && (
           <button
             onClick={openLiveSite}
-            className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
+            className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
           >
             <Icon name="cloud" size={14} />
             Live Site
@@ -284,7 +284,7 @@ Focus on quick wins that improve quality.`;
                   "_blank"
                 )
               }
-              className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
+              className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
             >
               <Icon name="settings" size={14} />
               Actions
@@ -297,7 +297,7 @@ Focus on quick wins that improve quality.`;
                   "_blank"
                 )
               }
-              className="flex items-center gap-2 rounded-lg border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
+              className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-3 py-1.5 text-xs font-medium text-[#8b8b8b] transition hover:border-[#555] hover:text-white"
             >
               <Icon name="chat" size={14} />
               Issues

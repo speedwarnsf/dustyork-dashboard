@@ -132,7 +132,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
   if (activities.length === 0) {
     return (
       <motion.div 
-        className="glass-strong rounded-3xl p-6"
+        className="glass-strong rounded-none p-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -159,7 +159,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
 
   return (
     <motion.div 
-      className="glass-strong rounded-3xl p-6"
+      className="glass-strong rounded-none p-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       layout
@@ -174,7 +174,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
             <RefreshCw size={18} className="text-[#7bdcff]" />
           </motion.div>
           Activity Feed
-          <span className="px-2 py-0.5 text-xs rounded-full bg-[#7bdcff]/20 text-[#7bdcff]">
+          <span className="px-2 py-0.5 text-xs rounded-none bg-[#7bdcff]/20 text-[#7bdcff]">
             {filteredActivities.length}
           </span>
         </h3>
@@ -185,7 +185,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
             <select
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
-              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors max-w-[140px]"
+              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors max-w-[140px]"
             >
               <option value="all">All Projects</option>
               {projectNames.map(name => (
@@ -199,7 +199,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
             <select
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
-              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors"
+              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors"
             >
               <option value="all">All Types</option>
               {activityTypes.map(type => (
@@ -215,7 +215,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
           <motion.button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="p-2 rounded-lg hover:bg-[#1c1c1c] transition-colors disabled:opacity-50"
+            className="p-2 rounded-none hover:bg-[#1c1c1c] transition-colors disabled:opacity-50"
             whileTap={{ scale: 0.95 }}
           >
             <RefreshCw size={14} className={isRefreshing ? "animate-spin" : ""} />
@@ -240,7 +240,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
               >
-                <div className="w-2 h-2 rounded-full bg-[#7bdcff]" />
+                <div className="w-2 h-2 rounded-none bg-[#7bdcff]" />
                 {period}
                 <span className="ml-auto text-[#666]">{periodActivities.length}</span>
               </motion.div>
@@ -255,7 +255,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
                     <motion.a
                       key={activity.id}
                       href={`/project/${activity.projectId}`}
-                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-[#1c1c1c]/50 transition-all group cursor-pointer"
+                      className="flex items-start gap-3 p-3 rounded-none hover:bg-[#1c1c1c]/50 transition-all group cursor-pointer"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
@@ -263,7 +263,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
                     >
                       {/* Enhanced activity icon */}
                       <motion.div 
-                        className={`w-8 h-8 rounded-lg ${config?.bgColor || "bg-gray-400/10"} flex items-center justify-center`}
+                        className={`w-8 h-8 rounded-none ${config?.bgColor || "bg-gray-400/10"} flex items-center justify-center`}
                         whileHover={{ scale: 1.1 }}
                       >
                         <ActivityIcon size={16} className={config?.color || "text-white"} />
@@ -274,7 +274,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
                           <span className={`font-medium ${config?.color || "text-white"}`}>
                             {activity.projectName}
                           </span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#1c1c1c] text-[#666]">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[#1c1c1c] text-[#666]">
                             {config?.label || activity.type}
                           </span>
                         </p>
@@ -294,14 +294,14 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
                         
                         <p className="text-xs text-[#666] mt-1 flex items-center gap-1">
                           <TimeAgo date={activity.timestamp} />
-                          <span className="w-1 h-1 rounded-full bg-[#333]" />
+                          <span className="w-1 h-1 rounded-none bg-[#333]" />
                           <span>{new Date(activity.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </p>
                       </div>
                       
                       {/* Hover indicator */}
                       <motion.div
-                        className="w-2 h-2 rounded-full bg-[#7bdcff] opacity-0 group-hover:opacity-100"
+                        className="w-2 h-2 rounded-none bg-[#7bdcff] opacity-0 group-hover:opacity-100"
                         initial={{ scale: 0 }}
                         whileHover={{ scale: 1 }}
                       />

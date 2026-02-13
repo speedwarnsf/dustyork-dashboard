@@ -1,6 +1,7 @@
 "use client";
 import { Icon } from "./Icon";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useId, useState } from "react";
 import { ExternalLink, Github, GitCommit, Globe, Clock, AlertTriangle, CheckCircle, Activity } from "lucide-react";
 
@@ -112,21 +113,21 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <motion.div
-        className="glass-strong rounded-3xl p-5 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] flex flex-col h-full"
+        className="glass-strong rounded-none p-5 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] flex flex-col h-full"
         style={{ 
           boxShadow: isHovered ? 'var(--shadow-premium)' : 'var(--shadow-card)' 
         }}
       >
         {/* Screenshot with enhanced overlay */}
         {imageUrl ? (
-          <div className="mb-4 overflow-hidden rounded-2xl border border-[#1c1c1c] bg-black relative group/image">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <motion.img
+          <div className="mb-4 overflow-hidden rounded-none border border-[#1c1c1c] bg-black relative group/image">
+            <Image
               src={imageUrl}
               alt={`${project.name} screenshot`}
+              width={400}
+              height={176}
               className="h-44 w-full object-cover"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
+              unoptimized={imageUrl.startsWith("http")}
             />
             
             {/* Gradient overlay on hover */}
@@ -140,13 +141,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {/* Live status indicator */}
             {isLive && (
               <motion.div 
-                className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-lg glass"
+                className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-none glass"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.1 }}
               >
                 <motion.div 
-                  className="w-2 h-2 rounded-full bg-[#d2ff5a]"
+                  className="w-2 h-2 rounded-none bg-[#d2ff5a]"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -164,7 +165,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {/* Launched badge */}
             {project.launched && (
               <motion.div 
-                className="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-[#d2ff5a] text-black text-xs font-medium flex items-center gap-1"
+                className="absolute bottom-3 left-3 px-2 py-1 rounded-none bg-[#d2ff5a] text-black text-xs font-medium flex items-center gap-1"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
@@ -175,8 +176,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             )}
           </div>
         ) : (
-          <div className="mb-4 h-44 rounded-2xl border border-dashed border-[#1c1c1c] bg-[#0a0a0a] flex items-center justify-center relative">
-            <span className="text-4xl opacity-20">📁</span>
+          <div className="mb-4 h-44 rounded-none border border-dashed border-[#1c1c1c] bg-[#0a0a0a] flex items-center justify-center relative">
+            
             {health && (
               <div className="absolute top-3 right-3">
                 <ProgressRing progress={health.score} size={36} strokeWidth={2} />
@@ -190,7 +191,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex items-center gap-2">
             {/* Animated priority dot */}
             <motion.span 
-              className={`w-2 h-2 rounded-full ${priorityDots[project.priority] || priorityDots.medium}`}
+              className={`w-2 h-2 rounded-none ${priorityDots[project.priority] || priorityDots.medium}`}
               title={`${project.priority} priority`}
               animate={project.priority === 'high' ? { scale: [1, 1.2, 1] } : {}}
               transition={{ duration: 2, repeat: Infinity }}
@@ -202,7 +203,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           
           {/* Enhanced status badge */}
           <motion.div
-            className={`rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] flex items-center gap-1 shrink-0 ${
+            className={`rounded-none border px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] flex items-center gap-1 shrink-0 ${
               statusConfig.bg
             } ${statusConfig.text} ${statusConfig.border}`}
             whileHover={{ scale: 1.05 }}
@@ -223,7 +224,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {project.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-0.5 rounded-full text-[10px] bg-[#1c1c1c] text-[#8b8b8b] border border-[#333]/30"
+                className="px-2 py-0.5 rounded-none text-[10px] bg-[#1c1c1c] text-[#8b8b8b] border border-[#333]/30"
               >
                 {tag}
               </span>
@@ -240,7 +241,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {health.alerts.slice(0, 2).map((alert, i) => (
               <motion.span
                 key={i}
-                className="px-2 py-1 rounded-full text-[10px] glass border border-yellow-500/20 text-yellow-400 flex items-center gap-1"
+                className="px-2 py-1 rounded-none text-[10px] glass border border-yellow-500/20 text-yellow-400 flex items-center gap-1"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: i * 0.1 }}
@@ -254,7 +255,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Last commit message */}
         {project.github?.lastCommitMessage && (
-          <div className="mt-3 flex items-start gap-2 px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#1c1c1c]/50">
+          <div className="mt-3 flex items-start gap-2 px-3 py-2 rounded-none bg-[#0a0a0a] border border-[#1c1c1c]/50">
             <GitCommit size={12} className="text-green-400 mt-0.5 shrink-0" />
             <p className="text-[11px] text-[#8b8b8b] line-clamp-1 font-mono">
               {project.github.lastCommitMessage}
@@ -284,7 +285,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               )}
               {health && (
                 <span className={`${health ? getHealthTextColor(health) : "text-[#555]"} flex items-center gap-1`}>
-                  <div className={`w-2 h-2 rounded-full ${healthDotColor}`} />
+                  <div className={`w-2 h-2 rounded-none ${healthDotColor}`} />
                   {healthLabel}
                 </span>
               )}
@@ -305,7 +306,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           {project.github_repo && (
             <motion.button
               onClick={(e) => handleQuickAction(e, () => window.open(`https://github.com/${project.github_repo}`, "_blank"))}
-              className="flex-1 py-2 text-xs rounded-lg glass-strong hover:border-[#7bdcff] hover:text-[#7bdcff] transition-all text-center flex items-center justify-center gap-1"
+              className="flex-1 py-2 text-xs rounded-none glass-strong hover:border-[#7bdcff] hover:text-[#7bdcff] transition-all text-center flex items-center justify-center gap-1"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -316,7 +317,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           {project.live_url && (
             <motion.button
               onClick={(e) => handleQuickAction(e, () => window.open(project.live_url!, "_blank"))}
-              className="flex-1 py-2 text-xs rounded-lg glass-strong hover:border-[#d2ff5a] hover:text-[#d2ff5a] transition-all text-center flex items-center justify-center gap-1"
+              className="flex-1 py-2 text-xs rounded-none glass-strong hover:border-[#d2ff5a] hover:text-[#d2ff5a] transition-all text-center flex items-center justify-center gap-1"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -326,7 +327,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           )}
           <motion.button
             onClick={(e) => handleQuickAction(e, () => window.location.href = `/project/${project.id}/edit`)}
-            className="px-3 py-2 text-xs rounded-lg glass-strong hover:border-[#8b8b8b] hover:text-[#8b8b8b] transition-all flex items-center justify-center"
+            className="px-3 py-2 text-xs rounded-none glass-strong hover:border-[#8b8b8b] hover:text-[#8b8b8b] transition-all flex items-center justify-center"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

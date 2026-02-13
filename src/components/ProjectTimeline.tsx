@@ -81,7 +81,7 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
     : [];
 
   return (
-    <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
+    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Icon name="calendar" size={20} />
@@ -95,7 +95,7 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
         {projects.map((project) => (
           <button
             key={project.name}
-            className={`px-2 py-1 rounded-lg text-xs flex items-center gap-1.5 transition ${
+            className={`px-2 py-1 rounded-none text-xs flex items-center gap-1.5 transition ${
               hoveredProject === project.name || hoveredProject === null
                 ? "opacity-100"
                 : "opacity-30"
@@ -103,7 +103,7 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
             onMouseEnter={() => setHoveredProject(project.name)}
             onMouseLeave={() => setHoveredProject(null)}
           >
-            <span className={`w-2 h-2 rounded-full ${project.color}`} />
+            <span className={`w-2 h-2 rounded-none ${project.color}`} />
             <span className="text-[#8b8b8b]">{project.name}</span>
           </button>
         ))}
@@ -124,7 +124,7 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
           return (
             <button
               key={key}
-              className={`flex-1 aspect-square rounded-lg transition-all ${
+              className={`flex-1 aspect-square rounded-none transition-all ${
                 isSelected
                   ? "ring-2 ring-[#7bdcff] ring-offset-2 ring-offset-[#0a0a0a]"
                   : ""
@@ -171,13 +171,13 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
                   <a
                     key={event.id}
                     href={`/project/${event.projectId}`}
-                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-[#111] transition"
+                    className="flex items-start gap-3 p-2 rounded-none hover:bg-[#111] transition"
                   >
                     <span className="text-sm"><Icon name={style.icon} size={16} /></span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`w-2 h-2 rounded-full ${projectColor}`}
+                          className={`w-2 h-2 rounded-none ${projectColor}`}
                         />
                         <span className="text-xs text-[#7bdcff]">
                           {event.projectName}
@@ -247,7 +247,7 @@ export function ActivityHeatmap({ events, days = 30 }: Props) {
         return (
           <div
             key={key}
-            className="w-3 h-3 rounded-sm"
+            className="w-3 h-3 rounded-none"
             style={{
               backgroundColor:
                 count > 0
