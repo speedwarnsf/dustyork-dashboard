@@ -71,7 +71,7 @@ async function captureScreenshot(url: string): Promise<Buffer> {
 
 // Upload to Supabase Storage
 async function uploadToStorage(
-  sb: ReturnType<typeof createClient>,
+  sb: any,
   projectName: string,
   imageBuffer: Buffer
 ): Promise<string> {

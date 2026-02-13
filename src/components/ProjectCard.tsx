@@ -1,9 +1,7 @@
 "use client";
-import { Icon } from "./Icon";
-import { motion } from "framer-motion";
 import Image from "next/image";
-import { useId, useState } from "react";
-import { ExternalLink, Github, GitCommit, Globe, Clock, AlertTriangle, CheckCircle, Activity } from "lucide-react";
+import { useState } from "react";
+import { ExternalLink, Github, GitCommit, Globe, Clock } from "lucide-react";
 
 import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
@@ -11,63 +9,11 @@ import { getGithubOpenGraphUrl } from "@/lib/github";
 import { getHealthDotColor, getHealthLabel, getHealthTextColor } from "@/lib/health";
 import TimeAgo from "./TimeAgo";
 
-const statusStyles: Record<string, { bg: string; text: string; border: string; icon: React.ComponentType<any> }> = {
-  active: { bg: "bg-[#0f1d12]", text: "text-[#d2ff5a]", border: "border-[#20381f]", icon: Activity },
-  paused: { bg: "bg-[#1a1410]", text: "text-[#f4b26a]", border: "border-[#3f2c1f]", icon: Clock },
-  completed: { bg: "bg-[#0c1b24]", text: "text-[#7bdcff]", border: "border-[#1b3b4c]", icon: CheckCircle },
-  archived: { bg: "bg-[#151515]", text: "text-[#8b8b8b]", border: "border-[#2a2a2a]", icon: ExternalLink },
-};
-
-const priorityDots: Record<string, string> = {
-  high: "bg-red-400",
-  medium: "bg-yellow-400", 
-  low: "bg-green-400",
-};
-
-// Progress Ring Component
-const ProgressRing = ({ progress, size = 40, strokeWidth = 3 }: { progress: number; size?: number; strokeWidth?: number }) => {
-  const gradientId = useId();
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const strokeDasharray = `${circumference} ${circumference}`;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
-
-  return (
-    <div className="relative">
-      <svg width={size} height={size} className="transform -rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="rgba(28, 28, 28, 0.3)"
-          strokeWidth={strokeWidth}
-          fill="transparent"
-        />
-        <motion.circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={`url(#${gradientId})`}
-          strokeWidth={strokeWidth}
-          fill="transparent"
-          strokeDasharray={strokeDasharray}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
-          strokeLinecap="round"
-        />
-        <defs>
-          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#7bdcff" />
-            <stop offset="100%" stopColor="#d2ff5a" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xs font-semibold">{Math.round(progress)}%</span>
-      </div>
-    </div>
-  );
+const statusStyles: Record<string, { text: string; border: string }> = {
+  active: { text: "text-[#d2ff5a]", border: "border-[#d2ff5a]/20" },
+  paused: { text: "text-[#f4b26a]", border: "border-[#f4b26a]/20" },
+  completed: { text: "text-[#7bdcff]", border: "border-[#7bdcff]/20" },
+  archived: { text: "text-[#555]", border: "border-[#333]" },
 };
 
 type ProjectCardProps = {
@@ -83,258 +29,122 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const imageUrl = project.screenshot_url || fallbackImage;
   const health = project.health;
   const healthDotColor = health ? getHealthDotColor(health) : "bg-[#555]";
-  const healthLabel = health ? getHealthLabel(health) : "Unknown";
-  
+  const healthLabel = health ? getHealthLabel(health) : "";
   const statusConfig = statusStyles[project.status] || statusStyles.active;
-  const StatusIcon = statusConfig.icon;
-  
-  // Calculate overall progress from health and milestones
-  const overallProgress = health?.score || 0;
-  
-  // Determine if project is "live" (recently active)
-  const isLive = project.status === "active" && project.github?.lastCommitDate && 
-    new Date(project.github.lastCommitDate).getTime() > Date.now() - (7 * 24 * 60 * 60 * 1000); // 7 days
-  
-  const handleQuickAction = (e: React.MouseEvent, action: () => void) => {
-    e.preventDefault();
-    e.stopPropagation();
-    action();
-  };
 
   return (
-    <motion.a
+    <a
       href={`/project/${project.id}`}
       className="group block"
       data-project-id={project.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <motion.div
-        className="glass-strong rounded-none p-5 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] flex flex-col h-full"
-        style={{ 
-          boxShadow: isHovered ? 'var(--shadow-premium)' : 'var(--shadow-card)' 
-        }}
+      <div
+        className="border border-[#1a1a1a] bg-[#080808] p-0 flex flex-col h-full transition-shadow duration-200"
+        style={{ boxShadow: isHovered ? 'var(--shadow-hover)' : 'var(--shadow-card)' }}
       >
-        {/* Screenshot with enhanced overlay */}
+        {/* Screenshot */}
         {imageUrl ? (
-          <div className="mb-4 overflow-hidden rounded-none border border-[#1c1c1c] bg-black relative group/image">
+          <div className="overflow-hidden border-b border-[#1a1a1a] bg-black relative">
             <Image
               src={imageUrl}
-              alt={`${project.name} screenshot`}
+              alt={`${project.name}`}
               width={400}
-              height={176}
-              className="h-44 w-full object-cover"
+              height={200}
+              className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               unoptimized={imageUrl.startsWith("http")}
             />
+            {/* Subtle gradient at bottom for readability */}
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#080808] to-transparent" />
             
-            {/* Gradient overlay on hover */}
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              transition={{ duration: 0.2 }}
-            />
-            
-            {/* Live status indicator */}
-            {isLive && (
-              <motion.div 
-                className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-none glass"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                <motion.div 
-                  className="w-2 h-2 rounded-none bg-[#d2ff5a]"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <span className="text-xs font-medium text-[#d2ff5a]">Live</span>
-              </motion.div>
-            )}
-            
-            {/* Progress ring */}
+            {/* Health score - top right */}
             {health && (
-              <div className="absolute top-3 right-3">
-                <ProgressRing progress={health.score} size={36} strokeWidth={2} />
+              <div className="absolute top-3 right-3 text-xs font-mono font-medium px-2 py-1 bg-black/70 backdrop-blur-sm border border-[#1a1a1a]">
+                <span className={getHealthTextColor(health)}>{health.score}</span>
               </div>
-            )}
-            
-            {/* Launched badge */}
-            {project.launched && (
-              <motion.div 
-                className="absolute bottom-3 left-3 px-2 py-1 rounded-none bg-[#d2ff5a] text-black text-xs font-medium flex items-center gap-1"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Icon name="rocket" size={12} />
-                Launched
-              </motion.div>
             )}
           </div>
         ) : (
-          <div className="mb-4 h-44 rounded-none border border-dashed border-[#1c1c1c] bg-[#0a0a0a] flex items-center justify-center relative">
-            
+          <div className="h-48 border-b border-[#1a1a1a] bg-[#050505] flex items-center justify-center relative">
+            <span className="text-[#1a1a1a] text-xs uppercase tracking-widest">No preview</span>
             {health && (
-              <div className="absolute top-3 right-3">
-                <ProgressRing progress={health.score} size={36} strokeWidth={2} />
+              <div className="absolute top-3 right-3 text-xs font-mono font-medium px-2 py-1 bg-black/70 border border-[#1a1a1a]">
+                <span className={getHealthTextColor(health)}>{health.score}</span>
               </div>
             )}
           </div>
         )}
 
-        {/* Header with enhanced status */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {/* Animated priority dot */}
-            <motion.span 
-              className={`w-2 h-2 rounded-none ${priorityDots[project.priority] || priorityDots.medium}`}
-              title={`${project.priority} priority`}
-              animate={project.priority === 'high' ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <h3 className="text-lg font-semibold transition-colors">
+        {/* Content */}
+        <div className="p-5 flex flex-col flex-1">
+          {/* Name + Status */}
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <h3 className="text-base font-semibold group-hover:text-white transition-colors">
               {project.name}
             </h3>
+            <span className={`text-[10px] uppercase tracking-[0.15em] border px-2 py-0.5 shrink-0 ${statusConfig.text} ${statusConfig.border}`}>
+              {project.status}
+            </span>
           </div>
-          
-          {/* Enhanced status badge */}
-          <motion.div
-            className={`rounded-none border px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] flex items-center gap-1 shrink-0 ${
-              statusConfig.bg
-            } ${statusConfig.text} ${statusConfig.border}`}
-            whileHover={{ scale: 1.05 }}
-          >
-            <StatusIcon size={10} />
-            {project.status}
-          </motion.div>
-        </div>
 
-        {/* Description */}
-        <p className="mt-2 text-sm text-[#8b8b8b] line-clamp-2 flex-1">
-          {project.description || "No description yet."}
-        </p>
+          {/* Description */}
+          <p className="text-sm text-[#666] line-clamp-2 mb-3 flex-1">
+            {project.description || "No description."}
+          </p>
 
-        {/* Tags */}
-        {project.tags && project.tags.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {project.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="px-2 py-0.5 rounded-none text-[10px] bg-[#1c1c1c] text-[#8b8b8b] border border-[#333]/30"
-              >
-                {tag}
-              </span>
-            ))}
-            {project.tags.length > 3 && (
-              <span className="text-[10px] text-[#555] self-center">+{project.tags.length - 3}</span>
-            )}
-          </div>
-        )}
+          {/* Last commit */}
+          {project.github?.lastCommitMessage && (
+            <div className="flex items-start gap-2 mb-3 py-2 border-t border-b border-[#1a1a1a]/60">
+              <GitCommit size={11} className="text-[#444] mt-0.5 shrink-0" />
+              <p className="text-[11px] text-[#555] line-clamp-1 font-mono">
+                {project.github.lastCommitMessage}
+              </p>
+            </div>
+          )}
 
-        {/* Health Alerts with enhanced styling */}
-        {health && health.alerts.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1">
-            {health.alerts.slice(0, 2).map((alert, i) => (
-              <motion.span
-                key={i}
-                className="px-2 py-1 rounded-none text-[10px] glass border border-yellow-500/20 text-yellow-400 flex items-center gap-1"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <AlertTriangle size={8} />
-                {alert}
-              </motion.span>
-            ))}
-          </div>
-        )}
-
-        {/* Last commit message */}
-        {project.github?.lastCommitMessage && (
-          <div className="mt-3 flex items-start gap-2 px-3 py-2 rounded-none bg-[#0a0a0a] border border-[#1c1c1c]/50">
-            <GitCommit size={12} className="text-green-400 mt-0.5 shrink-0" />
-            <p className="text-[11px] text-[#8b8b8b] line-clamp-1 font-mono">
-              {project.github.lastCommitMessage}
-            </p>
-          </div>
-        )}
-
-        {/* Enhanced meta info */}
-        <div className="mt-4 pt-4 border-t border-[#1c1c1c]/50">
-          <div className="flex items-center justify-between text-xs text-[#666]">
+          {/* Footer meta */}
+          <div className="flex items-center justify-between text-[11px] text-[#444] mt-auto pt-2">
             <div className="flex items-center gap-1">
               <Clock size={10} />
-              <TimeAgo date={project.updated_at} prefix="Updated " />
+              <TimeAgo date={project.updated_at} />
             </div>
             <div className="flex items-center gap-3">
               {project.github?.openIssues != null && project.github.openIssues > 0 && (
-                <span className="text-[#8b8b8b] flex items-center gap-1">
-                  <AlertTriangle size={10} />
-                  {project.github.openIssues} issues
-                </span>
-              )}
-              {project.live_url && (
-                <span className="text-[#7bdcff] flex items-center gap-1">
-                  <Globe size={10} />
-                  Live
-                </span>
+                <span className="text-[#666]">{project.github.openIssues} issues</span>
               )}
               {health && (
-                <span className={`${health ? getHealthTextColor(health) : "text-[#555]"} flex items-center gap-1`}>
-                  <div className={`w-2 h-2 rounded-none ${healthDotColor}`} />
+                <span className={`flex items-center gap-1.5 ${getHealthTextColor(health)}`}>
+                  <span className={`w-1.5 h-1.5 ${healthDotColor}`} />
                   {healthLabel}
                 </span>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Enhanced quick actions */}
-        <motion.div 
-          className="mt-3 flex gap-2"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ 
-            opacity: isHovered ? 1 : 0,
-            y: isHovered ? 0 : 10
-          }}
-          transition={{ duration: 0.2 }}
-        >
-          {project.github_repo && (
-            <motion.button
-              onClick={(e) => handleQuickAction(e, () => window.open(`https://github.com/${project.github_repo}`, "_blank"))}
-              className="flex-1 py-2 text-xs rounded-none glass-strong hover:border-[#7bdcff] hover:text-[#7bdcff] transition-all text-center flex items-center justify-center gap-1"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Github size={12} />
-              GitHub
-            </motion.button>
-          )}
-          {project.live_url && (
-            <motion.button
-              onClick={(e) => handleQuickAction(e, () => window.open(project.live_url!, "_blank"))}
-              className="flex-1 py-2 text-xs rounded-none glass-strong hover:border-[#d2ff5a] hover:text-[#d2ff5a] transition-all text-center flex items-center justify-center gap-1"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <ExternalLink size={12} />
-              Live Site
-            </motion.button>
-          )}
-          <motion.button
-            onClick={(e) => handleQuickAction(e, () => window.location.href = `/project/${project.id}/edit`)}
-            className="px-3 py-2 text-xs rounded-none glass-strong hover:border-[#8b8b8b] hover:text-[#8b8b8b] transition-all flex items-center justify-center"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Icon name="edit" size={12} />
-          </motion.button>
-        </motion.div>
-      </motion.div>
-    </motion.a>
+          {/* Quick links on hover */}
+          <div className={`flex gap-2 mt-3 pt-3 border-t border-[#1a1a1a]/40 transition-opacity duration-200 ${isHovered ? "opacity-100" : "opacity-0"}`}>
+            {project.github_repo && (
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(`https://github.com/${project.github_repo}`, "_blank"); }}
+                className="flex-1 py-1.5 text-[11px] border border-[#1a1a1a] text-[#555] hover:border-[#333] hover:text-[#999] transition flex items-center justify-center gap-1.5"
+              >
+                <Github size={11} />
+                Repo
+              </button>
+            )}
+            {project.live_url && (
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.live_url!, "_blank"); }}
+                className="flex-1 py-1.5 text-[11px] border border-[#1a1a1a] text-[#555] hover:border-[#333] hover:text-[#999] transition flex items-center justify-center gap-1.5"
+              >
+                <Globe size={11} />
+                Live
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </a>
   );
 }

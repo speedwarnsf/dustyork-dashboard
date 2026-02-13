@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Filter, RefreshCw, GitCommit, BookOpen, Target, Settings, Zap, ChevronDown } from "lucide-react";
+import { Filter, GitCommit, BookOpen, Target, Settings, Zap, ChevronDown } from "lucide-react";
 import TimeAgo from "./TimeAgo";
-import { Icon } from "./Icon";
 
 type ActivityItem = {
   id: string;
@@ -21,54 +19,18 @@ type Props = {
   showProjectFilter?: boolean;
 };
 
-type ActivityConfig = {
-  icon: React.ComponentType<any>;
-  color: string;
-  bgColor: string;
-  label: string;
+const activityConfig: Record<string, { icon: React.ComponentType<any>; color: string; label: string }> = {
+  commit: { icon: GitCommit, color: "text-green-400", label: "Code" },
+  journal: { icon: BookOpen, color: "text-blue-400", label: "Journal" },
+  milestone: { icon: Target, color: "text-yellow-400", label: "Milestone" },
+  status_change: { icon: Settings, color: "text-purple-400", label: "Status" },
+  io_update: { icon: Zap, color: "text-cyan-400", label: "Update" },
 };
 
-const activityConfig: Record<string, ActivityConfig> = {
-  commit: {
-    icon: GitCommit,
-    color: "text-green-400",
-    bgColor: "bg-green-400/10",
-    label: "Code"
-  },
-  journal: {
-    icon: BookOpen,
-    color: "text-blue-400", 
-    bgColor: "bg-blue-400/10",
-    label: "Journal"
-  },
-  milestone: {
-    icon: Target,
-    color: "text-yellow-400",
-    bgColor: "bg-yellow-400/10", 
-    label: "Milestone"
-  },
-  status_change: {
-    icon: Settings,
-    color: "text-purple-400",
-    bgColor: "bg-purple-400/10",
-    label: "Status"
-  },
-  io_update: {
-    icon: Zap,
-    color: "text-cyan-400",
-    bgColor: "bg-cyan-400/10",
-    label: "Update"
-  },
-};
-
-// Time period grouping
 const getTimePeriod = (timestamp: string) => {
-  const now = new Date();
-  const date = new Date(timestamp);
-  const diffHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-  
+  const diffHours = (Date.now() - new Date(timestamp).getTime()) / (1000 * 60 * 60);
   if (diffHours < 24) return "Today";
-  if (diffHours < 48) return "Yesterday"; 
+  if (diffHours < 48) return "Yesterday";
   if (diffHours < 168) return "This Week";
   return "Earlier";
 };
@@ -76,260 +38,128 @@ const getTimePeriod = (timestamp: string) => {
 export default function ActivityFeed({ activities, showProjectFilter = true }: Props) {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [selectedProject, setSelectedProject] = useState<string>("all");
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  
-  const activityTypes = Object.keys(activityConfig);
-  
-  // Get unique project names for filter
+
   const projectNames = useMemo(() => {
-    const names = new Set(activities.map(a => a.projectName));
-    return Array.from(names).sort();
+    return Array.from(new Set(activities.map(a => a.projectName))).sort();
   }, [activities]);
-  
-  // Filter activities by type AND project
+
   const filteredActivities = useMemo(() => {
     let result = activities;
-    if (selectedFilter !== "all") {
-      result = result.filter(activity => activity.type === selectedFilter);
-    }
-    if (selectedProject !== "all") {
-      result = result.filter(activity => activity.projectName === selectedProject);
-    }
+    if (selectedFilter !== "all") result = result.filter(a => a.type === selectedFilter);
+    if (selectedProject !== "all") result = result.filter(a => a.projectName === selectedProject);
     return result;
   }, [activities, selectedFilter, selectedProject]);
-  
-  // Group activities by time period
+
   const groupedActivities = useMemo(() => {
     const groups: Record<string, ActivityItem[]> = {};
-    
-    filteredActivities.forEach(activity => {
-      const period = getTimePeriod(activity.timestamp);
-      if (!groups[period]) groups[period] = [];
-      groups[period].push(activity);
-    });
-    
-    // Sort groups by recency
-    const sortedGroups: Record<string, ActivityItem[]> = {};
     const order = ["Today", "Yesterday", "This Week", "Earlier"];
-    
-    order.forEach(period => {
-      if (groups[period]) {
-        sortedGroups[period] = groups[period];
-      }
+    filteredActivities.forEach(a => {
+      const period = getTimePeriod(a.timestamp);
+      if (!groups[period]) groups[period] = [];
+      groups[period].push(a);
     });
-    
-    return sortedGroups;
+    const sorted: Record<string, ActivityItem[]> = {};
+    order.forEach(p => { if (groups[p]) sorted[p] = groups[p]; });
+    return sorted;
   }, [filteredActivities]);
-  
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    // Simulate refresh delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsRefreshing(false);
-  };
-  
+
   if (activities.length === 0) {
     return (
-      <motion.div 
-        className="glass-strong rounded-none p-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          >
-            <RefreshCw size={18} className="text-[#7bdcff]" />
-          </motion.div>
-          Activity Feed
-        </h3>
-        <motion.p 
-          className="mt-4 text-sm text-[#8b8b8b]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          No recent activity. Start working on a project!
-        </motion.p>
-      </motion.div>
+      <div className="border border-[#1a1a1a] bg-[#080808] p-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555] mb-4">Activity</h3>
+        <p className="text-sm text-[#444]">No recent activity.</p>
+      </div>
     );
   }
 
   return (
-    <motion.div 
-      className="glass-strong rounded-none p-6"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      layout
-    >
-      {/* Enhanced header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <motion.div
-            animate={isRefreshing ? { rotate: 360 } : {}}
-            transition={{ duration: 1, ease: "linear" }}
-          >
-            <RefreshCw size={18} className="text-[#7bdcff]" />
-          </motion.div>
-          Activity Feed
-          <span className="px-2 py-0.5 text-xs rounded-none bg-[#7bdcff]/20 text-[#7bdcff]">
-            {filteredActivities.length}
-          </span>
+    <div className="border border-[#1a1a1a] bg-[#080808] p-6">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555]">
+          Activity
+          <span className="ml-2 text-[#333] font-mono">{filteredActivities.length}</span>
         </h3>
-        
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Project filter */}
           {showProjectFilter && projectNames.length > 1 && (
             <select
-          aria-label="Filter activity type"
+              aria-label="Filter by project"
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
-              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors max-w-[140px]"
+              className="appearance-none bg-[#0a0a0a] border border-[#1a1a1a] px-2.5 py-1.5 text-xs text-[#777] focus:outline-none focus:border-[#333] max-w-[130px]"
             >
               <option value="all">All Projects</option>
-              {projectNames.map(name => (
-                <option key={name} value={name}>{name}</option>
-              ))}
+              {projectNames.map(name => <option key={name} value={name}>{name}</option>)}
             </select>
           )}
-          
-          {/* Type filter dropdown */}
           <div className="relative">
             <select
-          aria-label="Filter time range"
+              aria-label="Filter by type"
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
-              className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors"
+              className="appearance-none bg-[#0a0a0a] border border-[#1a1a1a] px-2.5 py-1.5 text-xs text-[#777] focus:outline-none focus:border-[#333] pr-6"
             >
               <option value="all">All Types</option>
-              {activityTypes.map(type => (
-                <option key={type} value={type}>
-                  {activityConfig[type].label}
-                </option>
+              {Object.entries(activityConfig).map(([type, c]) => (
+                <option key={type} value={type}>{c.label}</option>
               ))}
             </select>
-            <Filter size={12} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#666] pointer-events-none" />
+            <Filter size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#444] pointer-events-none" />
           </div>
-          
-          {/* Refresh button */}
-          <motion.button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="p-2 rounded-none hover:bg-[#1c1c1c] transition-colors disabled:opacity-50"
-            whileTap={{ scale: 0.95 }}
-          >
-            <RefreshCw size={14} className={isRefreshing ? "animate-spin" : ""} />
-          </motion.button>
         </div>
       </div>
 
-      {/* Activity list */}
-      <div className={`space-y-4 overflow-y-auto pr-2 ${isExpanded ? "max-h-none" : "max-h-[500px]"}`}>
-        <AnimatePresence mode="popLayout">
-          {Object.entries(groupedActivities).map(([period, periodActivities]) => (
-            <motion.div
-              key={period}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-2"
-            >
-              {/* Time period header */}
-              <motion.div 
-                className="flex items-center gap-2 text-xs font-medium text-[#7bdcff] uppercase tracking-wider py-2"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
-                <div className="w-2 h-2 rounded-none bg-[#7bdcff]" />
-                {period}
-                <span className="ml-auto text-[#666]">{periodActivities.length}</span>
-              </motion.div>
-              
-              {/* Activities */}
-              <div className="space-y-2">
-                {periodActivities.map((activity, index) => {
-                  const config = activityConfig[activity.type];
-                  const ActivityIcon = config?.icon || Zap;
-                  
-                  return (
-                    <motion.a
-                      key={activity.id}
-                      href={`/project/${activity.projectId}`}
-                      className="flex items-start gap-3 p-3 rounded-none hover:bg-[#1c1c1c]/50 transition-all group cursor-pointer"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      whileHover={{ scale: 1.02, x: 4 }}
-                    >
-                      {/* Enhanced activity icon */}
-                      <motion.div 
-                        className={`w-8 h-8 rounded-none ${config?.bgColor || "bg-gray-400/10"} flex items-center justify-center`}
-                        whileHover={{ scale: 1.1 }}
-                      >
-                        <ActivityIcon size={16} className={config?.color || "text-white"} />
-                      </motion.div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm flex items-center gap-2">
-                          <span className={`font-medium ${config?.color || "text-white"}`}>
-                            {activity.projectName}
-                          </span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[#1c1c1c] text-[#666]">
-                            {config?.label || activity.type}
-                          </span>
-                        </p>
-                        
-                        {activity.type === "commit" ? (
-                          <div className="text-sm text-[#8b8b8b] group-hover:text-white transition-colors">
-                            <code className="text-xs font-mono text-[#7bdcff]/50 mr-2">
-                              {activity.id.replace("commit-", "").slice(0, 7)}
-                            </code>
-                            {activity.message}
-                          </div>
-                        ) : (
-                          <p className="text-sm text-[#8b8b8b] group-hover:text-white transition-colors">
-                            {activity.message}
-                          </p>
-                        )}
-                        
-                        <p className="text-xs text-[#666] mt-1 flex items-center gap-1">
-                          <TimeAgo date={activity.timestamp} />
-                          <span className="w-1 h-1 rounded-none bg-[#333]" />
-                          <span>{new Date(activity.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        </p>
-                      </div>
-                      
-                      {/* Hover indicator */}
-                      <motion.div
-                        className="w-2 h-2 rounded-none bg-[#7bdcff] opacity-0 group-hover:opacity-100"
-                        initial={{ scale: 0 }}
-                        whileHover={{ scale: 1 }}
-                      />
-                    </motion.a>
-                  );
-                })}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-        
-        {/* Expand/Collapse toggle */}
+      {/* List */}
+      <div className={`space-y-1 ${isExpanded ? "" : "max-h-[480px]"} overflow-y-auto`}>
+        {Object.entries(groupedActivities).map(([period, items]) => (
+          <div key={period}>
+            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-[#333] py-2 mt-2 first:mt-0">
+              <span className="w-1.5 h-1.5 bg-[#1a1a1a]" />
+              {period}
+              <span className="ml-auto">{items.length}</span>
+            </div>
+            {items.map((activity) => {
+              const config = activityConfig[activity.type];
+              const ActivityIcon = config?.icon || Zap;
+              return (
+                <a
+                  key={activity.id}
+                  href={`/project/${activity.projectId}`}
+                  className="flex items-start gap-3 py-2.5 px-2 -mx-2 hover:bg-[#0c0c0c] transition-colors group"
+                >
+                  <div className="w-6 h-6 flex items-center justify-center shrink-0 mt-0.5">
+                    <ActivityIcon size={13} className={config?.color || "text-[#555]"} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs flex items-center gap-2">
+                      <span className="font-medium text-[#999] group-hover:text-white transition-colors">{activity.projectName}</span>
+                      <span className="text-[9px] px-1.5 py-0.5 bg-[#111] text-[#444] font-mono">{config?.label || activity.type}</span>
+                    </p>
+                    <p className="text-xs text-[#555] group-hover:text-[#888] transition-colors mt-0.5 line-clamp-1">
+                      {activity.type === "commit" && <code className="text-[10px] text-[#333] mr-1.5 font-mono">{activity.id.replace("commit-", "").slice(0, 7)}</code>}
+                      {activity.message}
+                    </p>
+                    <p className="text-[10px] text-[#333] mt-1 font-mono">
+                      <TimeAgo date={activity.timestamp} />
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        ))}
+
         {Object.values(groupedActivities).flat().length > 10 && (
-          <motion.button
+          <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full py-3 text-sm text-[#7bdcff] hover:text-white transition-colors flex items-center justify-center gap-2"
-            whileHover={{ scale: 1.02 }}
+            className="w-full py-3 text-[11px] text-[#444] hover:text-[#777] transition-colors flex items-center justify-center gap-1.5"
           >
-            <ChevronDown 
-              size={16} 
-              className={`transition-transform ${isExpanded ? "rotate-180" : ""}`} 
-            />
-            {isExpanded ? "Show Less" : `Show All (${Object.values(groupedActivities).flat().length} total)`}
-          </motion.button>
+            <ChevronDown size={12} className={`transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+            {isExpanded ? "Collapse" : `Show all ${Object.values(groupedActivities).flat().length}`}
+          </button>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 import { Icon } from "./Icon";
-
 import { useMemo, useState } from "react";
 import { format, startOfDay, subDays, eachDayOfInterval, isSameDay } from "date-fns";
 
@@ -8,7 +7,7 @@ type TimelineEvent = {
   id: string;
   projectId: string;
   projectName: string;
-  type: "commit" | "journal" | "deploy" | "milestone" | "status_change" | "io_update";
+  type: string;
   message: string;
   timestamp: string;
 };
@@ -18,13 +17,13 @@ type Props = {
   days?: number;
 };
 
-const eventStyles: Record<string, { bg: string; border: string; icon: string }> = {
-  commit: { bg: "bg-green-400", border: "border-green-400", icon: "edit" },
-  journal: { bg: "bg-blue-400", border: "border-blue-400", icon: "briefs" },
-  deploy: { bg: "bg-purple-400", border: "border-purple-400", icon: "upload" },
-  milestone: { bg: "bg-yellow-400", border: "border-yellow-400", icon: "star" },
-  status_change: { bg: "bg-orange-400", border: "border-orange-400", icon: "settings" },
-  io_update: { bg: "bg-cyan-400", border: "border-cyan-400", icon: "intelligence" },
+const eventIcons: Record<string, string> = {
+  commit: "edit",
+  journal: "briefs",
+  deploy: "upload",
+  milestone: "star",
+  status_change: "settings",
+  io_update: "intelligence",
 };
 
 export default function ProjectTimeline({ events, days = 14 }: Props) {
@@ -33,107 +32,65 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
 
   const today = startOfDay(new Date());
   const startDate = subDays(today, days - 1);
+  const dateRange = useMemo(() => eachDayOfInterval({ start: startDate, end: today }), [startDate.getTime(), today.getTime()]);
 
-  const dateRange = useMemo(
-    () => eachDayOfInterval({ start: startDate, end: today }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [startDate.getTime(), today.getTime()]
-  );
-
-  // Group events by day
   const eventsByDay = useMemo(() => {
     const grouped: Record<string, TimelineEvent[]> = {};
-    events.forEach((event) => {
-      const day = format(new Date(event.timestamp), "yyyy-MM-dd");
+    events.forEach((e) => {
+      const day = format(new Date(e.timestamp), "yyyy-MM-dd");
       if (!grouped[day]) grouped[day] = [];
-      grouped[day].push(event);
+      grouped[day].push(e);
     });
     return grouped;
   }, [events]);
 
-  // Get unique projects with colors
   const projects = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.projectName))];
-    const colors = [
-      "bg-cyan-400",
-      "bg-pink-400",
-      "bg-yellow-400",
-      "bg-green-400",
-      "bg-purple-400",
-      "bg-orange-400",
-      "bg-blue-400",
-      "bg-red-400",
-    ];
-    return unique.map((name, i) => ({
-      name,
-      color: colors[i % colors.length],
-    }));
+    const colors = ["bg-cyan-400", "bg-pink-400", "bg-yellow-400", "bg-green-400", "bg-purple-400", "bg-orange-400", "bg-blue-400", "bg-red-400"];
+    return unique.map((name, i) => ({ name, color: colors[i % colors.length] }));
   }, [events]);
 
-  // Get max events in a day for scaling
-  const maxEventsPerDay = useMemo(() => {
-    return Math.max(...Object.values(eventsByDay).map((e) => e.length), 1);
-  }, [eventsByDay]);
+  const maxEventsPerDay = useMemo(() => Math.max(...Object.values(eventsByDay).map((e) => e.length), 1), [eventsByDay]);
 
-  // Selected day events
-  const selectedDayEvents = selectedDay
-    ? eventsByDay[format(selectedDay, "yyyy-MM-dd")] || []
-    : [];
+  const selectedDayEvents = selectedDay ? eventsByDay[format(selectedDay, "yyyy-MM-dd")] || [] : [];
 
   return (
-    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Icon name="calendar" size={20} />
-          <h3 className="text-lg font-semibold">Activity Timeline</h3>
-        </div>
-        <span className="text-xs text-[#666]">Last {days} days</span>
+    <div className="border border-[#1a1a1a] bg-[#080808] p-6">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555]">Timeline</h3>
+        <span className="text-[10px] text-[#333] font-mono">{days}d</span>
       </div>
 
-      {/* Project Legend */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {projects.map((project) => (
+      {/* Project legend */}
+      <div className="flex flex-wrap gap-x-3 gap-y-1 mb-4">
+        {projects.map((p) => (
           <button
-            key={project.name}
-            className={`px-2 py-1 rounded-none text-xs flex items-center gap-1.5 transition ${
-              hoveredProject === project.name || hoveredProject === null
-                ? "opacity-100"
-                : "opacity-30"
-            }`}
-            onMouseEnter={() => setHoveredProject(project.name)}
+            key={p.name}
+            className={`text-[10px] flex items-center gap-1.5 transition-opacity ${hoveredProject && hoveredProject !== p.name ? "opacity-20" : "opacity-100"}`}
+            onMouseEnter={() => setHoveredProject(p.name)}
             onMouseLeave={() => setHoveredProject(null)}
           >
-            <span className={`w-2 h-2 rounded-none ${project.color}`} />
-            <span className="text-[#8b8b8b]">{project.name}</span>
+            <span className={`w-1.5 h-1.5 ${p.color}`} />
+            <span className="text-[#555]">{p.name}</span>
           </button>
         ))}
       </div>
 
-      {/* Timeline Grid */}
-      <div className="flex gap-1 mb-4">
+      {/* Grid */}
+      <div className="flex gap-[3px] mb-3">
         {dateRange.map((date) => {
           const key = format(date, "yyyy-MM-dd");
           const dayEvents = eventsByDay[key] || [];
-          const filteredEvents = hoveredProject
-            ? dayEvents.filter((e) => e.projectName === hoveredProject)
-            : dayEvents;
-          const intensity = Math.min(filteredEvents.length / maxEventsPerDay, 1);
+          const filtered = hoveredProject ? dayEvents.filter((e) => e.projectName === hoveredProject) : dayEvents;
+          const intensity = Math.min(filtered.length / maxEventsPerDay, 1);
           const isSelected = selectedDay && isSameDay(date, selectedDay);
           const isToday = isSameDay(date, today);
-
           return (
             <button
               key={key}
-              className={`flex-1 aspect-square rounded-none transition-all ${
-                isSelected
-                  ? "ring-2 ring-[#7bdcff] ring-offset-2 ring-offset-[#0a0a0a]"
-                  : ""
-              } ${isToday ? "border border-[#7bdcff]" : ""}`}
+              className={`flex-1 aspect-square transition-all ${isSelected ? "ring-1 ring-[#7bdcff] ring-offset-1 ring-offset-[#080808]" : ""} ${isToday ? "border border-[#7bdcff]/40" : ""}`}
               style={{
-                backgroundColor:
-                  intensity > 0
-                    ? `rgba(123, 220, 255, ${0.1 + intensity * 0.6})`
-                    : "#1c1c1c",
+                backgroundColor: intensity > 0 ? `rgba(123, 220, 255, ${0.08 + intensity * 0.5})` : "#111",
               }}
               onClick={() => setSelectedDay(isSelected ? null : date)}
               title={`${format(date, "MMM d")}: ${dayEvents.length} events`}
@@ -142,53 +99,34 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
         })}
       </div>
 
-      {/* Day Labels */}
-      <div className="flex justify-between text-xs text-[#555] mb-4">
+      <div className="flex justify-between text-[10px] text-[#333] font-mono mb-4">
         <span>{format(startDate, "MMM d")}</span>
         <span>{format(today, "MMM d")}</span>
       </div>
 
-      {/* Selected Day Details */}
+      {/* Selected day detail */}
       {selectedDay && (
-        <div className="border-t border-[#1c1c1c] pt-4">
-          <h4 className="font-medium text-sm mb-3">
+        <div className="border-t border-[#1a1a1a] pt-4">
+          <h4 className="text-xs font-medium mb-3 text-[#777]">
             {format(selectedDay, "EEEE, MMMM d")}
-            <span className="text-[#666] ml-2">
-              ({selectedDayEvents.length} event
-              {selectedDayEvents.length !== 1 ? "s" : ""})
-            </span>
+            <span className="text-[#333] ml-2">{selectedDayEvents.length} event{selectedDayEvents.length !== 1 ? "s" : ""}</span>
           </h4>
           {selectedDayEvents.length === 0 ? (
-            <p className="text-sm text-[#666]">No activity on this day</p>
+            <p className="text-xs text-[#333]">No activity</p>
           ) : (
-            <div className="space-y-2 max-h-[200px] overflow-y-auto">
+            <div className="space-y-1 max-h-[180px] overflow-y-auto">
               {selectedDayEvents.map((event) => {
-                const style = eventStyles[event.type];
-                const projectColor =
-                  projects.find((p) => p.name === event.projectName)?.color ||
-                  "bg-gray-400";
+                const projectColor = projects.find((p) => p.name === event.projectName)?.color || "bg-[#555]";
                 return (
-                  <a
-                    key={event.id}
-                    href={`/project/${event.projectId}`}
-                    className="flex items-start gap-3 p-2 rounded-none hover:bg-[#111] transition"
-                  >
-                    <span className="text-sm"><Icon name={style.icon} size={16} /></span>
+                  <a key={event.id} href={`/project/${event.projectId}`} className="flex items-start gap-2.5 py-1.5 hover:bg-[#0c0c0c] transition-colors px-1 -mx-1">
+                    <Icon name={eventIcons[event.type] || "edit"} size={12} className="text-[#444] mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span
-                          className={`w-2 h-2 rounded-none ${projectColor}`}
-                        />
-                        <span className="text-xs text-[#7bdcff]">
-                          {event.projectName}
-                        </span>
-                        <span className="text-xs text-[#555]">
-                          {format(new Date(event.timestamp), "h:mm a")}
-                        </span>
+                        <span className={`w-1.5 h-1.5 ${projectColor}`} />
+                        <span className="text-[11px] text-[#7bdcff]">{event.projectName}</span>
+                        <span className="text-[10px] text-[#333] font-mono">{format(new Date(event.timestamp), "h:mm a")}</span>
                       </div>
-                      <p className="text-sm text-[#8b8b8b] truncate">
-                        {event.message}
-                      </p>
+                      <p className="text-[11px] text-[#555] truncate">{event.message}</p>
                     </div>
                   </a>
                 );
@@ -198,22 +136,20 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
         </div>
       )}
 
-      {/* Summary Stats */}
+      {/* Summary */}
       {!selectedDay && (
-        <div className="border-t border-[#1c1c1c] pt-4 flex gap-6">
+        <div className="border-t border-[#1a1a1a] pt-4 flex gap-8">
           <div>
-            <p className="text-2xl font-bold">{events.length}</p>
-            <p className="text-xs text-[#666]">Total Events</p>
+            <p className="text-xl font-semibold tabular-nums">{events.length}</p>
+            <p className="text-[10px] text-[#444] font-mono uppercase">Events</p>
           </div>
           <div>
-            <p className="text-2xl font-bold">{projects.length}</p>
-            <p className="text-xs text-[#666]">Active Projects</p>
+            <p className="text-xl font-semibold tabular-nums">{projects.length}</p>
+            <p className="text-[10px] text-[#444] font-mono uppercase">Projects</p>
           </div>
           <div>
-            <p className="text-2xl font-bold">
-              {Object.keys(eventsByDay).length}
-            </p>
-            <p className="text-xs text-[#666]">Active Days</p>
+            <p className="text-xl font-semibold tabular-nums">{Object.keys(eventsByDay).length}</p>
+            <p className="text-[10px] text-[#444] font-mono uppercase">Active Days</p>
           </div>
         </div>
       )}
@@ -221,41 +157,23 @@ export default function ProjectTimeline({ events, days = 14 }: Props) {
   );
 }
 
-// Compact heatmap version
 export function ActivityHeatmap({ events, days = 30 }: Props) {
   const today = startOfDay(new Date());
   const startDate = subDays(today, days - 1);
   const dateRange = eachDayOfInterval({ start: startDate, end: today });
-
   const eventsByDay = useMemo(() => {
     const grouped: Record<string, number> = {};
-    events.forEach((event) => {
-      const day = format(new Date(event.timestamp), "yyyy-MM-dd");
-      grouped[day] = (grouped[day] || 0) + 1;
-    });
+    events.forEach((e) => { const d = format(new Date(e.timestamp), "yyyy-MM-dd"); grouped[d] = (grouped[d] || 0) + 1; });
     return grouped;
   }, [events]);
-
   const maxEvents = Math.max(...Object.values(eventsByDay), 1);
-
   return (
     <div className="flex gap-[2px]">
       {dateRange.map((date) => {
         const key = format(date, "yyyy-MM-dd");
         const count = eventsByDay[key] || 0;
-        const intensity = count / maxEvents;
         return (
-          <div
-            key={key}
-            className="w-3 h-3 rounded-none"
-            style={{
-              backgroundColor:
-                count > 0
-                  ? `rgba(123, 220, 255, ${0.2 + intensity * 0.8})`
-                  : "#1c1c1c",
-            }}
-            title={`${format(date, "MMM d")}: ${count} events`}
-          />
+          <div key={key} className="w-3 h-3" style={{ backgroundColor: count > 0 ? `rgba(123, 220, 255, ${0.15 + (count / maxEvents) * 0.85})` : "#111" }} title={`${format(date, "MMM d")}: ${count}`} />
         );
       })}
     </div>

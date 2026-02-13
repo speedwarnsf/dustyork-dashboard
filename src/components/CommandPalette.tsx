@@ -380,33 +380,26 @@ export default function CommandPalette() {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
       >
-        {/* Enhanced backdrop */}
+        {/* Backdrop */}
         <motion.div
-          className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
-          initial={{ backdropFilter: "blur(0px)" }}
-          animate={{ backdropFilter: "blur(20px)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
         />
 
-        {/* Enhanced modal */}
+        {/* Modal */}
         <motion.div 
           data-command-palette
-          className="relative w-full max-w-2xl glass-strong rounded-none shadow-2xl overflow-hidden"
-          initial={{ scale: 0.9, y: 20 }}
+          className="relative w-full max-w-2xl bg-[#080808] border border-[#1a1a1a] shadow-2xl overflow-hidden"
+          initial={{ scale: 0.95, y: 10 }}
           animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.9, y: 20 }}
-          transition={{ type: "spring", damping: 20 }}
-          style={{ boxShadow: 'var(--shadow-premium)' }}
+          exit={{ scale: 0.95, y: 10 }}
+          transition={{ duration: 0.15 }}
         >
-          {/* Enhanced search input */}
-          <div className="flex items-center gap-4 border-b border-[#1c1c1c]/50 px-6 py-5">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Search className="w-5 h-5 text-[#7bdcff]" />
-            </motion.div>
+          {/* Search input */}
+          <div className="flex items-center gap-4 border-b border-[#1a1a1a] px-6 py-4">
+            <Search className="w-4 h-4 text-[#444]" />
             
             <input
               ref={inputRef}
@@ -419,174 +412,104 @@ export default function CommandPalette() {
                 setSelectedIndex(0);
               }}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent text-white text-lg placeholder:text-[#555] focus:outline-none"
+              className="flex-1 bg-transparent text-white text-sm placeholder:text-[#333] focus:outline-none"
             />
             
             <div className="flex items-center gap-2">
               {query && (
-                <motion.button
+                <button
                   onClick={() => setQuery("")}
-                  className="px-2 py-1 text-xs rounded-none bg-[#1c1c1c] text-[#8b8b8b] hover:text-white transition-colors"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  className="px-2 py-1 text-[11px] bg-[#111] text-[#555] hover:text-white transition-colors"
                 >
                   Clear
-                </motion.button>
+                </button>
               )}
               
-              <kbd className="hidden sm:block px-2 py-1 text-xs rounded-none bg-[#1c1c1c] text-[#666] border border-[#333]">
+              <kbd className="hidden sm:block px-2 py-1 text-[10px] bg-[#111] text-[#333] font-mono">
                 ESC
               </kbd>
             </div>
           </div>
 
-          {/* Enhanced results */}
-          <div className="max-h-[500px] overflow-y-auto">
+          {/* Results */}
+          <div className="max-h-[440px] overflow-y-auto">
             {isLoading ? (
-              <motion.div 
-                className="px-6 py-16 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <motion.div
-                  className="inline-block w-8 h-8 border-3 border-[#7bdcff] border-t-transparent rounded-none mb-4"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                />
-                <p className="text-[#8b8b8b]">Loading projects...</p>
-              </motion.div>
+              <div className="px-6 py-16 text-center">
+                <p className="text-[#444] text-sm">Loading...</p>
+              </div>
             ) : fetchError ? (
-              <motion.div 
-                className="px-6 py-16 text-center"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <p className="text-red-400 flex items-center justify-center gap-2">
-                  <Icon name="warning" size={16} />
-                  {fetchError}
-                </p>
-                <p className="text-sm text-[#555] mt-2">Try refreshing the page</p>
-              </motion.div>
+              <div className="px-6 py-16 text-center">
+                <p className="text-red-400 text-sm">{fetchError}</p>
+              </div>
             ) : flatActions.length === 0 ? (
-              <motion.div 
-                className="px-6 py-16 text-center"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <p className="text-[#8b8b8b]">No results for &ldquo;{query}&rdquo;</p>
-                <p className="text-sm text-[#555] mt-2">Try a different search term</p>
-              </motion.div>
+              <div className="px-6 py-16 text-center">
+                <p className="text-[#444] text-sm">No results for &ldquo;{query}&rdquo;</p>
+              </div>
             ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                {Object.entries(groupedActions).map(([category, actions], categoryIndex) => (
-                  <motion.div 
-                    key={category}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: categoryIndex * 0.05 }}
-                  >
-                    <div className="px-6 py-3 text-xs uppercase tracking-wider text-[#7bdcff] bg-black/30 sticky top-0 backdrop-blur-sm flex items-center gap-2">
-                      {!query && category === "Recent" && <Zap size={12} />}
+              <div>
+                {Object.entries(groupedActions).map(([category, actions]) => (
+                  <div key={category}>
+                    <div className="px-6 py-2 text-[10px] uppercase tracking-wider text-[#333] font-mono bg-[#050505] sticky top-0 flex items-center gap-2">
+                      {!query && category === "Recent" && <Zap size={10} />}
                       {category}
-                      <span className="ml-auto text-[#555]">{actions.length}</span>
                     </div>
                     
-                    {actions.map((action, actionIndex) => {
+                    {actions.map((action) => {
                       const index = currentIndex++;
                       const isRecent = !query && recentActions.includes(action.id);
                       
                       return (
-                        <motion.button
+                        <button
                           key={action.id}
                           onClick={() => executeAction(action)}
-                          className={`
-                            flex w-full items-center gap-4 px-6 py-4 text-left transition-all duration-200
-                            ${
-                              index === selectedIndex
-                                ? "bg-gradient-to-r from-[#7bdcff]/20 to-[#d2ff5a]/20 text-white border-r-2 border-[#7bdcff]"
-                                : "text-[#8b8b8b] hover:bg-[#1c1c1c]/50 hover:text-white"
-                            }
-                          `}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: categoryIndex * 0.05 + actionIndex * 0.02 }}
-                          whileHover={{ x: 4 }}
+                          className={`flex w-full items-center gap-3 px-6 py-3 text-left transition-colors ${
+                            index === selectedIndex
+                              ? "bg-[#111] text-white"
+                              : "text-[#666] hover:bg-[#0c0c0c] hover:text-[#999]"
+                          }`}
                         >
-                          <span className="w-8 flex items-center justify-center text-[#8b8b8b]">
-                            <Icon name={action.icon || "file"} size={18} />
+                          <span className="w-6 flex items-center justify-center text-[#444]">
+                            <Icon name={action.icon || "file"} size={15} />
                           </span>
                           
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate flex items-center gap-2">
+                            <div className="text-sm font-medium truncate flex items-center gap-2">
                               {action.name}
                               {isRecent && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[#7bdcff]/20 text-[#7bdcff]">
-                                  Recent
-                                </span>
+                                <span className="text-[9px] px-1.5 py-0.5 bg-[#111] text-[#444] font-mono">recent</span>
                               )}
                             </div>
                             {action.description && (
-                              <div className="text-xs text-[#555] truncate mt-0.5">
-                                {action.description}
-                              </div>
+                              <div className="text-[11px] text-[#333] truncate mt-0.5">{action.description}</div>
                             )}
                           </div>
                           
                           <div className="flex items-center gap-2">
                             {action.shortcut && (
-                              <kbd className="px-2 py-1 text-xs rounded-none bg-[#1c1c1c] text-[#666] border border-[#333]">
-                                {action.shortcut}
-                              </kbd>
+                              <kbd className="px-1.5 py-0.5 text-[10px] bg-[#111] text-[#333] font-mono">{action.shortcut}</kbd>
                             )}
                             {index === selectedIndex && (
-                              <CornerDownLeft size={14} className="text-[#7bdcff]" />
+                              <CornerDownLeft size={12} className="text-[#555]" />
                             )}
                           </div>
-                        </motion.button>
+                        </button>
                       );
                     })}
-                  </motion.div>
+                  </div>
                 ))}
-              </motion.div>
+              </div>
             )}
           </div>
 
-          {/* Enhanced footer */}
-          <motion.div 
-            className="border-t border-[#1c1c1c]/50 px-6 py-4 glass flex items-center justify-between text-xs text-[#555]"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          {/* Footer */}
+          <div className="border-t border-[#1a1a1a] px-6 py-3 flex items-center justify-between text-[10px] text-[#333] font-mono">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <ArrowUp size={12} />
-                <ArrowDown size={12} />
-                <span>navigate</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <CornerDownLeft size={12} />
-                <span>select</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 text-[10px] rounded-none bg-[#1c1c1c] border border-[#333]">ESC</kbd>
-                <span>close</span>
-              </div>
+              <span className="flex items-center gap-1"><ArrowUp size={10} /><ArrowDown size={10} /> nav</span>
+              <span className="flex items-center gap-1"><CornerDownLeft size={10} /> select</span>
+              <span>esc close</span>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <span>⌘K to toggle</span>
-              {filteredActions.length > 0 && (
-                <span className="px-2 py-1 rounded-none bg-[#1c1c1c] text-[#7bdcff]">
-                  {filteredActions.length} results
-                </span>
-              )}
-            </div>
-          </motion.div>
+            <span>Cmd+K</span>
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

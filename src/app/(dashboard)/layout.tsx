@@ -13,15 +13,12 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
   }
 
-  // Fetch projects for keyboard shortcuts
   const { data: projectsForNav } = await supabase
     .from("projects")
     .select("id, name")
@@ -29,56 +26,37 @@ export default async function DashboardLayout({
 
   return (
     <>
-      {/* Global Components */}
       <CommandPalette />
       <KeyboardShortcuts projects={(projectsForNav || []).map(p => ({ id: p.id, name: p.name }))} />
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           style: {
-            background: '#0a0a0a',
-            color: '#f5f5f5',
-            border: '1px solid #1c1c1c',
+            background: '#080808',
+            color: '#e8e8e8',
+            border: '1px solid #1a1a1a',
             borderRadius: '0',
+            fontSize: '13px',
           },
-          success: {
-            style: {
-              borderColor: '#d2ff5a',
-            },
-          },
-          error: {
-            style: {
-              borderColor: '#ff4444',
-            },
-          },
+          success: { style: { borderColor: '#d2ff5a' } },
+          error: { style: { borderColor: '#ff4444' } },
         }}
       />
-      
+
       <MobileLayout>
-        <div className="min-h-screen bg-black text-white relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-none bg-[radial-gradient(circle,rgba(123,220,255,0.2)_0%,rgba(0,0,0,0)_60%)]" />
-            <div className="absolute top-1/3 -left-32 h-[420px] w-[420px] rounded-none bg-[radial-gradient(circle,rgba(210,255,90,0.15)_0%,rgba(0,0,0,0)_65%)]" />
-            <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-none bg-[radial-gradient(circle,rgba(123,220,255,0.12)_0%,rgba(0,0,0,0)_60%)]" />
-          </div>
-          <div className="relative">
+        <div className="min-h-screen bg-black text-[#e8e8e8] relative">
           {/* Desktop Header */}
-          <header className="sticky top-0 z-40 border-b border-[#1c1c1c] glass-strong hidden md:block">
-            <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
+          <header className="sticky top-0 z-40 border-b border-[#1a1a1a] bg-black/95 backdrop-blur-sm hidden md:block">
+            <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-3">
               <Header />
-              
               <div className="flex items-center gap-4">
-                {/* User info */}
                 <div id="profile" className="hidden sm:block text-right">
-                  <p className="text-sm font-medium">{user.email?.split("@")[0]}</p>
-                  <p className="text-xs text-[#666]">{user.email}</p>
+                  <p className="text-xs text-[#555] font-mono">{user.email}</p>
                 </div>
-                
-                {/* Sign out */}
                 <form action={signOut}>
                   <button
                     type="submit"
-                    className="rounded-none border border-[#1c1c1c] px-3 py-2 text-xs text-[#8b8b8b] transition hover:border-red-500/50 hover:text-red-400"
+                    className="border border-[#1a1a1a] px-3 py-1.5 text-[11px] text-[#444] hover:border-red-500/30 hover:text-red-400 transition"
                   >
                     Sign Out
                   </button>
@@ -86,37 +64,22 @@ export default async function DashboardLayout({
               </div>
             </div>
           </header>
-          
-          {/* Main content */}
+
+          {/* Main */}
           <main id="main-content" className="pb-20 md:pb-8" role="main">
             {children}
           </main>
-          
-          {/* Desktop Footer */}
-          <footer className="border-t border-[#1c1c1c] py-6 hidden md:block">
-            <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-xs text-[#555]">
-              <p>Built with -- by Io</p>
+
+          {/* Footer */}
+          <footer className="border-t border-[#1a1a1a] py-5 hidden md:block">
+            <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-[11px] text-[#333] font-mono">
+              <p>Built by Io</p>
               <div className="flex items-center gap-4">
-                <a 
-                  href="https://github.com/speedwarnsf" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="hover:text-[#7bdcff] transition"
-                >
-                  GitHub
-                </a>
-                <a 
-                  href="https://dyorkmusic.com" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="hover:text-[#7bdcff] transition"
-                >
-                  D_York Music
-                </a>
+                <a href="https://github.com/speedwarnsf" target="_blank" rel="noreferrer" className="hover:text-[#555] transition">GitHub</a>
+                <a href="https://dyorkmusic.com" target="_blank" rel="noreferrer" className="hover:text-[#555] transition">D York Music</a>
               </div>
             </div>
           </footer>
-          </div>
         </div>
       </MobileLayout>
     </>

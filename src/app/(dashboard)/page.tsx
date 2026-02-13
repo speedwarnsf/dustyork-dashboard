@@ -1,4 +1,3 @@
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import ProjectDashboard from "@/components/ProjectDashboard";
 import { ActivityFeedSkeleton } from "@/components/SkeletonLoader";
@@ -9,15 +8,14 @@ const ActivityFeed = dynamic(() => import("@/components/ActivityFeed"), {
 const NeedsAttention = dynamic(() => import("@/components/NeedsAttention"));
 const SmartInsights = dynamic(() => import("@/components/SmartInsights"));
 const ProjectTimeline = dynamic(() => import("@/components/ProjectTimeline"));
-const ProgressOverview = dynamic(() => import("@/components/ProgressOverview"));
 import { fetchGithubActivity } from "@/lib/github";
 import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Project, Milestone } from "@/lib/types";
-import { differenceInDays, format, subDays, eachDayOfInterval, startOfDay, isSameDay } from "date-fns";
+import { differenceInDays, subDays, eachDayOfInterval, startOfDay, isSameDay } from "date-fns";
 import StatsRow from "@/components/StatsRow";
 
-export const revalidate = 60; // Revalidate every minute
+export const revalidate = 60;
 
 export default async function DashboardPage() {
   let user = null;
@@ -28,56 +26,39 @@ export default async function DashboardPage() {
   try {
     const supabase = await createSupabaseServerClient();
     const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-    if (authError) {
-      console.error("Auth error:", authError);
-    }
+    if (authError) console.error("Auth error:", authError);
     user = authUser;
 
-    // Fetch all projects
     const { data: projectsData, error: projectsError } = await supabase
       .from("projects")
       .select("*")
       .order("updated_at", { ascending: false });
-
-    if (projectsError) {
-      console.error("Projects fetch error:", projectsError);
-    }
+    if (projectsError) console.error("Projects fetch error:", projectsError);
     projects = (projectsData || []) as Project[];
 
-    // Fetch all milestones
     const { data: milestonesData, error: milestonesError } = await supabase
       .from("milestones")
       .select("*, projects(name)")
       .order("target_date", { ascending: true });
-
-    if (milestonesError) {
-      console.error("Milestones fetch error:", milestonesError);
-    }
+    if (milestonesError) console.error("Milestones fetch error:", milestonesError);
     milestones = (milestonesData || []) as Array<Milestone & { projects: { name: string } | null }>;
 
-    // Fetch recent journal entries for activity feed
     const { data: journalResult, error: journalError } = await supabase
       .from("journal_entries")
       .select("*, projects(id, name)")
       .order("created_at", { ascending: false })
       .limit(50);
-
-    if (journalError) {
-      console.error("Journal fetch error:", journalError);
-    }
+    if (journalError) console.error("Journal fetch error:", journalError);
     journalData = journalResult || [];
   } catch (err) {
     console.error("Database error:", err);
   }
 
-  // Fetch GitHub activity for all projects (with error handling for each)
   let projectsWithGithub: Array<Project & { github: any }> = [];
   try {
     projectsWithGithub = await Promise.all(
       projects.map(async (project) => {
-        if (!project.github_repo) {
-          return { ...project, github: null };
-        }
+        if (!project.github_repo) return { ...project, github: null };
         try {
           const github = await fetchGithubActivity(project.github_repo);
           return { ...project, github };
@@ -92,13 +73,11 @@ export default async function DashboardPage() {
     projectsWithGithub = projects.map(p => ({ ...p, github: null }));
   }
 
-  // Calculate health scores for all projects
   const projectsWithHealth = projectsWithGithub.map((p) => ({
     ...p,
     health: calculateProjectHealth(p),
   }));
 
-  // Add activity metadata to projects (with safe date handling)
   const projectsWithActivity = projectsWithHealth.map((p) => {
     const lastActivityDate = p.github?.lastCommitDate || p.updated_at;
     let daysSinceActivity = 0;
@@ -107,21 +86,8 @@ export default async function DashboardPage() {
     } catch {
       daysSinceActivity = 0;
     }
-    return {
-      ...p,
-      lastActivity: lastActivityDate,
-      daysSinceActivity,
-    };
+    return { ...p, lastActivity: lastActivityDate, daysSinceActivity };
   });
-
-  // Get upcoming milestones (not completed, with dates)
-  const upcomingMilestones = milestones
-    .filter((m) => m.status !== "completed" && m.target_date)
-    .map((m) => ({
-      ...m,
-      projectName: m.projects?.name || "Unknown",
-    }))
-    .slice(0, 5);
 
   // Build activity feed
   type ActivityType = "commit" | "journal" | "milestone" | "status_change" | "io_update";
@@ -149,7 +115,6 @@ export default async function DashboardPage() {
   const activities = [...journalActivities, ...commitActivities]
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  // Build timeline events
   const timelineEvents = activities.map((a) => ({
     id: a.id,
     projectId: a.projectId,
@@ -159,7 +124,6 @@ export default async function DashboardPage() {
     timestamp: a.timestamp,
   }));
 
-  // Collect recent commits for insights
   const recentCommits = projectsWithGithub
     .filter((p) => p.github?.lastCommitMessage && p.github?.lastCommitDate)
     .map((p) => ({
@@ -169,10 +133,9 @@ export default async function DashboardPage() {
     }))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // Generate smart insights
   const insights = generateSmartInsights(projectsWithGithub, recentCommits);
 
-  // Calculate stats
+  // Stats
   const activeProjects = projects.filter((p) => p.status === "active").length;
   const completedMilestones = milestones.filter((m) => m.status === "completed").length;
   const totalMilestones = milestones.length;
@@ -180,95 +143,85 @@ export default async function DashboardPage() {
     .filter((p) => p.status === "active")
     .reduce((sum, p) => sum + p.health.score, 0) / Math.max(activeProjects, 1);
 
-  const milestoneStatusCounts = milestones.reduce(
-    (acc, milestone) => {
-      const status = milestone.status || "not_started";
-      if (status === "completed") acc.completed += 1;
-      else if (status === "in_progress") acc.inProgress += 1;
-      else acc.notStarted += 1;
-      acc.total += 1;
-      return acc;
-    },
-    { total: 0, completed: 0, inProgress: 0, notStarted: 0 }
-  );
-
-  const projectStatusCounts = projects.reduce(
-    (acc, project) => {
-      acc.total += 1;
-      if (project.status === "active") acc.active += 1;
-      else if (project.status === "paused") acc.paused += 1;
-      else if (project.status === "completed") acc.completed += 1;
-      else acc.archived += 1;
-      return acc;
-    },
-    { total: 0, active: 0, paused: 0, completed: 0, archived: 0 }
-  );
-
   const now = new Date();
   const weekAgo = subDays(now, 7);
   const monthAgo = subDays(now, 30);
-  const weeklyActivityCount = activities.filter((activity) => {
-    const timestamp = new Date(activity.timestamp);
-    return timestamp >= weekAgo;
-  }).length;
-  const monthlyActivityCount = activities.filter((activity) => {
-    const timestamp = new Date(activity.timestamp);
-    return timestamp >= monthAgo;
-  }).length;
+  const weeklyActivityCount = activities.filter((a) => new Date(a.timestamp) >= weekAgo).length;
+  const monthlyActivityCount = activities.filter((a) => new Date(a.timestamp) >= monthAgo).length;
 
-  // Build daily activity sparkline (last 14 days)
+  // Sparkline
   const sparklineDays = 14;
   const sparklineStart = subDays(now, sparklineDays - 1);
   const sparklineDateRange = eachDayOfInterval({ start: sparklineStart, end: now });
   const dailyActivityCounts = sparklineDateRange.map((day) => {
     const dayStart = startOfDay(day);
-    return activities.filter((a) => {
-      const aDate = startOfDay(new Date(a.timestamp));
-      return isSameDay(aDate, dayStart);
-    }).length;
+    return activities.filter((a) => isSameDay(startOfDay(new Date(a.timestamp)), dayStart)).length;
   });
 
-  // Calculate activity streak (consecutive days with activity, counting back from today)
   let streak = 0;
   for (let i = dailyActivityCounts.length - 1; i >= 0; i--) {
-    if (dailyActivityCounts[i] > 0) {
-      streak++;
-    } else {
-      break;
-    }
+    if (dailyActivityCounts[i] > 0) streak++;
+    else break;
   }
+
+  // Determine greeting based on time
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Morning" : hour < 18 ? "Afternoon" : "Evening";
+  const name = user?.email ? user.email.split("@")[0] : "";
+
+  // Hot projects (active in last 3 days)
+  const hotCount = projectsWithActivity.filter(p => p.daysSinceActivity <= 3 && p.status === "active").length;
+  // Stale projects (active but no activity in 7+ days)
+  const staleCount = projectsWithActivity.filter(p => p.daysSinceActivity >= 7 && p.status === "active").length;
 
   return (
     <main>
-      {/* Hero Section */}
-      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-8">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+      {/* Hero */}
+      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 pt-8 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-[#7bdcff] mb-2">
-              Command Center
+            <p className="text-[11px] uppercase tracking-[0.5em] text-[#555] mb-3 font-mono">
+              {greeting}{name ? `, ${name}` : ""}
             </p>
-            <h1 className="text-4xl font-semibold">
-              Welcome back{user?.email ? `, ${user.email.split("@")[0]}` : ""}
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              {hotCount > 0 ? (
+                <>
+                  <span className="text-[#d2ff5a]">{hotCount}</span> project{hotCount !== 1 ? "s" : ""} running hot
+                  {staleCount > 0 && (
+                    <span className="text-[#777] text-lg font-normal ml-3">
+                      / {staleCount} going cold
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  {activeProjects} active project{activeProjects !== 1 ? "s" : ""}
+                  {staleCount > 0 && (
+                    <span className="text-[#777] text-lg font-normal ml-3">
+                      / {staleCount} need{staleCount === 1 ? "s" : ""} attention
+                    </span>
+                  )}
+                </>
+              )}
             </h1>
-            <p className="mt-2 text-[#8b8b8b] max-w-xl">
-              Track your projects, monitor GitHub activity, and keep the momentum going.
-              <span className="hidden sm:inline">
-                {" "}Press <kbd className="px-1.5 py-0.5 text-xs rounded-none bg-[#1c1c1c] text-[#7bdcff]">⌘K</kbd> to
-                quickly navigate.
-              </span>
-            </p>
           </div>
           <div className="flex items-center gap-3">
-            <Link
-              href="/project/new"
-              className="rounded-none bg-[#7bdcff] px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
+            <button
+              onClick={undefined}
+              className="hidden sm:flex items-center gap-2 border border-[#1a1a1a] px-3 py-2 text-xs text-[#555] hover:border-[#333] hover:text-[#999] transition"
             >
-              + New Project
-            </Link>
+              <kbd className="text-[10px] text-[#444] font-mono">Cmd+K</kbd>
+            </button>
+            <a
+              href="/project/new"
+              className="bg-white px-4 py-2 text-sm font-medium text-black hover:bg-[#e8e8e8] transition"
+            >
+              New Project
+            </a>
           </div>
         </div>
 
-        {/* Stats Row */}
+        {/* Stats */}
         <StatsRow
           projects={projects.length}
           activeProjects={activeProjects}
@@ -284,77 +237,24 @@ export default async function DashboardPage() {
         />
       </section>
 
-      <ProgressOverview
-        milestoneStats={{
-          total: milestoneStatusCounts.total,
-          completed: milestoneStatusCounts.completed,
-          inProgress: milestoneStatusCounts.inProgress,
-          notStarted: milestoneStatusCounts.notStarted,
-        }}
-        projectStats={projectStatusCounts}
-        activityStats={{
-          weekly: weeklyActivityCount,
-          monthly: monthlyActivityCount,
-        }}
-        avgHealthScore={avgHealthScore}
-      />
+      {/* Projects first — the main event */}
+      <ProjectDashboard projects={projectsWithHealth} />
 
-      {/* Insights + Timeline Section */}
-      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6">
+      {/* Intelligence Section */}
+      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-8">
         <div className="grid gap-6 lg:grid-cols-2">
           <SmartInsights insights={insights} />
           <ProjectTimeline events={timelineEvents.slice(0, 100)} days={14} />
         </div>
       </section>
 
-      {/* Activity + Attention Section */}
+      {/* Activity + Attention */}
       <section id="activity" className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6 scroll-mt-24">
         <div className="grid gap-6 lg:grid-cols-2">
           <ActivityFeed activities={activities.slice(0, 25)} showProjectFilter />
           <NeedsAttention projects={projectsWithActivity} />
         </div>
       </section>
-
-      {/* Upcoming Milestones */}
-      {upcomingMilestones.length > 0 && (
-        <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6">
-          <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <h3 className="text-lg font-semibold">Upcoming Milestones</h3>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {upcomingMilestones.map((milestone) => (
-                <div 
-                  key={milestone.id}
-                  className="p-4 rounded-none bg-[#111] border border-[#1c1c1c]"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-medium text-sm">{milestone.name}</p>
-                      <p className="text-xs text-[#7bdcff]">{milestone.projectName}</p>
-                    </div>
-                    {milestone.target_date && (
-                      <span className="text-xs text-[#8b8b8b] whitespace-nowrap">
-                        {format(new Date(milestone.target_date), "MMM d")}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-3 h-1.5 bg-[#1c1c1c] rounded-none overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-[#7bdcff] to-[#d2ff5a]"
-                      style={{ width: `${milestone.percent_complete}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-[#666] mt-2">{milestone.percent_complete}% complete</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Projects Section */}
-      <ProjectDashboard projects={projectsWithHealth} />
     </main>
   );
 }

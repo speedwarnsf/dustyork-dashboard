@@ -1,8 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Sparkline from "./Sparkline";
-import { Flame, TrendingUp, Target, Activity, BarChart3 } from "lucide-react";
 
 type StatsRowProps = {
   projects: number;
@@ -18,15 +16,6 @@ type StatsRowProps = {
   sparklineData: number[];
 };
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.08, duration: 0.4, ease: "easeOut" as const },
-  }),
-};
-
 export default function StatsRow({
   projects,
   activeProjects,
@@ -40,131 +29,70 @@ export default function StatsRow({
   streak,
   sparklineData,
 }: StatsRowProps) {
+  const milestonePercent = totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0;
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-[#1a1a1a] border border-[#1a1a1a]">
       {/* Projects */}
-      <motion.div
-        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
-        custom={0}
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Projects</p>
-          <BarChart3 size={14} className="text-[#555] group-hover:text-[#7bdcff] transition-colors" />
-        </div>
-        <p className="text-3xl font-semibold mt-1">{projects}</p>
-        <p className="text-xs text-[#555] mt-1">{activeProjects} active</p>
-      </motion.div>
+      <div className="bg-[#080808] p-4">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-2">Projects</p>
+        <p className="text-2xl font-semibold tabular-nums">{projects}</p>
+        <p className="text-[11px] text-[#444] mt-1">{activeProjects} active</p>
+      </div>
 
       {/* Milestones */}
-      <motion.div
-        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#d2ff5a]/30 transition-colors"
-        custom={1}
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Milestones</p>
-          <Target size={14} className="text-[#555] group-hover:text-[#d2ff5a] transition-colors" />
+      <div className="bg-[#080808] p-4">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-2">Milestones</p>
+        <p className="text-2xl font-semibold tabular-nums">{completedMilestones}<span className="text-sm text-[#444] font-normal">/{totalMilestones}</span></p>
+        <div className="mt-2 h-[2px] bg-[#1a1a1a] overflow-hidden">
+          <div className="h-full bg-[#d2ff5a]" style={{ width: `${milestonePercent}%`, transition: "width 1s ease" }} />
         </div>
-        <p className="text-3xl font-semibold mt-1">{totalMilestones}</p>
-        <div className="flex items-center gap-2 mt-1">
-          <p className="text-xs text-[#555]">{completedMilestones} completed</p>
-          {totalMilestones > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[#d2ff5a]/10 text-[#d2ff5a]">
-              {Math.round((completedMilestones / totalMilestones) * 100)}%
-            </span>
-          )}
-        </div>
-      </motion.div>
+      </div>
 
-      {/* Avg Health */}
-      <motion.div
-        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
-        custom={2}
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Avg Health</p>
-          <Activity size={14} className="text-[#555] group-hover:text-[#7bdcff] transition-colors" />
-        </div>
-        <div className="flex items-center gap-3">
-          <p className="text-3xl font-semibold mt-1">{Math.round(avgHealthScore)}</p>
-          <span className={`text-xs px-1.5 py-0.5 rounded-none ${
-            avgHealthScore >= 70 ? "bg-green-400/10 text-green-400" :
-            avgHealthScore >= 50 ? "bg-yellow-400/10 text-yellow-400" : "bg-red-400/10 text-red-400"
-          }`}>
-            {avgHealthScore >= 70 ? "Good" : avgHealthScore >= 50 ? "Fair" : "Low"}
-          </span>
-        </div>
-        <div className="mt-2 h-1.5 bg-[#1c1c1c] rounded-none overflow-hidden">
-          <motion.div
-            className={`h-full rounded-none ${
-              avgHealthScore >= 70 ? "bg-gradient-to-r from-green-400 to-green-300" :
-              avgHealthScore >= 50 ? "bg-gradient-to-r from-yellow-400 to-yellow-300" : "bg-gradient-to-r from-red-400 to-red-300"
-            }`}
-            initial={{ width: 0 }}
-            animate={{ width: `${avgHealthScore}%` }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-          />
-        </div>
-      </motion.div>
+      {/* Health */}
+      <div className="bg-[#080808] p-4">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-2">Avg Health</p>
+        <p className="text-2xl font-semibold tabular-nums">
+          <span className={
+            avgHealthScore >= 70 ? "text-[#d2ff5a]" :
+            avgHealthScore >= 50 ? "text-yellow-400" : "text-red-400"
+          }>{Math.round(avgHealthScore)}</span>
+        </p>
+        <p className="text-[11px] text-[#444] mt-1">
+          {avgHealthScore >= 70 ? "Good" : avgHealthScore >= 50 ? "Fair" : "Low"}
+        </p>
+      </div>
 
-      {/* Active This Week + Sparkline */}
-      <motion.div
-        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#7bdcff]/30 transition-colors"
-        custom={3}
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Activity</p>
-          <TrendingUp size={14} className="text-[#555] group-hover:text-[#7bdcff] transition-colors" />
-        </div>
-        <div className="flex items-end justify-between mt-1">
+      {/* Activity + Sparkline */}
+      <div className="bg-[#080808] p-4">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-2">This Week</p>
+        <div className="flex items-end justify-between">
           <div>
-            <p className="text-3xl font-semibold">{activeThisWeek}</p>
-            <p className="text-xs text-[#555]">{weeklyActivityCount} events</p>
+            <p className="text-2xl font-semibold tabular-nums">{weeklyActivityCount}</p>
+            <p className="text-[11px] text-[#444] mt-1">events</p>
           </div>
-          <div className="opacity-80">
+          <div className="opacity-60">
             <Sparkline
               data={sparklineData}
-              width={80}
-              height={28}
+              width={72}
+              height={24}
               color="#7bdcff"
               gradientFrom="#7bdcff"
               gradientTo="#d2ff5a"
-              showDots
+              strokeWidth={1}
             />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Streak + Monthly */}
-      <motion.div
-        className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-4 relative overflow-hidden group hover:border-[#f97316]/30 transition-colors col-span-2 sm:col-span-1"
-        custom={4}
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-wider text-[#8b8b8b]">Streak</p>
-          <Flame size={14} className={`transition-colors ${streak >= 3 ? "text-orange-400" : "text-[#555]"} group-hover:text-orange-400`} />
-        </div>
-        <div className="flex items-center gap-2 mt-1">
-          <p className="text-3xl font-semibold">{streak}</p>
-        </div>
-        <p className="text-xs text-[#555] mt-1">
-          {streak === 0 ? "Start building!" : streak === 1 ? "day" : "days"} · {monthlyActivityCount} this month
+      {/* Streak */}
+      <div className="bg-[#080808] p-4 col-span-2 sm:col-span-1">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-2">Streak</p>
+        <p className="text-2xl font-semibold tabular-nums">
+          {streak}<span className="text-sm text-[#444] font-normal ml-1">d</span>
         </p>
-      </motion.div>
+        <p className="text-[11px] text-[#444] mt-1">{monthlyActivityCount} this month</p>
+      </div>
     </div>
   );
 }

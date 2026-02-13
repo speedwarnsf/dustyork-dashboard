@@ -1,7 +1,4 @@
 "use client";
-import { motion } from "framer-motion";
-import { Icon } from "./Icon";
-
 import type { Project } from "@/lib/types";
 import TimeAgo from "./TimeAgo";
 
@@ -15,7 +12,6 @@ type Props = {
 };
 
 export default function NeedsAttention({ projects }: Props) {
-  // Filter to projects with no activity in 7+ days
   const staleProjects = projects
     .filter((p) => p.status === "active" && (p.daysSinceActivity || 0) >= 7)
     .sort((a, b) => (b.daysSinceActivity || 0) - (a.daysSinceActivity || 0))
@@ -23,59 +19,46 @@ export default function NeedsAttention({ projects }: Props) {
 
   if (staleProjects.length === 0) {
     return (
-      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Icon name="star" size={20} className="text-[#d2ff5a]" />
-          <h3 className="text-lg font-semibold">All Good!</h3>
-        </div>
-        <p className="text-sm text-[#8b8b8b]">
-          All active projects have recent activity.
-        </p>
+      <div className="border border-[#1a1a1a] bg-[#080808] p-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555] mb-4">Attention</h3>
+        <p className="text-sm text-[#444]">All active projects have recent activity.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Icon name="warning" size={20} />
-        <h3 className="text-lg font-semibold">Needs Attention</h3>
-      </div>
-      <div className="space-y-3">
-        {staleProjects.map((project, index) => (
-          <motion.a
+    <div className="border border-[#1a1a1a] bg-[#080808] p-6">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555] mb-4">
+        Needs Attention
+        <span className="ml-2 text-[#333] font-mono">{staleProjects.length}</span>
+      </h3>
+      <div className="space-y-1">
+        {staleProjects.map((project) => (
+          <a
             key={project.id}
             href={`/project/${project.id}`}
-            className="flex items-center justify-between p-3 rounded-none hover:bg-[#111] transition group"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.3 }}
-            whileHover={{ scale: 1.01, x: 4 }}
+            className="flex items-center justify-between py-3 px-2 -mx-2 hover:bg-[#0c0c0c] transition-colors group"
           >
             <div>
-              <p className="font-medium text-sm group-hover:text-[#7bdcff] transition">
+              <p className="text-sm font-medium text-[#999] group-hover:text-white transition-colors">
                 {project.name}
               </p>
-              <p className="text-xs text-[#666]">
+              <p className="text-[11px] text-[#444] font-mono mt-0.5">
                 {project.lastActivity
-                  ? <TimeAgo date={project.lastActivity} prefix="Last activity " />
+                  ? <TimeAgo date={project.lastActivity} prefix="Last active " />
                   : "No recent activity"}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-xs px-2 py-1 rounded-none ${
-                  (project.daysSinceActivity || 0) >= 30
-                    ? "bg-red-500/20 text-red-400"
-                    : (project.daysSinceActivity || 0) >= 14
-                    ? "bg-yellow-500/20 text-yellow-400"
-                    : "bg-orange-500/20 text-orange-400"
-                }`}
-              >
-                {project.daysSinceActivity}d
-              </span>
-            </div>
-          </motion.a>
+            <span className={`text-[11px] font-mono px-2 py-1 ${
+              (project.daysSinceActivity || 0) >= 30
+                ? "text-red-400 bg-red-500/10"
+                : (project.daysSinceActivity || 0) >= 14
+                ? "text-yellow-400 bg-yellow-500/10"
+                : "text-orange-400 bg-orange-500/10"
+            }`}>
+              {project.daysSinceActivity}d
+            </span>
+          </a>
         ))}
       </div>
     </div>

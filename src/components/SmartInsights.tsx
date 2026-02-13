@@ -1,7 +1,5 @@
 "use client";
 import { Icon } from "./Icon";
-
-import { motion } from "framer-motion";
 import type { SmartInsight } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
@@ -9,38 +7,18 @@ type Props = {
   insights: SmartInsight[];
 };
 
-const typeStyles: Record<SmartInsight["type"], { icon: string; border: string; bg: string }> = {
-  stale: {
-    icon: "clock",
-    border: "border-orange-500/30",
-    bg: "bg-orange-500/5",
-  },
-  active: {
-    icon: "flame",
-    border: "border-green-500/30",
-    bg: "bg-green-500/5",
-  },
-  completion: {
-    icon: "star",
-    border: "border-cyan-500/30",
-    bg: "bg-cyan-500/5",
-  },
-  suggestion: {
-    icon: "info",
-    border: "border-yellow-500/30",
-    bg: "bg-yellow-500/5",
-  },
-  alert: {
-    icon: "warning",
-    border: "border-red-500/30",
-    bg: "bg-red-500/5",
-  },
+const typeConfig: Record<SmartInsight["type"], { icon: string; accent: string }> = {
+  stale: { icon: "clock", accent: "border-l-orange-500/60" },
+  active: { icon: "flame", accent: "border-l-green-500/60" },
+  completion: { icon: "star", accent: "border-l-cyan-500/60" },
+  suggestion: { icon: "info", accent: "border-l-yellow-500/60" },
+  alert: { icon: "warning", accent: "border-l-red-500/60" },
 };
 
-const priorityColors: Record<SmartInsight["priority"], string> = {
-  high: "text-red-400",
-  medium: "text-yellow-400",
-  low: "text-green-400",
+const priorityDot: Record<SmartInsight["priority"], string> = {
+  high: "bg-red-400",
+  medium: "bg-yellow-400",
+  low: "bg-[#333]",
 };
 
 export default function SmartInsights({ insights }: Props) {
@@ -48,86 +26,50 @@ export default function SmartInsights({ insights }: Props) {
 
   if (insights.length === 0) {
     return (
-      <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Icon name="info" size={20} />
-          <h3 className="text-lg font-semibold">Smart Insights</h3>
-        </div>
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Icon name="star" size={40} className="mb-3 text-[#d2ff5a]" />
-          <p className="text-[#8b8b8b]">All caught up!</p>
-          <p className="text-sm text-[#555] mt-1">No actionable insights right now.</p>
-        </div>
+      <div className="border border-[#1a1a1a] bg-[#080808] p-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555] mb-4">Insights</h3>
+        <p className="text-sm text-[#444]">Nothing actionable right now.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Icon name="info" size={20} />
-          <h3 className="text-lg font-semibold">Smart Insights</h3>
-        </div>
-        <span className="text-xs text-[#666] px-2 py-1 rounded-none bg-[#1c1c1c]">
-          {insights.length} insight{insights.length !== 1 ? "s" : ""}
-        </span>
+    <div className="border border-[#1a1a1a] bg-[#080808] p-6">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555]">
+          Insights
+          <span className="ml-2 text-[#333] font-mono">{insights.length}</span>
+        </h3>
       </div>
 
-      <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-        {insights.map((insight, index) => {
-          const style = typeStyles[insight.type];
+      <div className="space-y-2 max-h-[400px] overflow-y-auto">
+        {insights.map((insight) => {
+          const config = typeConfig[insight.type];
           return (
-            <motion.div
+            <button
               key={insight.id}
-              className={`p-4 rounded-none border ${style.border} ${style.bg} transition hover:border-[#7bdcff]/30 cursor-pointer`}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.08, duration: 0.3 }}
-              whileHover={{ scale: 1.01, x: 4 }}
+              className={`w-full text-left p-4 border border-[#1a1a1a] border-l-2 ${config.accent} bg-[#0a0a0a] hover:bg-[#0e0e0e] transition-colors`}
               onClick={() => {
-                if (insight.projectId) {
-                  router.push(`/project/${insight.projectId}`);
-                } else if (insight.actionUrl) {
-                  window.open(insight.actionUrl, "_blank");
-                }
+                if (insight.projectId) router.push(`/project/${insight.projectId}`);
+                else if (insight.actionUrl) window.open(insight.actionUrl, "_blank");
               }}
             >
               <div className="flex items-start gap-3">
-                <span className="text-xl"><Icon name={style.icon} size={20} /></span>
+                <Icon name={config.icon} size={16} className="text-[#555] shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-sm">{insight.title}</p>
-                    <span
-                      className={`w-1.5 h-1.5 rounded-none ${
-                        insight.priority === "high"
-                          ? "bg-red-400"
-                          : insight.priority === "medium"
-                          ? "bg-yellow-400"
-                          : "bg-green-400"
-                      }`}
-                      title={`${insight.priority} priority`}
-                    />
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-sm font-medium text-[#ccc]">{insight.title}</p>
+                    <span className={`w-1.5 h-1.5 shrink-0 ${priorityDot[insight.priority]}`} title={`${insight.priority} priority`} />
                   </div>
-                  <p className="text-sm text-[#8b8b8b] mt-1">
-                    {insight.description}
-                  </p>
+                  <p className="text-xs text-[#555]">{insight.description}</p>
                   {insight.actionLabel && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (insight.actionUrl) {
-                          window.open(insight.actionUrl, "_blank");
-                        }
-                      }}
-                      className="mt-2 text-xs text-[#7bdcff] hover:text-white transition"
-                    >
-                      {insight.actionLabel} →
-                    </button>
+                    <span className="inline-block mt-2 text-[11px] text-[#7bdcff] hover:text-white transition-colors">
+                      {insight.actionLabel} --&gt;
+                    </span>
                   )}
                 </div>
               </div>
-            </motion.div>
+            </button>
           );
         })}
       </div>
@@ -135,30 +77,24 @@ export default function SmartInsights({ insights }: Props) {
   );
 }
 
-// Compact version for smaller spaces
 export function SmartInsightsCompact({ insights }: Props) {
   if (insights.length === 0) return null;
-
   const highPriority = insights.filter((i) => i.priority === "high");
-  const displayInsights = highPriority.length > 0 ? highPriority : insights.slice(0, 3);
+  const display = highPriority.length > 0 ? highPriority : insights.slice(0, 3);
 
   return (
     <div className="flex flex-wrap gap-2">
-      {displayInsights.map((insight) => (
+      {display.map((insight) => (
         <div
           key={insight.id}
-          className={`px-3 py-1.5 rounded-none text-xs flex items-center gap-2 ${
-            typeStyles[insight.type].bg
-          } ${typeStyles[insight.type].border} border`}
+          className="px-3 py-1.5 text-xs flex items-center gap-2 border border-[#1a1a1a] bg-[#0a0a0a]"
         >
-          <span><Icon name={typeStyles[insight.type].icon} size={14} /></span>
-          <span className="truncate max-w-[200px]">{insight.title}</span>
+          <Icon name={typeConfig[insight.type].icon} size={12} className="text-[#555]" />
+          <span className="truncate max-w-[200px] text-[#777]">{insight.title}</span>
         </div>
       ))}
-      {insights.length > displayInsights.length && (
-        <span className="text-xs text-[#666] self-center">
-          +{insights.length - displayInsights.length} more
-        </span>
+      {insights.length > display.length && (
+        <span className="text-[11px] text-[#444] self-center">+{insights.length - display.length} more</span>
       )}
     </div>
   );
