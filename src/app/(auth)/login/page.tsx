@@ -35,22 +35,28 @@ function LoginForm() {
           </div>
         )}
         <form action={signIn} className="space-y-4">
-          <input
-            name="email"
-            type="email"
-            required
-            placeholder="Email"
-            aria-label="Email"
-            className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
-          />
-          <input
-            name="password"
-            type="password"
-            required
-            placeholder="Password"
-            aria-label="Password"
-            className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
-          />
+          <div>
+            <label htmlFor="email" className="block text-xs text-[#8b8b8b] mb-1">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="Email"
+              className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-xs text-[#8b8b8b] mb-1">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              placeholder="Password"
+              className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
+            />
+          </div>
           <button
             type="submit"
             className="w-full rounded-none bg-[#7bdcff] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"

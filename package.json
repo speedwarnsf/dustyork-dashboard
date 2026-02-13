@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "screenshots": "node scripts/capture-screenshots.mjs",
+    "screenshots:dry": "node scripts/capture-screenshots.mjs --dry-run",
+    "screenshots:local": "node scripts/capture-screenshots.mjs --local"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -28,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "pg": "^8.18.0",
+    "playwright": "^1.58.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

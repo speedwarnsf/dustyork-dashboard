@@ -53,6 +53,12 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-0 focus:left-0 focus:z-[9999] focus:bg-[#d2ff5a] focus:text-black focus:px-4 focus:py-2 focus:text-sm focus:font-semibold"
+        >
+          Skip to main content
+        </a>
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

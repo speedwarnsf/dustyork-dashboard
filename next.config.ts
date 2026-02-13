@@ -32,6 +32,8 @@ const nextConfig: NextConfig = {
       "react-dom",
       "@supabase/supabase-js",
       "lucide-react",
+      "framer-motion",
+      "date-fns",
     ],
   },
   
