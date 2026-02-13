@@ -159,7 +159,7 @@ export function generateSmartInsights(
       insights.push({
         id: "most-active-today",
         type: "active",
-        title: `${mostActive[0]} is on fire today 🔥`,
+        title: `${mostActive[0]} is on fire today`,
         description: `${mostActive[1]} commits today — most active project`,
         priority: "low",
       });
@@ -179,7 +179,7 @@ export function generateSmartInsights(
       insights.push({
         id: `hot-project-${p.id}`,
         type: "active",
-        title: `${p.name} is hot! 🔥`,
+        title: `${p.name} is hot!`,
         description: "Recent high commit activity",
         projectId: p.id,
         projectName: p.name,

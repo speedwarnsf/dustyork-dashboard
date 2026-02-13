@@ -21,7 +21,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
       <h3 className="text-lg font-semibold">Milestones</h3>
       {milestones.length === 0 && (
         <div className="mt-6 rounded-2xl border border-dashed border-[#1c1c1c] p-8 text-center">
-          <span className="text-4xl mb-3 block">🎯</span>
+          <span className="text-4xl mb-3 block"></span>
           <p className="text-sm text-[#8b8b8b]">No milestones yet. Add one below to track progress.</p>
         </div>
       )}

@@ -166,7 +166,7 @@ export default function StatsRow({
               animate={streak >= 5 ? { scale: [1, 1.2, 1] } : {}}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              🔥
+              
             </motion.span>
           )}
         </div>

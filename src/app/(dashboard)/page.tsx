@@ -315,7 +315,7 @@ export default async function DashboardPage() {
         <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6">
           <div className="rounded-3xl border border-[#1c1c1c] bg-[#0a0a0a] p-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🎯</span>
+              <span className="text-xl"></span>
               <h3 className="text-lg font-semibold">Upcoming Milestones</h3>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
