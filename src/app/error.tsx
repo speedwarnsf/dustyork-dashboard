@@ -16,7 +16,7 @@ export default function RootError({
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <div className="text-6xl mb-6">⚠️</div>
+        <div className="text-6xl mb-6">!</div>
         <h1 className="text-2xl font-semibold mb-3">Something went wrong</h1>
         <p className="text-[#8b8b8b] mb-6">
           An unexpected error occurred. Please try again.
