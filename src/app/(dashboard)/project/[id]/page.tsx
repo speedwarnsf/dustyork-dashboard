@@ -311,10 +311,12 @@ export default async function ProjectDetailPage({
               required
               rows={4}
               placeholder="Log progress, blockers, or insights..."
+              aria-label="Journal entry content"
               className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm focus:outline-none focus:border-[#7bdcff]"
             />
             <select
               name="entry_type"
+              aria-label="Entry type"
               className="rounded-none border border-[#1c1c1c] bg-black px-4 py-2 text-sm"
             >
               <option value="note">Note</option>

@@ -14,28 +14,33 @@ export default function NewProjectPage() {
             name="name"
             required
             placeholder="Project name"
+            aria-label="Project name"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <textarea
             name="description"
             rows={4}
             placeholder="Project description"
+            aria-label="Project description"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <input
             name="github_repo"
             placeholder="GitHub repo (owner/name)"
+            aria-label="GitHub repo"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <input
             name="live_url"
             placeholder="Live URL"
+            aria-label="Live URL"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <div className="grid gap-4 sm:grid-cols-2">
             <select
               name="status"
               defaultValue="active"
+              aria-label="Project status"
               className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
             >
               <option value="active">Active</option>
@@ -46,6 +51,7 @@ export default function NewProjectPage() {
             <select
               name="priority"
               defaultValue="medium"
+              aria-label="Project priority"
               className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
             >
               <option value="high">High</option>
@@ -56,6 +62,7 @@ export default function NewProjectPage() {
           <input
             name="tags"
             placeholder="Tags (comma separated)"
+            aria-label="Tags"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.3em]">

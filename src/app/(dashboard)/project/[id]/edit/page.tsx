@@ -35,29 +35,34 @@ export default async function EditProjectPage({
             name="name"
             required
             defaultValue={project.name}
+            aria-label="Project name"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <textarea
             name="description"
             rows={4}
             defaultValue={project.description || ""}
+            aria-label="Project description"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <input
             name="github_repo"
             defaultValue={project.github_repo || ""}
+            aria-label="GitHub repo"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <input
             name="live_url"
             defaultValue={project.live_url || ""}
+            aria-label="Live URL"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <div className="grid gap-4 sm:grid-cols-2">
             <select
               name="status"
               defaultValue={project.status}
-              className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
+              aria-label="Project status"
+            className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
             >
               <option value="active">Active</option>
               <option value="paused">Paused</option>
@@ -67,7 +72,8 @@ export default async function EditProjectPage({
             <select
               name="priority"
               defaultValue={project.priority}
-              className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
+              aria-label="Project priority"
+            className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
             >
               <option value="high">High</option>
               <option value="medium">Medium</option>
@@ -77,6 +83,7 @@ export default async function EditProjectPage({
           <input
             name="tags"
             defaultValue={(project.tags || []).join(", ")}
+            aria-label="Tags"
             className="rounded-none border border-[#1c1c1c] bg-black px-4 py-3"
           />
           <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.3em]">

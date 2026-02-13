@@ -132,6 +132,7 @@ export default function LaunchAnnouncement({ project }: Props) {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            aria-label="Announcement content"
             className={`w-full h-48 p-4 rounded-none border bg-[#111] text-sm resize-none focus:outline-none focus:border-[#7bdcff] ${
               isOverLimit ? "border-red-500" : "border-[#1c1c1c]"
             }`}

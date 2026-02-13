@@ -128,6 +128,7 @@ export default function ProjectDashboard({ projects }: Props) {
           <input
             type="text"
             placeholder="Search projects..."
+            aria-label="Search projects"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-none border border-[#1c1c1c] bg-[#0a0a0a] pl-10 pr-4 py-2 text-sm placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
@@ -138,6 +139,7 @@ export default function ProjectDashboard({ projects }: Props) {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
+          aria-label="Filter by status"
           className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
         >
           <option value="all">All Status</option>
@@ -151,6 +153,7 @@ export default function ProjectDashboard({ projects }: Props) {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortOption)}
+          aria-label="Sort projects"
           className="rounded-none border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2 text-sm text-[#8b8b8b] focus:outline-none focus:border-[#7bdcff]"
         >
           <option value="updated">Recently Updated</option>

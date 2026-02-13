@@ -54,6 +54,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                 <select
                   name="status"
                   defaultValue={milestone.status}
+                  aria-label="Milestone status"
                   className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
                 >
                   <option value="not_started">Not started</option>
@@ -66,6 +67,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                   min={0}
                   max={100}
                   defaultValue={milestone.percent_complete}
+                  aria-label="Percent complete"
                   className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
                 />
                 <button
@@ -106,6 +108,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                     <select
                       name="status"
                       defaultValue={task.status}
+                      aria-label="Task status"
                       className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-xs"
                     >
                       <option value="todo">Todo</option>
@@ -139,15 +142,18 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
                 name="name"
                 required
                 placeholder="New task name"
+                aria-label="Task name"
                 className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
               />
               <input
                 name="description"
                 placeholder="Task description"
+                aria-label="Task description"
                 className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
               />
               <select
                 name="status"
+                aria-label="Task status"
                 className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
               >
                 <option value="todo">Todo</option>
@@ -176,20 +182,24 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
           name="name"
           required
           placeholder="Milestone name"
+          aria-label="Milestone name"
           className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <input
           name="description"
           placeholder="Description"
+          aria-label="Milestone description"
           className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <input
           name="target_date"
           type="date"
+          aria-label="Target date"
           className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <select
           name="status"
+          aria-label="Milestone status"
           className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         >
           <option value="not_started">Not started</option>
@@ -202,6 +212,7 @@ export default function MilestoneList({ milestones, projectId }: MilestoneListPr
           min={0}
           max={100}
           defaultValue={0}
+          aria-label="Percent complete"
           className="rounded-none border border-[#1c1c1c] bg-black px-3 py-2 text-sm"
         />
         <button

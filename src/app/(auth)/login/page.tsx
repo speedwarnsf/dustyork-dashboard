@@ -40,6 +40,7 @@ function LoginForm() {
             type="email"
             required
             placeholder="Email"
+            aria-label="Email"
             className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
           />
           <input
@@ -47,6 +48,7 @@ function LoginForm() {
             type="password"
             required
             placeholder="Password"
+            aria-label="Password"
             className="w-full rounded-none border border-[#1c1c1c] bg-black px-4 py-3 text-sm text-white placeholder:text-[#555] focus:outline-none focus:border-[#7bdcff]"
           />
           <button

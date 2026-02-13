@@ -224,6 +224,7 @@ Focus on quick wins that improve quality.`;
             value={journalContent}
             onChange={(e) => setJournalContent(e.target.value)}
             placeholder="What did you work on?"
+            aria-label="Journal entry"
             className="w-full h-24 bg-transparent text-sm resize-none focus:outline-none placeholder:text-[#555]"
             autoFocus
           />

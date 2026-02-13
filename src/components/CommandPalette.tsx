@@ -412,6 +412,7 @@ export default function CommandPalette() {
               ref={inputRef}
               type="text"
               placeholder="Search projects, actions, or jump to..."
+              aria-label="Command palette search"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);

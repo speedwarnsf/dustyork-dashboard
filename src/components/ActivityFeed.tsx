@@ -183,6 +183,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
           {/* Project filter */}
           {showProjectFilter && projectNames.length > 1 && (
             <select
+          aria-label="Filter activity type"
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
               className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors max-w-[140px]"
@@ -197,6 +198,7 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
           {/* Type filter dropdown */}
           <div className="relative">
             <select
+          aria-label="Filter time range"
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
               className="appearance-none bg-[#1c1c1c] border border-[#333] rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-[#7bdcff] transition-colors"
