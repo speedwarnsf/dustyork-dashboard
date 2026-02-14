@@ -27,7 +27,7 @@ type ProjectCardProps = {
 export default function ProjectCard({ project }: ProjectCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const fallbackImage = getGithubOpenGraphUrl(project.github_repo);
-  const imageUrl = project.screenshot_url || fallbackImage;
+  const imageUrl = project.screenshot_url || fallbackImage || '/api/placeholder/400/192';
   const health = project.health;
   const healthDotColor = health ? getHealthDotColor(health) : "bg-[#555]";
   const healthLabel = health ? getHealthLabel(health) : "";
@@ -53,7 +53,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             width={400}
             height={192}
             className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            fallback={fallbackImage}
+            fallback={fallbackImage || undefined}
           />
           
           {/* Health score - top right */}

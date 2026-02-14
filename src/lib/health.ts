@@ -25,17 +25,16 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
   if (project.status === "archived" || project.status === "completed") {
     return {
       score: project.status === "completed" ? 100 : 50,
-      factors: { commitActivity: 0, deploymentStatus: 0, issueHealth: 0, ciStatus: 0 },
+      factors: { commitActivity: 0, deploymentStatus: 0, issueHealth: 0, ciStatus: 0, freshnessScore: 0 },
       status: project.status === "completed" ? "excellent" : "fair",
       alerts: [],
     };
   }
 
-  // 1. Enhanced Commit Activity (30 points) - weighted by frequency and recency
+  // 1. Enhanced Commit Activity (30 points) - weighted by recency
   if (project.github?.lastCommitDate) {
     const daysSinceCommit = differenceInDays(new Date(), new Date(project.github.lastCommitDate));
-    const commitFrequencyMultiplier = (project.github?.totalCommits || 0) > 50 ? 1.1 : 
-                                    (project.github?.totalCommits || 0) > 10 ? 1.0 : 0.9;
+    const commitFrequencyMultiplier = 1.0; // Simplified since totalCommits is not available
     
     let baseScore = 0;
     if (daysSinceCommit <= 1) {
@@ -91,10 +90,6 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
   } else if (project.status === "active") {
     deploymentStatus = 5;
     alerts.push("No live deployment");
-  } else if (project.status === "completed") {
-    // Completed projects should have deployment
-    deploymentStatus = project.live_url ? 25 : 8;
-    if (!project.live_url) alerts.push("Completed project missing live URL");
   } else {
     deploymentStatus = 12; // Neutral for paused/archived
   }
