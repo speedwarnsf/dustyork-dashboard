@@ -7,10 +7,11 @@ type ProjectWithGithub = Project & { github?: GithubActivity | null };
 /**
  * Calculate comprehensive project health score (0-100)
  * Factors:
- * - Commit Activity (25 points): Recent commits = healthy
- * - Deployment Status (25 points): Live + SSL = healthy
- * - Issue Health (25 points): Low open issues = healthy
- * - CI Status (25 points): Passing CI = healthy
+ * - Commit Activity (30 points): Recent commits = healthy, weighted by frequency
+ * - Deployment Status (25 points): Live + SSL + domain = healthy
+ * - Issue Health (20 points): Low open issues = healthy
+ * - CI Status (15 points): Passing CI = healthy
+ * - Freshness (10 points): Recent activity across all project areas
  */
 export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealth {
   const alerts: string[] = [];
@@ -18,6 +19,7 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
   let deploymentStatus = 0;
   let issueHealth = 0;
   let ciStatus = 0;
+  let freshnessScore = 0;
 
   // Skip health for archived/completed projects
   if (project.status === "archived" || project.status === "completed") {
@@ -29,42 +31,72 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
     };
   }
 
-  // 1. Commit Activity (25 points)
+  // 1. Enhanced Commit Activity (30 points) - weighted by frequency and recency
   if (project.github?.lastCommitDate) {
     const daysSinceCommit = differenceInDays(new Date(), new Date(project.github.lastCommitDate));
+    const commitFrequencyMultiplier = (project.github?.totalCommits || 0) > 50 ? 1.1 : 
+                                    (project.github?.totalCommits || 0) > 10 ? 1.0 : 0.9;
+    
+    let baseScore = 0;
     if (daysSinceCommit <= 1) {
-      commitActivity = 25;
+      baseScore = 30;
+    } else if (daysSinceCommit <= 3) {
+      baseScore = 25;
     } else if (daysSinceCommit <= 7) {
-      commitActivity = 20;
+      baseScore = 20;
     } else if (daysSinceCommit <= 14) {
-      commitActivity = 15;
+      baseScore = 15;
     } else if (daysSinceCommit <= 30) {
-      commitActivity = 10;
+      baseScore = 8;
       alerts.push("No commits in 2+ weeks");
+    } else if (daysSinceCommit <= 60) {
+      baseScore = 5;
+      alerts.push("Stale - no commits in 30+ days");
     } else {
-      commitActivity = 5;
-      alerts.push("No commits in 30+ days");
+      baseScore = 2;
+      alerts.push("Very stale - no commits in 60+ days");
     }
+    
+    commitActivity = Math.min(30, Math.round(baseScore * commitFrequencyMultiplier));
   } else if (project.github_repo) {
     commitActivity = 5;
     alerts.push("Could not fetch commit data");
   } else {
-    // No GitHub repo linked - neutral
-    commitActivity = 15;
+    // No GitHub repo linked - neutral for non-code projects
+    commitActivity = 18;
   }
 
-  // 2. Deployment Status (25 points)
+  // 2. Enhanced Deployment Status (25 points)
   if (project.live_url) {
-    deploymentStatus = 20;
-    // Bonus for having a live URL
+    let baseDeployScore = 15;
+    
+    // Bonus for custom domain
     if (project.domain) {
-      deploymentStatus = 25;
+      baseDeployScore += 5;
     }
+    
+    // Bonus for HTTPS
+    if (project.live_url.startsWith('https://')) {
+      baseDeployScore += 3;
+    }
+    
+    // Bonus for non-localhost/non-staging URLs
+    if (!project.live_url.includes('localhost') && 
+        !project.live_url.includes('staging') && 
+        !project.live_url.includes('dev.')) {
+      baseDeployScore += 2;
+    }
+    
+    deploymentStatus = Math.min(25, baseDeployScore);
   } else if (project.status === "active") {
     deploymentStatus = 5;
-    alerts.push("No live URL configured");
+    alerts.push("No live deployment");
+  } else if (project.status === "completed") {
+    // Completed projects should have deployment
+    deploymentStatus = project.live_url ? 25 : 8;
+    if (!project.live_url) alerts.push("Completed project missing live URL");
   } else {
-    deploymentStatus = 10;
+    deploymentStatus = 12; // Neutral for paused/archived
   }
 
   // 3. Issue Health (25 points)
@@ -87,17 +119,34 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
     issueHealth = 20; // No repo = no issues
   }
 
-  // 4. CI Status (25 points)
+  // 4. CI Status (15 points) 
   if (project.github?.ciStatus === "success") {
-    ciStatus = 25;
+    ciStatus = 15;
   } else if (project.github?.ciStatus === "failure") {
-    ciStatus = 5;
+    ciStatus = 3;
     alerts.push("CI/CD pipeline failing");
   } else {
-    ciStatus = 15; // Unknown/no CI
+    ciStatus = 10; // Unknown/no CI
   }
 
-  const score = commitActivity + deploymentStatus + issueHealth + ciStatus;
+  // 5. Freshness Score (10 points) - overall project activity
+  const projectActivityDays = differenceInDays(new Date(), new Date(project.updated_at));
+  if (projectActivityDays <= 1) {
+    freshnessScore = 10;
+  } else if (projectActivityDays <= 7) {
+    freshnessScore = 8;
+  } else if (projectActivityDays <= 30) {
+    freshnessScore = 6;
+  } else if (projectActivityDays <= 90) {
+    freshnessScore = 4;
+  } else {
+    freshnessScore = 2;
+    if (project.status === "active") {
+      alerts.push("No project activity in 90+ days");
+    }
+  }
+
+  const score = commitActivity + deploymentStatus + issueHealth + ciStatus + freshnessScore;
 
   let status: ProjectHealth["status"];
   if (score >= 85) status = "excellent";
@@ -108,7 +157,7 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
 
   return {
     score,
-    factors: { commitActivity, deploymentStatus, issueHealth, ciStatus },
+    factors: { commitActivity, deploymentStatus, issueHealth, ciStatus, freshnessScore },
     status,
     alerts,
   };

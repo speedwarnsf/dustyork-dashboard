@@ -114,32 +114,112 @@ main {
   to { opacity: 1; }
 }
 
-/* Mobile */
+/* Enhanced Mobile Responsiveness */
 @media (max-width: 768px) {
+  /* Touch targets */
   nav button,
   nav a,
   form button,
   header button,
   header a,
-  footer a {
+  footer a,
+  [data-project-id] button {
     min-height: 44px;
   }
   
+  /* Grid layouts collapse */
   .grid.lg\:grid-cols-\[1\.3fr_1fr\],
-  .grid.lg\:grid-cols-\[1\.4fr_1fr\] {
+  .grid.lg\:grid-cols-\[1\.4fr_1fr\],
+  .grid.lg\:grid-cols-2,
+  .grid.lg\:grid-cols-3 {
     grid-template-columns: 1fr;
+  }
+  
+  /* Project cards on mobile */
+  .grid.sm\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Stats row responsive */
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem;
+  }
+  
+  /* Mobile-specific padding adjustments */
+  .mobile-px {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Better spacing on mobile */
+  section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  /* Filter controls stack on mobile */
+  #search .flex-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  #search select,
+  #search input {
+    width: 100%;
   }
 }
 
 @media (max-width: 768px) {
+  /* Prevent zoom on form inputs */
   input, select, textarea {
     font-size: 16px !important;
   }
+  
+  /* Hide non-essential elements on small screens */
+  .hidden-mobile {
+    display: none !important;
+  }
+  
+  /* Compress spacing */
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
 }
 
+/* Small phone adjustments */
 @media (max-width: 380px) {
   section h1 {
     font-size: 1.5rem;
+  }
+  
+  /* Even more compressed layout */
+  .mobile-px {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  
+  /* Stack stats more aggressively */
+  .stats-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1440px) {
+  .max-w-7xl {
+    max-width: 90rem;
+  }
+  
+  .grid.lg\:grid-cols-3 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .shimmer {
+    background-size: 400% 100%;
   }
 }
 

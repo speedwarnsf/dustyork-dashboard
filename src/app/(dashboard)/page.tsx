@@ -7,7 +7,7 @@ const ActivityFeed = dynamic(() => import("@/components/ActivityFeed"), {
 });
 const NeedsAttention = dynamic(() => import("@/components/NeedsAttention"));
 const SmartInsights = dynamic(() => import("@/components/SmartInsights"));
-const ProjectTimeline = dynamic(() => import("@/components/ProjectTimeline"));
+const ActivityTimeline = dynamic(() => import("@/components/ActivityTimeline"));
 import { fetchGithubActivity } from "@/lib/github";
 import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -177,8 +177,8 @@ export default async function DashboardPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 pt-8 pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 pt-8 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
             <p className="text-[11px] uppercase tracking-[0.5em] text-[#555] mb-3 font-mono">
               {greeting}{name ? `, ${name}` : ""}
@@ -241,16 +241,16 @@ export default async function DashboardPage() {
       <ProjectDashboard projects={projectsWithHealth} />
 
       {/* Intelligence Section */}
-      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-8">
-        <div className="grid gap-6 lg:grid-cols-2">
+      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           <SmartInsights insights={insights} />
-          <ProjectTimeline events={timelineEvents.slice(0, 100)} days={14} />
+          <ActivityTimeline events={timelineEvents.slice(0, 100)} days={14} showProjectFilter />
         </div>
       </section>
 
       {/* Activity + Attention */}
-      <section id="activity" className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6 scroll-mt-24">
-        <div className="grid gap-6 lg:grid-cols-2">
+      <section id="activity" className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6 scroll-mt-24">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           <ActivityFeed activities={activities.slice(0, 25)} showProjectFilter />
           <NeedsAttention projects={projectsWithActivity} />
         </div>

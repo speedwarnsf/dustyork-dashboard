@@ -112,10 +112,11 @@ export type LaunchAnnouncement = {
 export type ProjectHealth = {
   score: number; // 0-100
   factors: {
-    commitActivity: number; // 0-25
+    commitActivity: number; // 0-30
     deploymentStatus: number; // 0-25
-    issueHealth: number; // 0-25
-    ciStatus: number; // 0-25
+    issueHealth: number; // 0-20
+    ciStatus: number; // 0-15
+    freshnessScore: number; // 0-10
   };
   status: "excellent" | "good" | "fair" | "poor" | "critical";
   alerts: string[];

@@ -14,37 +14,72 @@ type Props = {
   }>;
 };
 
-type SortOption = "updated" | "name" | "status" | "priority" | "health";
+type SortOption = "updated" | "name" | "status" | "priority" | "health" | "alerts";
 type FilterStatus = "all" | "active" | "paused" | "completed" | "archived";
+type FilterHealth = "all" | "critical" | "poor" | "fair" | "good" | "excellent";
 
 export default function ProjectDashboard({ projects }: Props) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("updated");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [filterHealth, setFilterHealth] = useState<FilterHealth>("all");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Get all available tags for filtering
+  const availableTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    projects.forEach(p => {
+      p.tags?.forEach(tag => tagSet.add(tag));
+    });
+    return Array.from(tagSet).sort();
+  }, [projects]);
 
   const filtered = useMemo(() => {
     let result = [...projects];
+    
+    // Text search
     if (search) {
       const q = search.toLowerCase();
       result = result.filter((p) =>
         p.name.toLowerCase().includes(q) ||
         p.description?.toLowerCase().includes(q) ||
-        p.tags?.some((t) => t.toLowerCase().includes(q))
+        p.tags?.some((t) => t.toLowerCase().includes(q)) ||
+        p.github_repo?.toLowerCase().includes(q) ||
+        p.live_url?.toLowerCase().includes(q)
       );
     }
-    if (filterStatus !== "all") result = result.filter((p) => p.status === filterStatus);
+    
+    // Status filter
+    if (filterStatus !== "all") {
+      result = result.filter((p) => p.status === filterStatus);
+    }
+    
+    // Health filter
+    if (filterHealth !== "all") {
+      result = result.filter((p) => p.health?.status === filterHealth);
+    }
+    
+    // Tag filter
+    if (selectedTags.length > 0) {
+      result = result.filter((p) => 
+        selectedTags.every(tag => p.tags?.includes(tag))
+      );
+    }
+    
+    // Sorting
     result.sort((a, b) => {
       switch (sortBy) {
         case "name": return a.name.localeCompare(b.name);
         case "status": return a.status.localeCompare(b.status);
         case "priority": return ({ high: 0, medium: 1, low: 2 }[a.priority] || 1) - ({ high: 0, medium: 1, low: 2 }[b.priority] || 1);
         case "health": return (b.health?.score ?? 50) - (a.health?.score ?? 50);
+        case "alerts": return (b.health?.alerts.length ?? 0) - (a.health?.alerts.length ?? 0);
         default: return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
       }
     });
     return result;
-  }, [projects, search, sortBy, filterStatus]);
+  }, [projects, search, sortBy, filterStatus, filterHealth, selectedTags]);
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-8">
@@ -76,52 +111,120 @@ export default function ProjectDashboard({ projects }: Props) {
         </div>
       </div>
 
-      {/* Filters */}
-      <div id="search" className="flex flex-wrap items-center gap-2 mb-6 scroll-mt-24">
-        <div className="relative flex-1 min-w-0 sm:min-w-[200px] max-w-sm">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#444]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Filter..."
-            aria-label="Search projects"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full border border-[#1a1a1a] bg-[#080808] pl-9 pr-3 py-2 text-sm placeholder:text-[#333] focus:outline-none focus:border-[#333] text-[#999]"
-          />
+      {/* Enhanced Filters */}
+      <div id="search" className="mb-6 scroll-mt-24">
+        {/* Search bar */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <div className="relative flex-1 min-w-0 sm:min-w-[250px] max-w-md">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#444]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search projects, descriptions, tags, repos..."
+              aria-label="Search projects"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full border border-[#1a1a1a] bg-[#080808] pl-9 pr-3 py-2 text-sm placeholder:text-[#333] focus:outline-none focus:border-[#333] text-[#999]"
+            />
+          </div>
+          
+          {(search || filterStatus !== "all" || filterHealth !== "all" || selectedTags.length > 0 || sortBy !== "updated") && (
+            <button
+              onClick={() => { 
+                setSearch(""); 
+                setFilterStatus("all"); 
+                setFilterHealth("all");
+                setSelectedTags([]);
+                setSortBy("updated"); 
+              }}
+              className="text-[11px] text-[#444] hover:text-[#777] transition px-3 py-2 border border-[#1a1a1a] hover:border-[#333]"
+            >
+              Clear All
+            </button>
+          )}
         </div>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-          aria-label="Filter by status"
-          className="border border-[#1a1a1a] bg-[#080808] px-3 py-2 text-xs text-[#555] focus:outline-none focus:border-[#333]"
-        >
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="paused">Paused</option>
-          <option value="completed">Completed</option>
-          <option value="archived">Archived</option>
-        </select>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortOption)}
-          aria-label="Sort projects"
-          className="border border-[#1a1a1a] bg-[#080808] px-3 py-2 text-xs text-[#555] focus:outline-none focus:border-[#333]"
-        >
-          <option value="updated">Recent</option>
-          <option value="health">Health</option>
-          <option value="name">Name</option>
-          <option value="priority">Priority</option>
-          <option value="status">Status</option>
-        </select>
-        {(search || filterStatus !== "all" || sortBy !== "updated") && (
-          <button
-            onClick={() => { setSearch(""); setFilterStatus("all"); setSortBy("updated"); }}
-            className="text-[11px] text-[#444] hover:text-[#777] transition"
+
+        {/* Filter controls */}
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
+            aria-label="Filter by status"
+            className="border border-[#1a1a1a] bg-[#080808] px-3 py-2 text-xs text-[#555] focus:outline-none focus:border-[#333]"
           >
-            Clear
-          </button>
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+            <option value="completed">Completed</option>
+            <option value="archived">Archived</option>
+          </select>
+          
+          <select
+            value={filterHealth}
+            onChange={(e) => setFilterHealth(e.target.value as FilterHealth)}
+            aria-label="Filter by health"
+            className="border border-[#1a1a1a] bg-[#080808] px-3 py-2 text-xs text-[#555] focus:outline-none focus:border-[#333]"
+          >
+            <option value="all">All Health</option>
+            <option value="critical">Critical</option>
+            <option value="poor">Poor</option>
+            <option value="fair">Fair</option>
+            <option value="good">Good</option>
+            <option value="excellent">Excellent</option>
+          </select>
+          
+          {availableTags.length > 0 && (
+            <select
+              onChange={(e) => {
+                const tag = e.target.value;
+                if (tag && !selectedTags.includes(tag)) {
+                  setSelectedTags([...selectedTags, tag]);
+                }
+                e.target.value = "";
+              }}
+              aria-label="Filter by tech stack"
+              className="border border-[#1a1a1a] bg-[#080808] px-3 py-2 text-xs text-[#555] focus:outline-none focus:border-[#333]"
+            >
+              <option value="">+ Tech Stack</option>
+              {availableTags
+                .filter(tag => !selectedTags.includes(tag))
+                .map(tag => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))
+              }
+            </select>
+          )}
+          
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            aria-label="Sort projects"
+            className="border border-[#1a1a1a] bg-[#080808] px-3 py-2 text-xs text-[#555] focus:outline-none focus:border-[#333]"
+          >
+            <option value="updated">Recent</option>
+            <option value="alerts">Need Attention</option>
+            <option value="health">Health Score</option>
+            <option value="name">Name</option>
+            <option value="priority">Priority</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+
+        {/* Selected tags display */}
+        {selectedTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {selectedTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1a1a1a] text-[11px] text-[#999] hover:bg-[#222] hover:text-white transition"
+              >
+                {tag}
+                <Icon name="x" size={10} />
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
