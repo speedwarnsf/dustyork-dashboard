@@ -14,6 +14,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Project, Milestone } from "@/lib/types";
 import { differenceInDays, subDays, eachDayOfInterval, startOfDay, isSameDay } from "date-fns";
 import StatsRow from "@/components/StatsRow";
+import ProjectPulse from "@/components/ProjectPulse";
+import RecentActivity from "@/components/RecentActivity";
 
 export const revalidate = 60;
 
@@ -174,6 +176,32 @@ export default async function DashboardPage() {
   // Stale projects (active but no activity in 7+ days)
   const staleCount = projectsWithActivity.filter(p => p.daysSinceActivity >= 7 && p.status === "active").length;
 
+  // Project Pulse data
+  const milestonesInProgress = milestones.filter((m) => m.status === "in_progress").length;
+  const journalEntriesThisWeek = journalData.filter((j) => new Date(j.created_at) >= weekAgo).length;
+
+  // Recent Activity entries (last 10 journal entries)
+  const recentEntries = journalData.slice(0, 10).map((entry) => ({
+    id: entry.id,
+    content: entry.content,
+    entry_type: entry.entry_type,
+    created_at: entry.created_at,
+    projectName: entry.projects?.name || "Unknown",
+    projectId: entry.projects?.id || "",
+  }));
+
+  // Health trend: compare current health to stored health_score (previous snapshot)
+  const projectsWithTrend = projectsWithHealth.map((p) => {
+    const previousScore = p.health_score ?? null;
+    const currentScore = p.health.score;
+    let trend: "up" | "down" | "stable" = "stable";
+    if (previousScore !== null && previousScore !== undefined) {
+      if (currentScore > previousScore + 3) trend = "up";
+      else if (currentScore < previousScore - 3) trend = "down";
+    }
+    return { ...p, healthTrend: trend };
+  });
+
   return (
     <main>
       {/* Hero */}
@@ -239,6 +267,15 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Project Pulse */}
+        <div className="mb-6">
+          <ProjectPulse
+            activeProjects={activeProjects}
+            milestonesInProgress={milestonesInProgress}
+            journalEntriesThisWeek={journalEntriesThisWeek}
+          />
+        </div>
+
         {/* Stats */}
         <StatsRow
           projects={projects.length}
@@ -256,7 +293,7 @@ export default async function DashboardPage() {
       </section>
 
       {/* Projects first — the main event */}
-      <ProjectDashboard projects={projectsWithHealth} />
+      <ProjectDashboard projects={projectsWithTrend} />
 
       {/* Intelligence Section */}
       <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-6 sm:py-8">
@@ -264,6 +301,11 @@ export default async function DashboardPage() {
           <SmartInsights insights={insights} />
           <ActivityTimeline events={timelineEvents.slice(0, 100)} days={14} showProjectFilter />
         </div>
+      </section>
+
+      {/* Recent Activity */}
+      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
+        <RecentActivity entries={recentEntries} />
       </section>
 
       {/* Activity + Attention */}

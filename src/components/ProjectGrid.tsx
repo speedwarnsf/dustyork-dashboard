@@ -10,12 +10,13 @@ type ProjectGridProps = {
   projects: Array<Project & { 
     github?: GithubActivity | null;
     health?: ProjectHealth;
+    healthTrend?: "up" | "down" | "stable";
   }>;
 };
 
 // Lazy loading component wrapper
 function LazyProjectCard({ project, isVisible }: { 
-  project: Project & { github?: GithubActivity | null; health?: ProjectHealth; }, 
+  project: Project & { github?: GithubActivity | null; health?: ProjectHealth; healthTrend?: "up" | "down" | "stable"; }, 
   isVisible: boolean 
 }) {
   const [hasLoaded, setHasLoaded] = useState(false);

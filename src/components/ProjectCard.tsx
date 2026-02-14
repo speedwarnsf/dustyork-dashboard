@@ -21,6 +21,7 @@ type ProjectCardProps = {
   project: Project & { 
     github?: GithubActivity | null;
     health?: ProjectHealth;
+    healthTrend?: "up" | "down" | "stable";
   };
 };
 
@@ -58,8 +59,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           
           {/* Health score - top right */}
           {health && (
-            <div className="absolute top-3 right-3 text-xs font-mono font-medium px-2 py-1 bg-black/70 backdrop-blur-sm border border-[#1a1a1a]">
+            <div className="absolute top-3 right-3 text-xs font-mono font-medium px-2 py-1 bg-black/70 backdrop-blur-sm border border-[#1a1a1a] flex items-center gap-1">
               <span className={getHealthTextColor(health)}>{health.score}</span>
+              {project.healthTrend === "up" && <span className="text-green-400" title="Improving">&#9650;</span>}
+              {project.healthTrend === "down" && <span className="text-red-400" title="Declining">&#9660;</span>}
             </div>
           )}
           

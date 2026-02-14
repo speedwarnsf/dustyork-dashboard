@@ -12,6 +12,7 @@ type Props = {
   projects: Array<Project & { 
     github?: GithubActivity | null;
     health?: ProjectHealth;
+    healthTrend?: "up" | "down" | "stable";
   }>;
 };
 
