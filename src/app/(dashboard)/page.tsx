@@ -189,7 +189,7 @@ export default async function DashboardPage() {
                   <span className="text-[#d2ff5a]">{hotCount}</span> project{hotCount !== 1 ? "s" : ""} running hot
                   {staleCount > 0 && (
                     <span className="text-[#777] text-lg font-normal ml-3">
-                      / {staleCount} going cold
+                      / <span className="text-orange-400">{staleCount}</span> need attention
                     </span>
                   )}
                 </>
@@ -198,12 +198,30 @@ export default async function DashboardPage() {
                   {activeProjects} active project{activeProjects !== 1 ? "s" : ""}
                   {staleCount > 0 && (
                     <span className="text-[#777] text-lg font-normal ml-3">
-                      / {staleCount} need{staleCount === 1 ? "s" : ""} attention
+                      / <span className="text-orange-400">{staleCount}</span> need{staleCount === 1 ? "s" : ""} attention
                     </span>
                   )}
                 </>
               )}
             </h1>
+            <div className="flex items-center gap-4 mt-2 text-sm text-[#666]">
+              <div className="flex items-center gap-2">
+                <span>Avg Health:</span>
+                <span className={`font-mono ${
+                  avgHealthScore >= 80 ? "text-green-400" :
+                  avgHealthScore >= 60 ? "text-cyan-400" :
+                  avgHealthScore >= 40 ? "text-yellow-400" : "text-orange-400"
+                }`}>
+                  {Math.round(avgHealthScore)}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>Activity Streak:</span>
+                <span className={`font-mono ${streak >= 5 ? "text-green-400" : streak >= 2 ? "text-cyan-400" : "text-[#666]"}`}>
+                  {streak} day{streak !== 1 ? "s" : ""}
+                </span>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <button

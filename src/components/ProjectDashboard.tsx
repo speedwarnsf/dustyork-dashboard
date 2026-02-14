@@ -6,6 +6,7 @@ import type { GithubActivity } from "@/lib/github";
 import { getHealthDotColor } from "@/lib/health";
 import ProjectGrid from "@/components/ProjectGrid";
 import { Icon } from "./Icon";
+import { X } from "lucide-react";
 
 type Props = {
   projects: Array<Project & { 
@@ -221,7 +222,7 @@ export default function ProjectDashboard({ projects }: Props) {
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1a1a1a] text-[11px] text-[#999] hover:bg-[#222] hover:text-white transition"
               >
                 {tag}
-                <Icon name="x" size={10} />
+                <X size={10} />
               </button>
             ))}
           </div>
