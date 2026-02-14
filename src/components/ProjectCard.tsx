@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ExternalLink, Github, GitCommit, Globe, Clock, Rocket, Eye, Code, AlertTriangle } from "lucide-react";
+import { Github, GitCommit, Globe, Clock, Rocket, Eye, AlertTriangle } from "lucide-react";
 import OptimizedImage from "./OptimizedImage";
 import { deployProject } from "@/lib/actions";
 

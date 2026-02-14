@@ -79,7 +79,7 @@ export default function HealthScore({ health, size = "md", showFactors = false }
           <FactorBar
             label="Commit Activity"
             value={health.factors.commitActivity}
-            max={25}
+            max={30}
             icon="edit"
           />
           <FactorBar
@@ -97,8 +97,14 @@ export default function HealthScore({ health, size = "md", showFactors = false }
           <FactorBar
             label="CI/CD"
             value={health.factors.ciStatus}
-            max={25}
+            max={15}
             icon="settings"
+          />
+          <FactorBar
+            label="Freshness"
+            value={health.factors.freshnessScore}
+            max={5}
+            icon="clock"
           />
         </div>
       )}

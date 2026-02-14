@@ -34,7 +34,7 @@ ${p.live_url || ""}
 
 ${p.tags?.slice(0, 3).map((t) => `#${t.replace(/\s+/g, "")}`).join(" ") || ""}`,
 
-  linkedin: (p) => `🎉 Excited to announce the launch of ${p.name}!
+  linkedin: (p) => `Excited to announce the launch of ${p.name}!
 
 ${p.description || ""}
 
@@ -55,7 +55,7 @@ ${p.tags?.slice(0, 5).map((t) => `#${t.replace(/\s+/g, "")}`).join(" ") || ""}`,
 
 We built ${p.name} to [solve problem]. It's [unique value prop].
 
-🔗 ${p.live_url || ""}`,
+${p.live_url || ""}`,
 };
 
 export default function LaunchAnnouncement({ project }: Props) {

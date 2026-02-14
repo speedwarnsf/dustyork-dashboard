@@ -14,7 +14,7 @@ export default function GlobalError({
     <html lang="en">
       <body className="min-h-screen bg-black text-white flex items-center justify-center px-6">
         <div className="max-w-md text-center">
-          <div className="text-6xl mb-6">💥</div>
+          <div className="text-6xl mb-6 font-mono">!</div>
           <h1 className="text-2xl font-semibold mb-3">Critical Error</h1>
           <p className="text-[#8b8b8b] mb-6">
             Something went seriously wrong. Please try refreshing the page.

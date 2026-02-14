@@ -124,18 +124,18 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
     ciStatus = 10; // Unknown/no CI
   }
 
-  // 5. Freshness Score (10 points) - overall project activity
+  // 5. Freshness Score (5 points) - overall project activity
   const projectActivityDays = differenceInDays(new Date(), new Date(project.updated_at));
   if (projectActivityDays <= 1) {
-    freshnessScore = 10;
+    freshnessScore = 5;
   } else if (projectActivityDays <= 7) {
-    freshnessScore = 8;
-  } else if (projectActivityDays <= 30) {
-    freshnessScore = 6;
-  } else if (projectActivityDays <= 90) {
     freshnessScore = 4;
-  } else {
+  } else if (projectActivityDays <= 30) {
+    freshnessScore = 3;
+  } else if (projectActivityDays <= 90) {
     freshnessScore = 2;
+  } else {
+    freshnessScore = 1;
     if (project.status === "active") {
       alerts.push("No project activity in 90+ days");
     }

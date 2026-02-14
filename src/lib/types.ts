@@ -114,9 +114,9 @@ export type ProjectHealth = {
   factors: {
     commitActivity: number; // 0-30
     deploymentStatus: number; // 0-25
-    issueHealth: number; // 0-20
+    issueHealth: number; // 0-25
     ciStatus: number; // 0-15
-    freshnessScore: number; // 0-10
+    freshnessScore: number; // 0-5
   };
   status: "excellent" | "good" | "fair" | "poor" | "critical";
   alerts: string[];

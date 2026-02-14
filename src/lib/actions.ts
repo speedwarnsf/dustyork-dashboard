@@ -101,7 +101,7 @@ export function openInVSCode(githubRepo: string) {
 /**
  * Copy project info to clipboard for AI context
  */
-export async function copyProjectContext(project: any) {
+export async function copyProjectContext(project: { name: string; status: string; description?: string | null; github_repo?: string | null; live_url?: string | null; health?: { score: number; alerts?: string[] } | null; tags?: string[] | null; updated_at: string }) {
   const context = `
 Project: ${project.name}
 Status: ${project.status}
