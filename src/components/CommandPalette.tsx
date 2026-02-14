@@ -92,7 +92,7 @@ export default function CommandPalette() {
       });
   }, []);
 
-  // Handle keyboard shortcut (Cmd+K)
+  // Handle keyboard shortcut (Cmd+K) and custom open event
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -104,8 +104,14 @@ export default function CommandPalette() {
       }
     };
 
+    const handleOpen = () => setIsOpen(true);
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("open-command-palette", handleOpen);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("open-command-palette", handleOpen);
+    };
   }, []);
 
   // Focus input when opened

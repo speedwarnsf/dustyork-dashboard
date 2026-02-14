@@ -22,6 +22,7 @@ type ProjectCardProps = {
     github?: GithubActivity | null;
     health?: ProjectHealth;
     healthTrend?: "up" | "down" | "stable";
+    lastDeployed?: string | null;
   };
 };
 
@@ -105,9 +106,17 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
           {/* Footer meta */}
           <div className="flex items-center justify-between text-[11px] text-[#444] mt-auto pt-2">
-            <div className="flex items-center gap-1">
-              <Clock size={10} />
-              <TimeAgo date={project.updated_at} />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <Clock size={10} />
+                <TimeAgo date={project.updated_at} />
+              </div>
+              {project.lastDeployed && (
+                <div className="flex items-center gap-1 text-[#555]">
+                  <Rocket size={9} />
+                  <TimeAgo date={project.lastDeployed} />
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-3">
               {project.github?.openIssues != null && project.github.openIssues > 0 && (

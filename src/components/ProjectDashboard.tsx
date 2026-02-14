@@ -13,6 +13,7 @@ type Props = {
     github?: GithubActivity | null;
     health?: ProjectHealth;
     healthTrend?: "up" | "down" | "stable";
+    lastDeployed?: string | null;
   }>;
 };
 

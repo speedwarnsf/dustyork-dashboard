@@ -16,6 +16,7 @@ import { differenceInDays, subDays, eachDayOfInterval, startOfDay, isSameDay } f
 import StatsRow from "@/components/StatsRow";
 import ProjectPulse from "@/components/ProjectPulse";
 import RecentActivity from "@/components/RecentActivity";
+import MobileSearchButton from "@/components/MobileSearchButton";
 
 export const revalidate = 60;
 
@@ -180,6 +181,19 @@ export default async function DashboardPage() {
   const milestonesInProgress = milestones.filter((m) => m.status === "in_progress").length;
   const journalEntriesThisWeek = journalData.filter((j) => new Date(j.created_at) >= weekAgo).length;
 
+  // Status breakdown for Pulse
+  const completedProjects = projects.filter((p) => p.status === "completed").length;
+  const pausedProjects = projects.filter((p) => p.status === "paused").length;
+  const archivedProjects = projects.filter((p) => p.status === "archived").length;
+
+  // Last deployed timestamps per project (from io_update journal entries or updated_at)
+  const lastDeployedMap: Record<string, string> = {};
+  for (const entry of journalData) {
+    if (entry.entry_type === "io_update" && entry.projects?.id && !lastDeployedMap[entry.projects.id]) {
+      lastDeployedMap[entry.projects.id] = entry.created_at;
+    }
+  }
+
   // Recent Activity entries (last 10 journal entries)
   const recentEntries = journalData.slice(0, 10).map((entry) => ({
     id: entry.id,
@@ -199,7 +213,8 @@ export default async function DashboardPage() {
       if (currentScore > previousScore + 3) trend = "up";
       else if (currentScore < previousScore - 3) trend = "down";
     }
-    return { ...p, healthTrend: trend };
+    const lastDeployed = lastDeployedMap[p.id] || null;
+    return { ...p, healthTrend: trend, lastDeployed };
   });
 
   return (
@@ -252,12 +267,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={undefined}
-              className="hidden sm:flex items-center gap-2 border border-[#1a1a1a] px-3 py-2 text-xs text-[#555] hover:border-[#333] hover:text-[#999] transition"
-            >
-              <kbd className="text-[10px] text-[#444] font-mono">Cmd+K</kbd>
-            </button>
+            <MobileSearchButton />
             <a
               href="/project/new"
               className="bg-white px-4 py-2 text-sm font-medium text-black hover:bg-[#e8e8e8] transition"
@@ -271,6 +281,10 @@ export default async function DashboardPage() {
         <div className="mb-6">
           <ProjectPulse
             activeProjects={activeProjects}
+            completedProjects={completedProjects}
+            pausedProjects={pausedProjects}
+            archivedProjects={archivedProjects}
+            totalProjects={projects.length}
             milestonesInProgress={milestonesInProgress}
             journalEntriesThisWeek={journalEntriesThisWeek}
           />
