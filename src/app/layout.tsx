@@ -26,17 +26,20 @@ export const metadata: Metadata = {
     url: "https://dustyork.com",
     siteName: "D's Command Center",
     type: "website",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "D's Project Command Center",
     description: "Personal project dashboard with GitHub intelligence, milestones, and activity tracking.",
-    images: ["/og-image.png"],
+    images: ["/opengraph-image"],
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://dustyork.com",
   },
   icons: {
     icon: "/favicon.ico",
@@ -50,6 +53,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "D's Project Command Center",
+              url: "https://dustyork.com",
+              description:
+                "Personal project dashboard with GitHub intelligence, milestones, and activity tracking.",
+              applicationCategory: "DeveloperApplication",
+              operatingSystem: "Web",
+            }),
+          }}
+        />
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
       >
