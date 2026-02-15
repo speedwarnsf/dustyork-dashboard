@@ -17,6 +17,7 @@ import StatsRow from "@/components/StatsRow";
 import ProjectPulse from "@/components/ProjectPulse";
 import RecentActivity from "@/components/RecentActivity";
 import MobileSearchButton from "@/components/MobileSearchButton";
+import FocusSuggestion from "@/components/FocusSuggestion";
 
 export const revalidate = 60;
 
@@ -288,6 +289,11 @@ export default async function DashboardPage() {
             milestonesInProgress={milestonesInProgress}
             journalEntriesThisWeek={journalEntriesThisWeek}
           />
+        </div>
+
+        {/* Focus Suggestion */}
+        <div className="mb-6">
+          <FocusSuggestion projects={projectsWithActivity} />
         </div>
 
         {/* Stats */}

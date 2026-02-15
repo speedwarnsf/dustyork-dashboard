@@ -1,5 +1,6 @@
 "use client";
 import type { Project, ProjectHealth } from "@/lib/types";
+import type { GithubActivity } from "@/lib/github";
 import { AlertTriangle, Clock, GitCommit, Globe, Github } from "lucide-react";
 import TimeAgo from "./TimeAgo";
 import { getHealthDotColor } from "@/lib/health";
@@ -8,6 +9,7 @@ type ProjectWithActivity = Project & {
   lastActivity?: string;
   daysSinceActivity?: number;
   health?: ProjectHealth;
+  github?: GithubActivity | null;
 };
 
 type Props = {
@@ -130,15 +132,25 @@ export default function NeedsAttention({ projects }: Props) {
                 </div>
               </div>
               
-              {/* Severity indicator */}
-              <div className={`text-[10px] font-mono px-2 py-1 shrink-0 ${
-                hasHealthIssues && healthScore < 30
-                  ? "text-red-400 bg-red-500/10 border border-red-500/20"
-                  : hasHealthIssues || (project.daysSinceActivity || 0) >= 30
-                  ? "text-orange-400 bg-orange-500/10 border border-orange-500/20"
-                  : "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20"
-              }`}>
-                {hasHealthIssues ? "HEALTH" : `${project.daysSinceActivity}D`}
+              {/* Severity + suggested action */}
+              <div className="text-right shrink-0">
+                <div className={`text-[10px] font-mono px-2 py-1 ${
+                  hasHealthIssues && healthScore < 30
+                    ? "text-red-400 bg-red-500/10 border border-red-500/20"
+                    : hasHealthIssues || (project.daysSinceActivity || 0) >= 30
+                    ? "text-orange-400 bg-orange-500/10 border border-orange-500/20"
+                    : "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20"
+                }`}>
+                  {hasHealthIssues ? "HEALTH" : `${project.daysSinceActivity}D`}
+                </div>
+                <p className="text-[9px] text-[#444] mt-1 max-w-[100px]">
+                  {project.github?.ciStatus === "failure" ? "Fix CI first" :
+                   isStale && (project.daysSinceActivity || 0) >= 30 ? "Push any commit" :
+                   isStale ? "Open it up" :
+                   hasHealthIssues && (project.github?.openIssues || 0) > 5 ? "Triage issues" :
+                   hasHealthIssues && !project.live_url ? "Deploy it" :
+                   "Review health"}
+                </p>
               </div>
             </a>
           );

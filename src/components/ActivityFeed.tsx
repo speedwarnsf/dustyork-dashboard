@@ -110,6 +110,22 @@ export default function ActivityFeed({ activities, showProjectFilter = true }: P
         </div>
       </div>
 
+      {/* Today summary */}
+      {groupedActivities["Today"] && groupedActivities["Today"].length > 0 && (
+        <div className="mb-4 px-3 py-2 border border-[#1a1a1a] bg-[#0a0a0a]">
+          <p className="text-[11px] text-[#666]">
+            <span className="text-white font-medium">{groupedActivities["Today"].length}</span> event{groupedActivities["Today"].length !== 1 ? "s" : ""} today across{" "}
+            <span className="text-white font-medium">
+              {new Set(groupedActivities["Today"].map(a => a.projectName)).size}
+            </span> project{new Set(groupedActivities["Today"].map(a => a.projectName)).size !== 1 ? "s" : ""}
+            {(() => {
+              const todayProjects = Array.from(new Set(groupedActivities["Today"].map(a => a.projectName)));
+              return todayProjects.length <= 3 ? ` -- ${todayProjects.join(", ")}` : "";
+            })()}
+          </p>
+        </div>
+      )}
+
       {/* List */}
       <div className={`space-y-1 ${isExpanded ? "" : "max-h-[480px]"} overflow-y-auto`}>
         {Object.entries(groupedActivities).map(([period, items]) => (

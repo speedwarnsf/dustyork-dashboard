@@ -124,6 +124,42 @@ export default function HealthScore({ health, size = "md", showFactors = false }
   );
 }
 
+const factorAdvice: Record<string, Record<string, string>> = {
+  "Commit Activity": {
+    low: "Push a commit -- even a small fix keeps momentum.",
+    mid: "Decent pace. A few more commits this week would help.",
+    high: "",
+  },
+  "Deployment": {
+    low: "Get a live URL deployed. Vercel/Netlify makes this trivial.",
+    mid: "Add a custom domain or enable HTTPS to max this out.",
+    high: "",
+  },
+  "Issue Health": {
+    low: "Triage and close stale issues to bring this up.",
+    mid: "A few open issues. Close or label what you can.",
+    high: "",
+  },
+  "CI/CD": {
+    low: "CI is failing or missing. Fix the pipeline or add one.",
+    mid: "CI exists but isn't fully passing. Check the latest run.",
+    high: "",
+  },
+  "Freshness": {
+    low: "This project hasn't been touched in a while. Open it up.",
+    mid: "Activity is tapering off. Even a journal entry counts.",
+    high: "",
+  },
+};
+
+function getAdvice(label: string, percentage: number): string {
+  const advice = factorAdvice[label];
+  if (!advice) return "";
+  if (percentage >= 80) return advice.high;
+  if (percentage >= 50) return advice.mid;
+  return advice.low;
+}
+
 function FactorBar({
   label,
   value,
@@ -145,6 +181,8 @@ function FactorBar({
       ? "bg-yellow-400"
       : "bg-red-400";
 
+  const advice = getAdvice(label, percentage);
+
   return (
     <div className="flex items-center gap-3">
       <span className="text-sm w-5"><Icon name={icon} size={14} /></span>
@@ -159,6 +197,9 @@ function FactorBar({
             style={{ width: `${percentage}%` }}
           />
         </div>
+        {advice && (
+          <p className="text-[10px] text-[#555] mt-1 italic">{advice}</p>
+        )}
       </div>
     </div>
   );

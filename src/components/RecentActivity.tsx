@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 
 type RecentEntry = {
@@ -24,6 +25,8 @@ const typeColors: Record<string, string> = {
 };
 
 export default function RecentActivity({ entries }: Props) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   if (entries.length === 0) return null;
 
   return (
@@ -35,32 +38,43 @@ export default function RecentActivity({ entries }: Props) {
         </h3>
       </div>
       <div className="divide-y divide-[#1a1a1a]">
-        {entries.map((entry) => (
-          <a
-            key={entry.id}
-            href={`/project/${entry.projectId}`}
-            className="block px-5 py-3 hover:bg-[#0c0c0c] transition-colors group"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] uppercase tracking-[0.15em] text-[#444] font-mono">
-                    {entry.projectName}
-                  </span>
-                  <span className={`text-[10px] uppercase tracking-[0.1em] ${typeColors[entry.entry_type] || "text-[#555]"}`}>
-                    {entry.entry_type.replace("_", " ")}
-                  </span>
+        {entries.map((entry) => {
+          const isLong = entry.content.length > 120;
+          const isExpanded = expandedId === entry.id;
+          return (
+            <div key={entry.id} className="group">
+              <div className="flex items-start justify-between gap-3 px-5 py-3 hover:bg-[#0c0c0c] transition-colors">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <a
+                      href={`/project/${entry.projectId}`}
+                      className="text-[10px] uppercase tracking-[0.15em] text-[#444] font-mono hover:text-white transition-colors"
+                    >
+                      {entry.projectName}
+                    </a>
+                    <span className={`text-[10px] uppercase tracking-[0.1em] ${typeColors[entry.entry_type] || "text-[#555]"}`}>
+                      {entry.entry_type.replace("_", " ")}
+                    </span>
+                  </div>
+                  <p className={`text-sm text-[#888] group-hover:text-[#ccc] transition-colors whitespace-pre-wrap ${isExpanded ? "" : "line-clamp-2"}`}>
+                    {entry.content}
+                  </p>
+                  {isLong && (
+                    <button
+                      onClick={() => setExpandedId(isExpanded ? null : entry.id)}
+                      className="text-[11px] text-[#555] hover:text-[#999] mt-1 transition-colors"
+                    >
+                      {isExpanded ? "Show less" : "Show more"}
+                    </button>
+                  )}
                 </div>
-                <p className="text-sm text-[#888] line-clamp-1 group-hover:text-[#ccc] transition-colors">
-                  {entry.content}
-                </p>
+                <span className="text-[11px] text-[#444] font-mono shrink-0 mt-0.5">
+                  {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}
+                </span>
               </div>
-              <span className="text-[11px] text-[#444] font-mono shrink-0 mt-0.5">
-                {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}
-              </span>
             </div>
-          </a>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

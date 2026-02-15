@@ -20,6 +20,7 @@ import HealthScore from "@/components/HealthScore";
 import LaunchChecklist from "@/components/LaunchChecklist";
 import LaunchAnnouncement from "@/components/LaunchAnnouncement";
 import { fetchRecentCommits } from "@/lib/github";
+import { differenceInDays } from "date-fns";
 
 type MilestoneWithTasks = Milestone & { tasks: Task[] };
 
@@ -91,6 +92,14 @@ export default async function ProjectDetailPage({
   // Calculate project health
   const health = calculateProjectHealth({ ...typedProject, github });
 
+  // Days since last activity
+  const lastActivityDate = github?.lastCommitDate || typedProject.updated_at;
+  const daysSinceActivity = differenceInDays(new Date(), new Date(lastActivityDate));
+
+  // Milestone progress
+  const completedMilestoneCount = milestones.filter(m => m.status === "completed").length;
+  const milestoneProgressPct = milestones.length > 0 ? Math.round((completedMilestoneCount / milestones.length) * 100) : 0;
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-6 sm:py-10 text-white">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -139,6 +148,48 @@ export default async function ProjectDetailPage({
           </div>
         </div>
       </div>
+
+      {/* Quick Status Bar */}
+      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-px bg-[#1a1a1a] border border-[#1a1a1a]">
+        <div className="bg-[#080808] p-4">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-1">Health</p>
+          <p className={`text-xl font-semibold tabular-nums ${
+            health.score >= 70 ? "text-green-400" : health.score >= 50 ? "text-yellow-400" : "text-red-400"
+          }`}>{health.score}</p>
+          <p className="text-[10px] text-[#444] mt-1">{health.status}</p>
+        </div>
+        <div className="bg-[#080808] p-4">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-1">Last Activity</p>
+          <p className={`text-xl font-semibold tabular-nums ${
+            daysSinceActivity <= 3 ? "text-green-400" : daysSinceActivity <= 7 ? "text-yellow-400" : "text-orange-400"
+          }`}>{daysSinceActivity}<span className="text-sm text-[#444] font-normal ml-1">d ago</span></p>
+          <p className="text-[10px] text-[#444] mt-1">{daysSinceActivity <= 1 ? "Active today" : daysSinceActivity <= 7 ? "This week" : "Getting stale"}</p>
+        </div>
+        <div className="bg-[#080808] p-4">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-1">Milestones</p>
+          <p className="text-xl font-semibold tabular-nums">{completedMilestoneCount}<span className="text-sm text-[#444] font-normal">/{milestones.length}</span></p>
+          <div className="mt-2 h-[2px] bg-[#1a1a1a] overflow-hidden">
+            <div className="h-full bg-[#d2ff5a]" style={{ width: `${milestoneProgressPct}%` }} />
+          </div>
+        </div>
+        <div className="bg-[#080808] p-4">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#555] font-mono mb-1">Journal</p>
+          <p className="text-xl font-semibold tabular-nums">{(journalData || []).length}</p>
+          <p className="text-[10px] text-[#444] mt-1">entries logged</p>
+        </div>
+      </div>
+
+      {/* Top Alert */}
+      {health.alerts.length > 0 && typedProject.status === "active" && (
+        <div className="mt-4 border border-orange-500/20 bg-orange-500/5 px-5 py-3">
+          <p className="text-xs text-orange-400 font-medium mb-1">Attention needed</p>
+          <ul className="text-xs text-[#888] space-y-1">
+            {health.alerts.map((alert, i) => (
+              <li key={i}>-- {alert}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Command Center */}
       <div className="mt-6">
