@@ -13,6 +13,8 @@ import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Project, Milestone } from "@/lib/types";
 import { differenceInDays, subDays, eachDayOfInterval, startOfDay, isSameDay } from "date-fns";
+import AlertsPanel from "@/components/AlertsPanel";
+import type { Alert } from "@/lib/alerts";
 import StatsRow from "@/components/StatsRow";
 import ProjectPulse from "@/components/ProjectPulse";
 import RecentActivity from "@/components/RecentActivity";
@@ -36,6 +38,7 @@ export default async function DashboardPage() {
   let projects: Project[] = [];
   let milestones: Array<Milestone & { projects: { name: string } | null }> = [];
   let journalData: Array<{ id: string; content: string; entry_type: string; created_at: string; projects: { id: string; name: string } | null }> = [];
+  let alertsData: Alert[] = [];
 
   try {
     const supabase = await createSupabaseServerClient();
@@ -64,6 +67,13 @@ export default async function DashboardPage() {
       .limit(50);
     if (journalError) console.error("Journal fetch error:", journalError);
     journalData = journalResult || [];
+
+    const { data: alertsResult } = await supabase
+      .from("alerts")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    alertsData = (alertsResult || []) as Alert[];
   } catch (err) {
     console.error("Database error:", err);
   }
@@ -361,6 +371,11 @@ export default async function DashboardPage() {
               </div>
             </section>
           ),
+          alerts: alertsData.filter(a => a.status !== "resolved").length > 0 ? (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 pb-4">
+              <AlertsPanel alerts={alertsData} showHistory />
+            </section>
+          ) : null,
           stats: (
             <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 pb-4">
               <StatsRow

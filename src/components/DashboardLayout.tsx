@@ -11,6 +11,7 @@ type Widget = {
 
 const DEFAULT_WIDGETS: Widget[] = [
   { id: "pulse", label: "Project Pulse", visible: true },
+  { id: "alerts", label: "Alerts", visible: true },
   { id: "focus", label: "Focus Suggestion", visible: true },
   { id: "stats", label: "Stats Row", visible: true },
   { id: "comparison", label: "Project Comparison", visible: true },

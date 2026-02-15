@@ -2,8 +2,10 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fetchGithubActivity, fetchDeployStatus } from "@/lib/github";
 import { calculateProjectHealth } from "@/lib/health";
 import type { Project, Milestone } from "@/lib/types";
+import type { Alert } from "@/lib/alerts";
 import { differenceInDays, subHours, format } from "date-fns";
 import Link from "next/link";
+import AlertsPanel from "@/components/AlertsPanel";
 
 export const revalidate = 60;
 
@@ -99,6 +101,24 @@ export default async function BriefingPage() {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const dateStr = format(now, "EEEE, MMMM d, yyyy");
 
+  // Fetch active alerts
+  const { data: alertsData } = await supabase
+    .from("alerts")
+    .select("*")
+    .in("status", ["unread", "read"])
+    .order("created_at", { ascending: false })
+    .limit(20);
+  const activeAlerts = (alertsData || []) as Alert[];
+
+  // Also fetch recent resolved for history
+  const { data: resolvedData } = await supabase
+    .from("alerts")
+    .select("*")
+    .eq("status", "resolved")
+    .order("created_at", { ascending: false })
+    .limit(20);
+  const allAlerts = [...activeAlerts, ...(resolvedData || [])] as Alert[];
+
   const nothingHappened = changedProjects.length === 0 && recentJournal.length === 0 && recentCommits.length === 0;
 
   return (
@@ -122,6 +142,13 @@ export default async function BriefingPage() {
             </Link>
           </div>
         </header>
+
+        {/* Active Alerts */}
+        {activeAlerts.length > 0 && (
+          <section className="mb-10">
+            <AlertsPanel alerts={allAlerts} showHistory />
+          </section>
+        )}
 
         {/* Overnight Summary */}
         <section className="mb-10">
