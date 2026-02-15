@@ -9,9 +9,9 @@ type ProjectWithGithub = Project & { github?: GithubActivity | null };
  * Factors:
  * - Commit Activity (30 points): Recent commits = healthy, weighted by frequency
  * - Deployment Status (25 points): Live + SSL + domain = healthy
- * - Issue Health (20 points): Low open issues = healthy
+ * - Issue Health (25 points): Low open issues = healthy
  * - CI Status (15 points): Passing CI = healthy
- * - Freshness (10 points): Recent activity across all project areas
+ * - Freshness (5 points): Recent activity across all project areas
  */
 export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealth {
   const alerts: string[] = [];
