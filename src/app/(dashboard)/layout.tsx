@@ -4,6 +4,7 @@ import { signOut } from "../(auth)/actions";
 import CommandPalette from "@/components/CommandPalette";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import Header from "@/components/Header";
+import DarkModeToggle from "@/components/DarkModeToggle";
 import MobileLayout from "@/components/MobileLayout";
 import { Toaster } from "react-hot-toast";
 
@@ -50,6 +51,7 @@ export default async function DashboardLayout({
             <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-3">
               <Header />
               <div className="flex items-center gap-4">
+                <DarkModeToggle />
                 <div id="profile" className="hidden sm:block text-right">
                   <p className="text-xs text-[#555] font-mono">{user.email}</p>
                 </div>

@@ -189,7 +189,7 @@ export default function ProjectDashboard({ projects }: Props) {
               aria-label="Filter by tech stack"
               className="border border-[#1a1a1a] bg-[#080808] px-3 py-2 text-xs text-[#555] focus:outline-none focus:border-[#333]"
             >
-              <option value="">+ Tech Stack</option>
+              <option value="">+ Filter Tag</option>
               {availableTags
                 .filter(tag => !selectedTags.includes(tag))
                 .map(tag => (

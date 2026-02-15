@@ -12,6 +12,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { JournalEntry, Milestone, Project, Task } from "@/lib/types";
 import MilestoneList from "@/components/MilestoneList";
 import MilestoneTimeline from "@/components/MilestoneTimeline";
+import GanttMilestones from "@/components/GanttMilestones";
 import RecentCommits from "@/components/RecentCommits";
 import JournalEntryCard from "@/components/JournalEntry";
 import CommandCenter from "@/components/CommandCenter";
@@ -337,6 +338,11 @@ export default async function ProjectDetailPage({
           />
         </section>
       )}
+
+      {/* Gantt Timeline */}
+      <section className="mt-8">
+        <GanttMilestones milestones={milestones} />
+      </section>
 
       {/* Timeline + Commits Section */}
       <section className="mt-8 grid gap-6 lg:grid-cols-2">

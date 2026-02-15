@@ -243,6 +243,83 @@ main {
   }
 }
 
+/* Light mode */
+html.light-mode {
+  --background: #f5f5f0;
+  --foreground: #1a1a1a;
+  --muted: #666;
+  --accent: #0066cc;
+  --accent-2: #2d8a2d;
+  --border: #ddd;
+  --card: #ffffff;
+  --glass: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(200, 200, 200, 0.5);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 102, 204, 0.15);
+  color-scheme: light;
+}
+
+html.light-mode body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+html.light-mode .bg-black { background: #ffffff; }
+html.light-mode .bg-\[\#080808\] { background: #fafafa; }
+html.light-mode .bg-\[\#0a0a0a\] { background: #ffffff; }
+html.light-mode .bg-\[\#0c0c0c\] { background: #f9f9f5; }
+html.light-mode .bg-\[\#111\] { background: #eee; }
+html.light-mode .bg-\[\#1a1a1a\] { background: #ddd; }
+html.light-mode .bg-\[\#1c1c1c\] { background: #ddd; }
+
+html.light-mode .text-\[\#e8e8e8\] { color: #1a1a1a; }
+html.light-mode .text-\[\#999\] { color: #444; }
+html.light-mode .text-\[\#888\] { color: #555; }
+html.light-mode .text-\[\#8b8b8b\] { color: #555; }
+html.light-mode .text-\[\#777\] { color: #666; }
+html.light-mode .text-\[\#666\] { color: #777; }
+html.light-mode .text-\[\#555\] { color: #888; }
+html.light-mode .text-\[\#444\] { color: #999; }
+html.light-mode .text-\[\#333\] { color: #bbb; }
+html.light-mode .text-white { color: #000; }
+
+html.light-mode .border-\[\#1a1a1a\] { border-color: #ddd; }
+html.light-mode .border-\[\#1c1c1c\] { border-color: #ddd; }
+
+html.light-mode .bg-white { background: #000; }
+html.light-mode .bg-white.text-black { color: #fff; }
+
+html.light-mode .bg-black\/80 { background: rgba(255, 255, 255, 0.85); }
+html.light-mode .bg-black\/95 { background: rgba(255, 255, 255, 0.97); }
+html.light-mode .bg-black\/70 { background: rgba(255, 255, 255, 0.8); }
+html.light-mode .bg-black\/50 { background: rgba(255, 255, 255, 0.6); }
+
+html.light-mode input,
+html.light-mode select,
+html.light-mode textarea {
+  background: #fff;
+  border-color: #ddd;
+  color: #1a1a1a;
+}
+
+html.light-mode code {
+  background: #f0f0f0;
+  border-color: #ddd;
+}
+
+html.light-mode ::-webkit-scrollbar-thumb {
+  background: #ccc;
+}
+
+html.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+html.light-mode .shimmer {
+  background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%);
+  background-size: 200% 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -19,6 +19,10 @@ import RecentActivity from "@/components/RecentActivity";
 import MobileSearchButton from "@/components/MobileSearchButton";
 import FocusSuggestion from "@/components/FocusSuggestion";
 
+const UnifiedTimeline = dynamic(() => import("@/components/UnifiedTimeline"));
+const WeeklyDigest = dynamic(() => import("@/components/WeeklyDigest"));
+const GanttMilestones = dynamic(() => import("@/components/GanttMilestones"));
+
 export const revalidate = 60;
 
 export default async function DashboardPage() {
@@ -321,6 +325,31 @@ export default async function DashboardPage() {
           <SmartInsights insights={insights} />
           <ActivityTimeline events={timelineEvents.slice(0, 100)} days={14} showProjectFilter />
         </div>
+      </section>
+
+      {/* Weekly Digest + Gantt */}
+      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+          <WeeklyDigest
+            activities={activities}
+            totalProjects={projects.length}
+            activeProjects={activeProjects}
+          />
+          <GanttMilestones
+            milestones={milestones.map(m => ({
+              ...m,
+              projectName: m.projects?.name || undefined,
+            }))}
+          />
+        </div>
+      </section>
+
+      {/* Unified Changelog */}
+      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
+        <UnifiedTimeline
+          entries={timelineEvents}
+          projectNames={Array.from(new Set(timelineEvents.map(e => e.projectName))).sort()}
+        />
       </section>
 
       {/* Recent Activity */}
