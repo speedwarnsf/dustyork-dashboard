@@ -23,6 +23,11 @@ const UnifiedTimeline = dynamic(() => import("@/components/UnifiedTimeline"));
 const WeeklyDigest = dynamic(() => import("@/components/WeeklyDigest"));
 const GanttMilestones = dynamic(() => import("@/components/GanttMilestones"));
 const BulkJournalEntry = dynamic(() => import("@/components/BulkJournalEntry"));
+const ProjectComparison = dynamic(() => import("@/components/ProjectComparison"));
+const GlobalSearch = dynamic(() => import("@/components/GlobalSearch"));
+const CustomizableDashboardLayout = dynamic(() => import("@/components/DashboardLayout"));
+const QuickActions = dynamic(() => import("@/components/QuickActions"));
+const DataExport = dynamic(() => import("@/components/DataExport"));
 
 export const revalidate = 60;
 
@@ -227,8 +232,45 @@ export default async function DashboardPage() {
     return { ...p, healthTrend: trend, lastDeployed, sparklineData: p.sparklineData || [], deployStatus: p.deployStatus };
   });
 
+  // Build global search items
+  const searchItems = [
+    ...journalData.map((entry) => ({
+      id: `j-${entry.id}`,
+      type: "journal" as const,
+      title: (entry.content || "").slice(0, 80),
+      snippet: entry.content || "",
+      projectName: entry.projects?.name || "Unknown",
+      projectId: entry.projects?.id || "",
+      date: entry.created_at,
+    })),
+    ...milestones.map((m) => ({
+      id: `m-${m.id}`,
+      type: "milestone" as const,
+      title: m.name,
+      snippet: m.description || `${m.percent_complete}% complete`,
+      projectName: m.projects?.name || "Unknown",
+      projectId: m.project_id,
+      date: m.updated_at,
+    })),
+    ...projects.map((p) => ({
+      id: `p-${p.id}`,
+      type: "project" as const,
+      title: p.name,
+      snippet: p.description || "",
+      projectName: p.name,
+      projectId: p.id,
+      date: p.updated_at,
+    })),
+  ];
+
   return (
     <main>
+      {/* Global Search (Cmd+Shift+F) */}
+      <GlobalSearch items={searchItems} />
+
+      {/* Quick Actions FAB */}
+      <QuickActions />
+
       {/* Hero */}
       <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 pt-8 pb-4">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-8">
@@ -276,8 +318,9 @@ export default async function DashboardPage() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <MobileSearchButton />
+            <DataExport />
             <a
               href="/analytics"
               className="border border-[#1a1a1a] px-4 py-2 text-sm font-medium text-[#666] hover:border-[#7bdcff] hover:text-[#7bdcff] transition"
@@ -292,94 +335,110 @@ export default async function DashboardPage() {
             </a>
           </div>
         </div>
-
-        {/* Project Pulse */}
-        <div className="mb-6">
-          <ProjectPulse
-            activeProjects={activeProjects}
-            completedProjects={completedProjects}
-            pausedProjects={pausedProjects}
-            archivedProjects={archivedProjects}
-            totalProjects={projects.length}
-            milestonesInProgress={milestonesInProgress}
-            journalEntriesThisWeek={journalEntriesThisWeek}
-          />
-        </div>
-
-        {/* Focus Suggestion */}
-        <div className="mb-6">
-          <FocusSuggestion projects={projectsWithActivity} />
-        </div>
-
-        {/* Stats */}
-        <StatsRow
-          projects={projects.length}
-          activeProjects={activeProjects}
-          totalMilestones={totalMilestones}
-          completedMilestones={completedMilestones}
-          avgHealthScore={avgHealthScore}
-          activeThisWeek={projectsWithActivity.filter(p => p.daysSinceActivity <= 7 && p.status === "active").length}
-          weeklyActivityCount={weeklyActivityCount}
-          monthlyActivityCount={monthlyActivityCount}
-          commitCount={commitActivities.filter(a => new Date(a.timestamp) >= monthAgo).length}
-          streak={streak}
-          sparklineData={dailyActivityCounts}
-        />
       </section>
 
-      {/* Projects first — the main event */}
-      <ProjectDashboard projects={projectsWithTrend} />
-
-      {/* Intelligence Section */}
-      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-6 sm:py-8">
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-          <SmartInsights insights={insights} />
-          <ActivityTimeline events={timelineEvents.slice(0, 100)} days={14} showProjectFilter />
-        </div>
-      </section>
-
-      {/* Weekly Digest + Gantt */}
-      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-          <WeeklyDigest
-            activities={activities}
-            totalProjects={projects.length}
-            activeProjects={activeProjects}
-          />
-          <GanttMilestones
-            milestones={milestones.map(m => ({
-              ...m,
-              projectName: m.projects?.name || undefined,
-            }))}
-          />
-        </div>
-      </section>
-
-      {/* Unified Changelog */}
-      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
-        <UnifiedTimeline
-          entries={timelineEvents}
-          projectNames={Array.from(new Set(timelineEvents.map(e => e.projectName))).sort()}
-        />
-      </section>
-
-      {/* Recent Activity */}
-      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
-        <RecentActivity entries={recentEntries} />
-      </section>
-
-      {/* Bulk Journal Entry */}
-      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
-        <BulkJournalEntry projects={projects.map(p => ({ id: p.id, name: p.name }))} />
-      </section>
-
-      {/* Activity + Attention */}
-      <section id="activity" className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6 scroll-mt-24">
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-          <ActivityFeed activities={activities.slice(0, 25)} showProjectFilter />
-          <NeedsAttention projects={projectsWithActivity} />
-        </div>
-      </section>
+      <CustomizableDashboardLayout>
+        {{
+          pulse: (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 pb-4">
+              <div className="mb-6">
+                <ProjectPulse
+                  activeProjects={activeProjects}
+                  completedProjects={completedProjects}
+                  pausedProjects={pausedProjects}
+                  archivedProjects={archivedProjects}
+                  totalProjects={projects.length}
+                  milestonesInProgress={milestonesInProgress}
+                  journalEntriesThisWeek={journalEntriesThisWeek}
+                />
+              </div>
+            </section>
+          ),
+          focus: (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 pb-4">
+              <div className="mb-6">
+                <FocusSuggestion projects={projectsWithActivity} />
+              </div>
+            </section>
+          ),
+          stats: (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 pb-4">
+              <StatsRow
+                projects={projects.length}
+                activeProjects={activeProjects}
+                totalMilestones={totalMilestones}
+                completedMilestones={completedMilestones}
+                avgHealthScore={avgHealthScore}
+                activeThisWeek={projectsWithActivity.filter(p => p.daysSinceActivity <= 7 && p.status === "active").length}
+                weeklyActivityCount={weeklyActivityCount}
+                monthlyActivityCount={monthlyActivityCount}
+                commitCount={commitActivities.filter(a => new Date(a.timestamp) >= monthAgo).length}
+                streak={streak}
+                sparklineData={dailyActivityCounts}
+              />
+            </section>
+          ),
+          comparison: (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4">
+              <ProjectComparison projects={projectsWithTrend} />
+            </section>
+          ),
+          projects: (
+            <ProjectDashboard projects={projectsWithTrend} />
+          ),
+          intelligence: (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-6 sm:py-8">
+              <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+                <SmartInsights insights={insights} />
+                <ActivityTimeline events={timelineEvents.slice(0, 100)} days={14} showProjectFilter />
+              </div>
+            </section>
+          ),
+          "digest-gantt": (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
+              <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+                <WeeklyDigest
+                  activities={activities}
+                  totalProjects={projects.length}
+                  activeProjects={activeProjects}
+                />
+                <GanttMilestones
+                  milestones={milestones.map(m => ({
+                    ...m,
+                    projectName: m.projects?.name || undefined,
+                  }))}
+                />
+              </div>
+            </section>
+          ),
+          timeline: (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
+              <UnifiedTimeline
+                entries={timelineEvents}
+                projectNames={Array.from(new Set(timelineEvents.map(e => e.projectName))).sort()}
+              />
+            </section>
+          ),
+          recent: (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
+              <RecentActivity entries={recentEntries} />
+            </section>
+          ),
+          "bulk-journal": (
+            <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6" data-bulk-journal>
+              <BulkJournalEntry projects={projects.map(p => ({ id: p.id, name: p.name }))} />
+            </section>
+          ),
+          "activity-attention": (
+            <section id="activity" className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6 scroll-mt-24">
+              <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+                <ActivityFeed activities={activities.slice(0, 25)} showProjectFilter />
+                <NeedsAttention projects={projectsWithActivity} />
+              </div>
+            </section>
+          ),
+        }}
+      </CustomizableDashboardLayout>
     </main>
   );
 }

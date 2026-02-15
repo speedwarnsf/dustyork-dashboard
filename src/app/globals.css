@@ -343,3 +343,15 @@ html.light-mode .shimmer {
 h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
+
+/* Safe area for notched phones */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Touch-friendly tap targets on mobile */
+@media (max-width: 768px) {
+  .min-h-touch {
+    min-height: 44px;
+  }
+}

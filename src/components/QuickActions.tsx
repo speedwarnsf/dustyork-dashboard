@@ -1,149 +1,128 @@
 "use client";
 
-import { useToast } from "./Toast";
-import { Icon } from "./Icon";
+import { useState, useEffect, useRef } from "react";
+import { Plus, X, BookOpen, Camera, Moon, Sun, Search, BarChart3 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-type QuickActionsProps = {
-  project: {
-    id: string;
-    name: string;
-    description: string | null;
-    github_repo: string | null;
-    live_url: string | null;
-    status: string;
-    priority: string;
-  };
-  milestones?: Array<{
-    name: string;
-    status: string;
-    percent_complete: number;
-  }>;
-  recentJournalEntries?: Array<{
-    content: string;
-    entry_type: string;
-    created_at: string;
-  }>;
-};
+export default function QuickActions() {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-export default function QuickActions({
-  project,
-  milestones = [],
-  recentJournalEntries = [],
-}: QuickActionsProps) {
-  const { addToast } = useToast();
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isOpen]);
 
-  const generateContextPrompt = () => {
-    const milestonesText = milestones
-      .map(
-        (m) =>
-          `- ${m.name}: ${m.status} (${m.percent_complete}% complete)`
-      )
-      .join("\n");
-
-    const journalText = recentJournalEntries
-      .slice(0, 5)
-      .map(
-        (j) =>
-          `[${new Date(j.created_at).toLocaleDateString()}] ${j.entry_type}: ${j.content.slice(0, 200)}${j.content.length > 200 ? "..." : ""}`
-      )
-      .join("\n\n");
-
-    return `# Resume Work: ${project.name}
-
-## Project Overview
-**Name:** ${project.name}
-**Status:** ${project.status}
-**Priority:** ${project.priority}
-**Description:** ${project.description || "No description"}
-
-${project.github_repo ? `**GitHub:** https://github.com/${project.github_repo}` : ""}
-${project.live_url ? `**Live URL:** ${project.live_url}` : ""}
-
-## Current Milestones
-${milestonesText || "No milestones set"}
-
-## Recent Journal Entries
-${journalText || "No recent entries"}
-
----
-
-## Instructions
-You are resuming work on this project. Based on the context above:
-1. Review the current status and recent progress
-2. Identify the most important next steps
-3. Help complete the next milestone or task
-
-What would you like to work on?`;
-  };
-
-  const handleCopyContext = async () => {
-    try {
-      await navigator.clipboard.writeText(generateContextPrompt());
-      addToast("Context copied to clipboard!", "success");
-    } catch {
-      addToast("Failed to copy", "error");
-    }
-  };
-
-  const openVercel = () => {
-    // Link to Vercel dashboard - team page for now
-    // Could add project-specific links if we add a vercel_project field
-    window.open("https://vercel.com/speed-warns-projects", "_blank");
-  };
-
-  const openGitHub = () => {
-    if (project.github_repo) {
-      window.open(`https://github.com/${project.github_repo}`, "_blank");
-    } else {
-      addToast("No GitHub repo linked", "error");
-    }
-  };
-
-  const visitLiveSite = () => {
-    if (project.live_url) {
-      window.open(project.live_url, "_blank");
-    } else {
-      addToast("No live site available", "error");
-    }
-  };
+  const actions = [
+    {
+      icon: BookOpen,
+      label: "New Journal",
+      color: "text-[#d2ff5a]",
+      action: () => {
+        const el = document.querySelector("[data-bulk-journal]");
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+        else window.location.href = "/#bulk-journal";
+        setIsOpen(false);
+      },
+    },
+    {
+      icon: Camera,
+      label: "Refresh Screenshots",
+      color: "text-[#7bdcff]",
+      action: async () => {
+        setIsOpen(false);
+        try {
+          const res = await fetch("/api/screenshots", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ all: true }),
+          });
+          if (res.ok) {
+            const toast = (await import("react-hot-toast")).default;
+            toast.success("Screenshots refreshing");
+          }
+        } catch {
+          // silent
+        }
+      },
+    },
+    {
+      icon: typeof window !== "undefined" && document.documentElement.classList.contains("light-mode") ? Moon : Sun,
+      label: "Toggle Dark Mode",
+      color: "text-[#f4b26a]",
+      action: () => {
+        document.documentElement.classList.toggle("light-mode");
+        localStorage.setItem(
+          "theme",
+          document.documentElement.classList.contains("light-mode") ? "light" : "dark"
+        );
+        setIsOpen(false);
+      },
+    },
+    {
+      icon: Search,
+      label: "Global Search",
+      color: "text-[#999]",
+      action: () => {
+        window.dispatchEvent(new Event("open-global-search"));
+        setIsOpen(false);
+      },
+    },
+    {
+      icon: BarChart3,
+      label: "Analytics",
+      color: "text-[#7bdcff]",
+      action: () => {
+        window.location.href = "/analytics";
+        setIsOpen(false);
+      },
+    },
+  ];
 
   return (
-    <div className="flex flex-wrap gap-3">
-      <button
-        onClick={handleCopyContext}
-        className="flex items-center gap-2 rounded-none bg-[#7bdcff] px-4 py-2 text-sm font-semibold text-black transition hover:bg-[#a5ebff]"
-      >
-        <Icon name="intelligence" size={16} />
-        Resume with AI
-      </button>
+    <div ref={containerRef} className="fixed bottom-24 right-4 z-50 md:bottom-6 md:right-6">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute bottom-16 right-0 mb-2 w-52"
+          >
+            <div className="border border-[#1a1a1a] bg-[#080808] shadow-2xl overflow-hidden">
+              {actions.map((a, i) => {
+                const Icon = a.icon;
+                return (
+                  <button
+                    key={i}
+                    onClick={a.action}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#666] hover:bg-[#111] hover:text-white transition text-left"
+                  >
+                    <Icon size={14} className={a.color} />
+                    {a.label}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <button
-        onClick={openVercel}
-        className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-12 h-12 flex items-center justify-center border shadow-lg transition-all ${
+          isOpen
+            ? "bg-white text-black border-white"
+            : "bg-[#080808] text-[#999] border-[#1a1a1a] hover:border-[#333] hover:text-white"
+        }`}
       >
-        <Icon name="upload" size={16} />
-        Vercel
+        {isOpen ? <X size={18} /> : <Plus size={18} />}
       </button>
-
-      {project.github_repo && (
-        <button
-          onClick={openGitHub}
-          className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
-        >
-          <Icon name="entities" size={16} />
-          GitHub
-        </button>
-      )}
-
-      {project.live_url && (
-        <button
-          onClick={visitLiveSite}
-          className="flex items-center gap-2 rounded-none border border-[#1c1c1c] px-4 py-2 text-sm font-medium text-white transition hover:border-[#7bdcff] hover:text-[#7bdcff]"
-        >
-          <Icon name="cloud" size={16} />
-          Live Site
-        </button>
-      )}
     </div>
   );
 }
