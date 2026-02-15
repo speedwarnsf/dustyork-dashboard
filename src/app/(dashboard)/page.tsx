@@ -8,7 +8,7 @@ const ActivityFeed = dynamic(() => import("@/components/ActivityFeed"), {
 const NeedsAttention = dynamic(() => import("@/components/NeedsAttention"));
 const SmartInsights = dynamic(() => import("@/components/SmartInsights"));
 const ActivityTimeline = dynamic(() => import("@/components/ActivityTimeline"));
-import { fetchGithubActivity } from "@/lib/github";
+import { fetchGithubActivity, fetchCommitActivitySparkline, fetchDeployStatus } from "@/lib/github";
 import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Project, Milestone } from "@/lib/types";
@@ -22,6 +22,7 @@ import FocusSuggestion from "@/components/FocusSuggestion";
 const UnifiedTimeline = dynamic(() => import("@/components/UnifiedTimeline"));
 const WeeklyDigest = dynamic(() => import("@/components/WeeklyDigest"));
 const GanttMilestones = dynamic(() => import("@/components/GanttMilestones"));
+const BulkJournalEntry = dynamic(() => import("@/components/BulkJournalEntry"));
 
 export const revalidate = 60;
 
@@ -62,23 +63,27 @@ export default async function DashboardPage() {
     console.error("Database error:", err);
   }
 
-  let projectsWithGithub: Array<Project & { github: any }> = [];
+  let projectsWithGithub: Array<Project & { github: any; sparklineData?: number[]; deployStatus?: { status: string; timestamp: string | null; url: string | null } }> = [];
   try {
     projectsWithGithub = await Promise.all(
       projects.map(async (project) => {
-        if (!project.github_repo) return { ...project, github: null };
+        if (!project.github_repo) return { ...project, github: null, sparklineData: [], deployStatus: undefined };
         try {
-          const github = await fetchGithubActivity(project.github_repo);
-          return { ...project, github };
+          const [github, sparklineData, deployStatus] = await Promise.all([
+            fetchGithubActivity(project.github_repo),
+            fetchCommitActivitySparkline(project.github_repo, 30),
+            fetchDeployStatus(project.github_repo),
+          ]);
+          return { ...project, github, sparklineData, deployStatus };
         } catch (err) {
           console.error(`GitHub fetch error for ${project.name}:`, err);
-          return { ...project, github: null };
+          return { ...project, github: null, sparklineData: [], deployStatus: undefined };
         }
       })
     );
   } catch (err) {
     console.error("GitHub batch fetch error:", err);
-    projectsWithGithub = projects.map(p => ({ ...p, github: null }));
+    projectsWithGithub = projects.map(p => ({ ...p, github: null, sparklineData: [], deployStatus: undefined }));
   }
 
   const projectsWithHealth = projectsWithGithub.map((p) => ({
@@ -219,7 +224,7 @@ export default async function DashboardPage() {
       else if (currentScore < previousScore - 3) trend = "down";
     }
     const lastDeployed = lastDeployedMap[p.id] || null;
-    return { ...p, healthTrend: trend, lastDeployed };
+    return { ...p, healthTrend: trend, lastDeployed, sparklineData: p.sparklineData || [], deployStatus: p.deployStatus };
   });
 
   return (
@@ -273,6 +278,12 @@ export default async function DashboardPage() {
           </div>
           <div className="flex items-center gap-3">
             <MobileSearchButton />
+            <a
+              href="/analytics"
+              className="border border-[#1a1a1a] px-4 py-2 text-sm font-medium text-[#666] hover:border-[#7bdcff] hover:text-[#7bdcff] transition"
+            >
+              Analytics
+            </a>
             <a
               href="/project/new"
               className="bg-white px-4 py-2 text-sm font-medium text-black hover:bg-[#e8e8e8] transition"
@@ -355,6 +366,11 @@ export default async function DashboardPage() {
       {/* Recent Activity */}
       <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
         <RecentActivity entries={recentEntries} />
+      </section>
+
+      {/* Bulk Journal Entry */}
+      <section className="mx-auto w-full max-w-7xl mobile-px px-4 sm:px-6 py-4 sm:py-6">
+        <BulkJournalEntry projects={projects.map(p => ({ id: p.id, name: p.name }))} />
       </section>
 
       {/* Activity + Attention */}

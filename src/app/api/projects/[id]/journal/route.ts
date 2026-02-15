@@ -29,6 +29,8 @@ export async function OPTIONS() {
   return withCors(new NextResponse(null, { status: 204 }));
 }
 
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
 function checkApiKey(request: NextRequest): { valid: boolean; reason?: string } {
   const authHeader = request.headers.get("authorization");
   const apiHeader = request.headers.get("x-api-key");
@@ -48,12 +50,23 @@ function checkApiKey(request: NextRequest): { valid: boolean; reason?: string } 
   return { valid: true };
 }
 
+async function checkSessionAuth(): Promise<boolean> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    return !!user;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const authCheck = checkApiKey(request);
-  if (!authCheck.valid) {
+  const sessionAuth = authCheck.valid ? true : await checkSessionAuth();
+  if (!authCheck.valid && !sessionAuth) {
     return withCors(
       NextResponse.json(
         { error: "Unauthorized", reason: authCheck.reason },

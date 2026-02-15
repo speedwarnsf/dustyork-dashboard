@@ -5,10 +5,11 @@ import OptimizedImage from "./OptimizedImage";
 import { deployProject } from "@/lib/actions";
 
 import type { Project, ProjectHealth } from "@/lib/types";
-import type { GithubActivity } from "@/lib/github";
+import type { GithubActivity, DeployStatus } from "@/lib/github";
 import { getGithubOpenGraphUrl } from "@/lib/github";
 import { getHealthDotColor, getHealthLabel, getHealthTextColor } from "@/lib/health";
 import TimeAgo from "./TimeAgo";
+import Sparkline from "./Sparkline";
 
 const statusStyles: Record<string, { text: string; border: string }> = {
   active: { text: "text-[#d2ff5a]", border: "border-[#d2ff5a]/20" },
@@ -23,6 +24,8 @@ type ProjectCardProps = {
     health?: ProjectHealth;
     healthTrend?: "up" | "down" | "stable";
     lastDeployed?: string | null;
+    sparklineData?: number[];
+    deployStatus?: DeployStatus;
   };
 };
 
@@ -93,6 +96,53 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <p className="text-sm text-[#666] line-clamp-2 mb-3 flex-1">
             {project.description || "No description."}
           </p>
+
+          {/* Deploy Status Badge */}
+          {project.deployStatus && project.deployStatus.status !== "unknown" && (
+            <div className="flex items-center gap-2 mb-3">
+              <span className={`inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] font-mono px-2 py-1 border ${
+                project.deployStatus.status === "success" ? "text-[#d2ff5a] border-[#d2ff5a]/20 bg-[#d2ff5a]/5" :
+                project.deployStatus.status === "failed" ? "text-red-400 border-red-400/20 bg-red-400/5" :
+                project.deployStatus.status === "building" ? "text-yellow-400 border-yellow-400/20 bg-yellow-400/5" :
+                "text-[#555] border-[#1a1a1a]"
+              }`}>
+                <span className={`w-1.5 h-1.5 ${
+                  project.deployStatus.status === "success" ? "bg-[#d2ff5a]" :
+                  project.deployStatus.status === "failed" ? "bg-red-400" :
+                  project.deployStatus.status === "building" ? "bg-yellow-400 animate-pulse" :
+                  "bg-[#555]"
+                }`} />
+                {project.deployStatus.status === "success" ? "Deployed" :
+                 project.deployStatus.status === "failed" ? "Deploy Failed" :
+                 project.deployStatus.status === "building" ? "Building" : "Unknown"}
+              </span>
+              {project.deployStatus.timestamp && (
+                <span className="text-[10px] text-[#444] font-mono">
+                  <TimeAgo date={project.deployStatus.timestamp} />
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Sparkline - 30 day commit activity */}
+          {project.sparklineData && project.sparklineData.length > 0 && project.sparklineData.some(v => v > 0) && (
+            <div className="mb-3 py-2 border-t border-b border-[#1a1a1a]/40">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] text-[#444] font-mono uppercase tracking-wider">30d commits</span>
+                <span className="text-[10px] text-[#555] font-mono">{project.sparklineData.reduce((a, b) => a + b, 0)} total</span>
+              </div>
+              <Sparkline
+                data={project.sparklineData}
+                width={320}
+                height={28}
+                color="#7bdcff"
+                gradientFrom="#7bdcff"
+                gradientTo="#d2ff5a"
+                strokeWidth={1.5}
+                showDots
+              />
+            </div>
+          )}
 
           {/* Last commit */}
           {project.github?.lastCommitMessage && (

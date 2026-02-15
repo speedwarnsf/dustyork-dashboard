@@ -20,6 +20,7 @@ import ProjectStats from "@/components/ProjectStats";
 import HealthScore from "@/components/HealthScore";
 import LaunchChecklist from "@/components/LaunchChecklist";
 import LaunchAnnouncement from "@/components/LaunchAnnouncement";
+import EditableNotes from "@/components/EditableNotes";
 import { fetchRecentCommits } from "@/lib/github";
 import { differenceInDays } from "date-fns";
 
@@ -80,6 +81,13 @@ export default async function ProjectDetailPage({
     .select("*")
     .eq("project_id", id)
     .order("created_at", { ascending: false });
+
+  // Fetch project notes
+  const { data: notesData } = await supabase
+    .from("project_notes")
+    .select("notes")
+    .eq("project_id", id)
+    .single();
 
   const [github, recentCommits] = await Promise.all([
     project.github_repo ? fetchGithubActivity(project.github_repo) : null,
@@ -214,6 +222,11 @@ export default async function ProjectDetailPage({
             created_at: j.created_at,
           }))}
         />
+      </div>
+
+      {/* README / Notes */}
+      <div className="mt-6">
+        <EditableNotes projectId={typedProject.id} initialNotes={notesData?.notes || ""} />
       </div>
 
       {/* Project Stats */}

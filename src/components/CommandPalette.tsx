@@ -146,6 +146,16 @@ export default function CommandPalette() {
       shortcut: "⌘N",
       action: () => router.push("/project/new"),
     },
+    {
+      id: "analytics",
+      name: "Portfolio Analytics",
+      description: "View commit heatmap, activity charts, and project rankings",
+      icon: "jobs",
+      category: "Navigation",
+      priority: 95,
+      keywords: ["analytics", "stats", "charts", "heatmap", "commits", "activity", "portfolio"],
+      action: () => router.push("/analytics"),
+    },
   ];
 
   // Generate enhanced project-specific actions

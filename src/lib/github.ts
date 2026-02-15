@@ -67,6 +67,79 @@ export const fetchRecentCommits = async (repo: string, count: number = 10): Prom
   }
 };
 
+export const fetchCommitActivitySparkline = async (repo: string, days: number = 30): Promise<number[]> => {
+  const parsed = parseRepo(repo);
+  if (!parsed) return [];
+
+  try {
+    const token = process.env.GITHUB_TOKEN;
+    const headers: HeadersInit = token ? { Authorization: `token ${token}` } : {};
+    const base = `https://api.github.com/repos/${parsed.owner}/${parsed.name}`;
+    const since = new Date(Date.now() - days * 86400000).toISOString();
+    const res = await fetch(`${base}/commits?per_page=100&since=${since}`, { headers, next: { revalidate: 600 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+
+    // Bucket commits into days
+    const buckets = new Array(days).fill(0);
+    const now = Date.now();
+    for (const c of data) {
+      const date = c.commit?.author?.date;
+      if (!date) continue;
+      const daysAgo = Math.floor((now - new Date(date).getTime()) / 86400000);
+      if (daysAgo >= 0 && daysAgo < days) {
+        buckets[days - 1 - daysAgo]++;
+      }
+    }
+    return buckets;
+  } catch {
+    return [];
+  }
+};
+
+export type DeployStatus = {
+  status: "success" | "failed" | "building" | "unknown";
+  timestamp: string | null;
+  url: string | null;
+};
+
+export const fetchDeployStatus = async (repo: string): Promise<DeployStatus> => {
+  const parsed = parseRepo(repo);
+  if (!parsed) return { status: "unknown", timestamp: null, url: null };
+
+  try {
+    const token = process.env.GITHUB_TOKEN;
+    const headers: HeadersInit = token ? { Authorization: `token ${token}` } : {};
+    const base = `https://api.github.com/repos/${parsed.owner}/${parsed.name}`;
+    const res = await fetch(`${base}/deployments?per_page=1&environment=production`, { headers, next: { revalidate: 300 } });
+    if (!res.ok) return { status: "unknown", timestamp: null, url: null };
+    const deployments = await res.json();
+    if (!Array.isArray(deployments) || deployments.length === 0) return { status: "unknown", timestamp: null, url: null };
+
+    const deployment = deployments[0];
+    const statusRes = await fetch(`${deployment.statuses_url}?per_page=1`, { headers, next: { revalidate: 300 } });
+    if (!statusRes.ok) return { status: "unknown", timestamp: deployment.created_at, url: null };
+    const statuses = await statusRes.json();
+    const latest = Array.isArray(statuses) && statuses.length > 0 ? statuses[0] : null;
+
+    let status: DeployStatus["status"] = "unknown";
+    if (latest) {
+      if (latest.state === "success") status = "success";
+      else if (latest.state === "failure" || latest.state === "error") status = "failed";
+      else if (latest.state === "pending" || latest.state === "in_progress") status = "building";
+    }
+
+    return {
+      status,
+      timestamp: latest?.created_at || deployment.created_at,
+      url: latest?.target_url || latest?.environment_url || null,
+    };
+  } catch {
+    return { status: "unknown", timestamp: null, url: null };
+  }
+};
+
 export const fetchGithubActivity = async (repo: string): Promise<GithubActivity> => {
   const parsed = parseRepo(repo);
   if (!parsed) {
