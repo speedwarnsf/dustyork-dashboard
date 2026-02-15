@@ -183,6 +183,56 @@ export const deleteJournalEntry = async (entryId: string, projectId: string): Pr
   redirect(`/project/${projectId}`);
 };
 
+export const addGoal = async (projectId: string, formData: FormData): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const payload = {
+    project_id: projectId,
+    user_id: user.id,
+    title: String(formData.get("title") || ""),
+    description: String(formData.get("description") || "") || null,
+    target_date: String(formData.get("target_date") || "") || null,
+    status: "active",
+    progress: 0,
+  };
+  const { error } = await supabase.from("project_goals").insert(payload);
+  if (error) {
+    redirect(`/project/${projectId}?error=${encodeURIComponent(error.message)}`);
+  }
+  redirect(`/project/${projectId}`);
+};
+
+export const updateGoal = async (goalId: string, projectId: string, formData: FormData): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+  const status = String(formData.get("status") || "active");
+  const progress = Number(formData.get("progress") || 0);
+  const payload: Record<string, unknown> = {
+    status,
+    progress,
+    updated_at: new Date().toISOString(),
+  };
+  if (status === "completed") {
+    payload.completed_at = new Date().toISOString();
+    payload.progress = 100;
+  }
+  const { error } = await supabase.from("project_goals").update(payload).eq("id", goalId);
+  if (error) {
+    redirect(`/project/${projectId}?error=${encodeURIComponent(error.message)}`);
+  }
+  redirect(`/project/${projectId}`);
+};
+
+export const deleteGoal = async (goalId: string, projectId: string): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("project_goals").delete().eq("id", goalId);
+  if (error) {
+    redirect(`/project/${projectId}?error=${encodeURIComponent(error.message)}`);
+  }
+  redirect(`/project/${projectId}`);
+};
+
 export const refreshScreenshot = async (projectId: string, liveUrl: string): Promise<void> => {
   const supabase = await createSupabaseServerClient();
   if (!liveUrl) {

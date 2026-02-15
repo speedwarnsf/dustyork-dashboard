@@ -1,7 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fetchGithubActivity, fetchDeployStatus } from "@/lib/github";
 import { calculateProjectHealth } from "@/lib/health";
-import type { Project, Milestone } from "@/lib/types";
+import type { Project, Milestone, Goal } from "@/lib/types";
 import type { Alert } from "@/lib/alerts";
 import { differenceInDays, subHours, format } from "date-fns";
 import Link from "next/link";
@@ -20,15 +20,29 @@ export default async function BriefingPage() {
   const isoThreshold = twentyFourHoursAgo.toISOString();
 
   // Fetch data
-  const [projectsRes, milestonesRes, journalRes] = await Promise.all([
+  const [projectsRes, milestonesRes, journalRes, goalsRes] = await Promise.all([
     supabase.from("projects").select("*").order("updated_at", { ascending: false }),
     supabase.from("milestones").select("*, projects(name)").order("target_date", { ascending: true }),
     supabase.from("journal_entries").select("*, projects(id, name)").gte("created_at", isoThreshold).order("created_at", { ascending: false }),
+    supabase.from("project_goals").select("*, projects(id, name)").eq("status", "active").order("target_date", { ascending: true }),
   ]);
 
   const projects = (projectsRes.data || []) as Project[];
   const milestones = (milestonesRes.data || []) as Array<Milestone & { projects: { name: string } | null }>;
   const recentJournal = journalRes.data || [];
+  const activeGoals = (goalsRes.data || []) as Array<Goal & { projects: { id: string; name: string } | null }>;
+
+  // Goals approaching deadline (within 14 days)
+  const approachingGoals = activeGoals.filter(g => {
+    if (!g.target_date) return false;
+    const daysUntil = differenceInDays(new Date(g.target_date), now);
+    return daysUntil >= 0 && daysUntil <= 14;
+  });
+
+  const overdueGoals = activeGoals.filter(g => {
+    if (!g.target_date) return false;
+    return new Date(g.target_date) < now;
+  });
 
   // GitHub data for changed projects
   const changedProjects = projects.filter(p => new Date(p.updated_at) >= twentyFourHoursAgo);
@@ -220,6 +234,70 @@ export default async function BriefingPage() {
             </div>
           </div>
         </section>
+
+        {/* Overdue Goals */}
+        {overdueGoals.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-xs uppercase tracking-[0.3em] text-red-400 font-mono mb-4">
+              Overdue Goals
+            </h2>
+            <div className="space-y-2">
+              {overdueGoals.map((g) => {
+                const daysOver = differenceInDays(now, new Date(g.target_date!));
+                return (
+                  <Link
+                    key={g.id}
+                    href={`/project/${g.project_id}`}
+                    className="border border-red-500/20 p-4 bg-[#080808] flex justify-between items-center hover:border-red-500/40 transition block"
+                  >
+                    <div>
+                      <p className="text-sm text-[#ccc]">{g.title}</p>
+                      <p className="text-[11px] text-[#555] font-mono">{g.projects?.name || "Unknown"}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-red-400 font-mono">{daysOver}d overdue</p>
+                      <p className="text-[10px] text-[#555] font-mono">{g.progress}% done</p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Approaching Goal Deadlines */}
+        {approachingGoals.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-xs uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4">
+              Goal Deadlines Approaching
+            </h2>
+            <div className="space-y-2">
+              {approachingGoals.map((g) => {
+                const daysUntil = differenceInDays(new Date(g.target_date!), now);
+                return (
+                  <Link
+                    key={g.id}
+                    href={`/project/${g.project_id}`}
+                    className="border border-[#1a1a1a] p-4 bg-[#080808] flex justify-between items-center hover:border-[#333] transition block"
+                  >
+                    <div>
+                      <p className="text-sm text-[#ccc]">{g.title}</p>
+                      <p className="text-[11px] text-[#555] font-mono">{g.projects?.name || "Unknown"}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-xs font-mono ${daysUntil <= 3 ? "text-orange-400" : "text-yellow-400"}`}>
+                        {daysUntil === 0 ? "Today" : daysUntil === 1 ? "Tomorrow" : `${daysUntil}d left`}
+                      </p>
+                      <div className="mt-1 w-16 h-[2px] bg-[#1a1a1a] overflow-hidden">
+                        <div className="h-full bg-[#d2ff5a]" style={{ width: `${g.progress}%` }} />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Overdue Milestones */}
         {overdueMilestones.length > 0 && (

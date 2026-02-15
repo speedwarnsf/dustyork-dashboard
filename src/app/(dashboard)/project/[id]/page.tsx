@@ -21,8 +21,10 @@ import HealthScore from "@/components/HealthScore";
 import LaunchChecklist from "@/components/LaunchChecklist";
 import LaunchAnnouncement from "@/components/LaunchAnnouncement";
 import EditableNotes from "@/components/EditableNotes";
+import GoalsList from "@/components/GoalsList";
 import { fetchRecentCommits } from "@/lib/github";
 import { differenceInDays } from "date-fns";
+import type { Goal } from "@/lib/types";
 
 type MilestoneWithTasks = Milestone & { tasks: Task[] };
 
@@ -88,6 +90,15 @@ export default async function ProjectDetailPage({
     .select("notes")
     .eq("project_id", id)
     .single();
+
+  // Fetch goals
+  const { data: goalsData } = await supabase
+    .from("project_goals")
+    .select("*")
+    .eq("project_id", id)
+    .order("created_at", { ascending: false });
+
+  const goals = (goalsData || []) as Goal[];
 
   const [github, recentCommits] = await Promise.all([
     project.github_repo ? fetchGithubActivity(project.github_repo) : null,
@@ -351,6 +362,11 @@ export default async function ProjectDetailPage({
           />
         </section>
       )}
+
+      {/* Goals */}
+      <section className="mt-8">
+        <GoalsList goals={goals} projectId={typedProject.id} />
+      </section>
 
       {/* Gantt Timeline */}
       <section className="mt-8">

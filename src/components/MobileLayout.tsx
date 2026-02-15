@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Home, Plus, Activity, Search, User, Menu, X, BarChart3, Download, Cpu } from "lucide-react";
+import { Home, Plus, Activity, Search, User, Menu, X, BarChart3, Download, Cpu, Target } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
 type MobileLayoutProps = {

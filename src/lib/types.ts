@@ -108,6 +108,22 @@ export type LaunchAnnouncement = {
   created_at: string;
 };
 
+export type GoalStatus = "active" | "completed" | "abandoned";
+
+export type Goal = {
+  id: string;
+  project_id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  target_date: string | null;
+  status: GoalStatus;
+  progress: number;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 // Computed types for UI
 export type ProjectHealth = {
   score: number; // 0-100
