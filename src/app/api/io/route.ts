@@ -348,6 +348,36 @@ export async function POST(request: NextRequest) {
         return withCors(NextResponse.json({ success: true, project }));
       }
 
+      case "sync_health": {
+        // Update health_score for a specific project
+        const { health_score } = data;
+
+        if (!resolvedProjectId || typeof health_score !== "number") {
+          return withCors(NextResponse.json(
+            { error: "Missing projectId/projectName and health_score (number)" },
+            { status: 400 }
+          ));
+        }
+
+        const { data: project, error } = await supabase
+          .from("projects")
+          .update({
+            health_score,
+            health_updated_at: new Date().toISOString(),
+          })
+          .eq("id", resolvedProjectId)
+          .select()
+          .single();
+
+        if (error) {
+          return withCors(
+            NextResponse.json({ error: error.message }, { status: 500 })
+          );
+        }
+
+        return withCors(NextResponse.json({ success: true, project }));
+      }
+
       default:
         return withCors(NextResponse.json(
           { error: `Unknown action: ${action}` },

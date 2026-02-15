@@ -106,6 +106,24 @@ export default async function DashboardPage() {
     health: calculateProjectHealth(p),
   }));
 
+  // Sync calculated health scores back to Supabase (fire-and-forget)
+  try {
+    const supabaseSync = await createSupabaseServerClient();
+    const updates = projectsWithHealth
+      .filter((p) => p.health.score !== (p.health_score ?? -1))
+      .map((p) =>
+        supabaseSync
+          .from("projects")
+          .update({ health_score: p.health.score, health_updated_at: new Date().toISOString() })
+          .eq("id", p.id)
+      );
+    if (updates.length > 0) {
+      await Promise.allSettled(updates);
+    }
+  } catch (err) {
+    console.error("Health score sync error:", err);
+  }
+
   const projectsWithActivity = projectsWithHealth.map((p) => {
     const lastActivityDate = p.github?.lastCommitDate || p.updated_at;
     let daysSinceActivity = 0;
