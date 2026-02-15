@@ -18,6 +18,13 @@ export default function Header() {
         </span>
       </Link>
 
+      <Link
+        href="/io"
+        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#1a1a1a] text-[11px] text-[#444] hover:border-[#333] hover:text-[#d2ff5a] transition"
+      >
+        <span>Io</span>
+      </Link>
+
       <button
         onClick={triggerCommandPalette}
         className="hidden sm:flex items-center gap-2 px-3 py-1.5 border border-[#1a1a1a] text-[11px] text-[#444] hover:border-[#333] hover:text-[#666] transition"

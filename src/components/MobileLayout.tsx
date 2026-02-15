@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Home, Plus, Activity, Search, User, Menu, X, BarChart3, Download } from "lucide-react";
+import { Home, Plus, Activity, Search, User, Menu, X, BarChart3, Download, Cpu } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
 type MobileLayoutProps = {
@@ -127,6 +127,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
                 {[
                   { label: "Dashboard", href: "/", icon: Home },
                   { label: "Analytics", href: "/analytics", icon: BarChart3 },
+                  { label: "Io Panel", href: "/io", icon: Cpu },
                   { label: "New Project", href: "/project/new", icon: Plus },
                 ].map((item) => {
                   const ItemIcon = item.icon;
