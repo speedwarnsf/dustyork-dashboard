@@ -19,6 +19,13 @@ export default function Header() {
       </Link>
 
       <Link
+        href="/roadmap"
+        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#1a1a1a] text-[11px] text-[#444] hover:border-[#333] hover:text-[#d2ff5a] transition"
+      >
+        <span>Roadmap</span>
+      </Link>
+
+      <Link
         href="/goals"
         className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#1a1a1a] text-[11px] text-[#444] hover:border-[#333] hover:text-[#d2ff5a] transition"
       >

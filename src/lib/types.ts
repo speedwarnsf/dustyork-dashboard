@@ -38,6 +38,7 @@ export type Milestone = {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  release_id?: string | null;
 };
 
 export type Task = {
@@ -122,6 +123,27 @@ export type Goal = {
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type ReleaseStatus = "planned" | "in_progress" | "released" | "cancelled";
+
+export type Release = {
+  id: string;
+  project_id: string;
+  name: string;
+  description: string | null;
+  target_date: string | null;
+  status: ReleaseStatus;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MilestoneDependency = {
+  id: string;
+  milestone_id: string;
+  depends_on_id: string;
+  created_at: string;
 };
 
 // Computed types for UI
