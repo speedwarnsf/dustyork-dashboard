@@ -78,6 +78,7 @@ export default async function DashboardLayout({
               <p>Built by Io</p>
               <div className="flex items-center gap-4">
                 <a href="https://github.com/speedwarnsf" target="_blank" rel="noreferrer" className="hover:text-[#555] transition">GitHub</a>
+                <a href="/changelog" className="hover:text-[#555] transition">What&apos;s New</a>
                 <a href="https://dyorkmusic.com" target="_blank" rel="noreferrer" className="hover:text-[#555] transition">D York Music</a>
               </div>
             </div>
