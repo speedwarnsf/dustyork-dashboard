@@ -127,12 +127,12 @@ async function main() {
     try {
       const page = await context.newPage();
       await page.goto(project.live_url, {
-        waitUntil: "networkidle",
-        timeout: 30000,
+        waitUntil: "domcontentloaded",
+        timeout: 15000,
       });
 
-      // Wait a bit for animations/lazy content
-      await page.waitForTimeout(2000);
+      // Brief pause for rendering/animations
+      await page.waitForTimeout(3000);
 
       const buffer = await page.screenshot({
         type: "jpeg",
