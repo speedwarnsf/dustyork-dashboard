@@ -77,8 +77,8 @@ export default function Sparkline({
         fill="none"
         stroke={gradientFrom ? `url(#${gradientId})` : color}
         strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
         initial={animated ? { pathLength: 0 } : undefined}
         animate={{ pathLength: 1 }}
         transition={{ duration: 1.2, ease: "easeInOut" }}

@@ -51,7 +51,7 @@ export default function HealthScore({ health, size = "md", showFactors = false }
               strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={circumference - progress}
-              strokeLinecap="round"
+              strokeLinecap="butt"
               className={colorClass.split(" ")[0]}
               style={{ transition: "stroke-dashoffset 0.5s ease" }}
             />
