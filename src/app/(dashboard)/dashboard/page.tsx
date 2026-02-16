@@ -11,6 +11,7 @@ const ActivityTimeline = dynamic(() => import("@/components/ActivityTimeline"));
 import { fetchGithubActivity, fetchCommitActivitySparkline, fetchDeployStatus } from "@/lib/github";
 import { calculateProjectHealth, generateSmartInsights } from "@/lib/health";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import type { Project, Milestone } from "@/lib/types";
 import { differenceInDays, subDays, eachDayOfInterval, startOfDay, isSameDay } from "date-fns";
 import AlertsPanel from "@/components/AlertsPanel";
@@ -106,9 +107,9 @@ export default async function DashboardPage() {
     health: calculateProjectHealth(p),
   }));
 
-  // Sync calculated health scores back to Supabase (fire-and-forget)
+  // Sync calculated health scores back to Supabase (fire-and-forget, uses service role to bypass RLS)
   try {
-    const supabaseSync = await createSupabaseServerClient();
+    const supabaseSync = createSupabaseServiceClient();
     const updates = projectsWithHealth
       .filter((p) => p.health.score !== (p.health_score ?? -1))
       .map((p) =>
