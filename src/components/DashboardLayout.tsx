@@ -10,12 +10,12 @@ type Widget = {
 };
 
 const DEFAULT_WIDGETS: Widget[] = [
+  { id: "projects", label: "Projects Grid", visible: true },
   { id: "pulse", label: "Project Pulse", visible: true },
   { id: "alerts", label: "Alerts", visible: true },
   { id: "focus", label: "Focus Suggestion", visible: true },
   { id: "stats", label: "Stats Row", visible: true },
   { id: "comparison", label: "Project Comparison", visible: true },
-  { id: "projects", label: "Projects Grid", visible: true },
   { id: "intelligence", label: "Intelligence", visible: true },
   { id: "digest-gantt", label: "Weekly Digest + Gantt", visible: true },
   { id: "timeline", label: "Unified Timeline", visible: true },
