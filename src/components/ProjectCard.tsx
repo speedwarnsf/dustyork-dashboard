@@ -78,6 +78,18 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               </span>
             </div>
           )}
+          
+          {/* Live Site button - always visible */}
+          {project.live_url && (
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.live_url!, "_blank"); }}
+              className="absolute bottom-3 right-3 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider px-3 py-1.5 bg-black/70 backdrop-blur-sm border border-[#d2ff5a]/30 text-[#d2ff5a] hover:bg-[#d2ff5a] hover:text-black transition-all"
+              title="Open live site"
+            >
+              <Globe size={11} />
+              Live Site
+            </button>
+          )}
         </div>
 
         {/* Content */}
