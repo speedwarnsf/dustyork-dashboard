@@ -79,29 +79,31 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </div>
           )}
           
-          {/* Live Site button - always visible */}
-          {project.live_url && (
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.live_url!, "_blank"); }}
-              className="absolute bottom-3 right-3 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider px-3 py-1.5 bg-black/70 backdrop-blur-sm border border-[#d2ff5a]/30 text-[#d2ff5a] hover:bg-[#d2ff5a] hover:text-black transition-all"
-              title="Open live site"
-            >
-              <Globe size={11} />
-              Live Site
-            </button>
-          )}
+          {/* Live Site button moved below screenshot */}
         </div>
 
         {/* Content */}
         <div className="p-5 flex flex-col flex-1">
-          {/* Name + Status */}
+          {/* Name + Status + Live Site */}
           <div className="flex items-start justify-between gap-3 mb-2">
             <h3 className="text-base font-semibold group-hover:text-white transition-colors">
               {project.name}
             </h3>
-            <span className={`text-[10px] uppercase tracking-[0.15em] border px-2 py-0.5 shrink-0 ${statusConfig.text} ${statusConfig.border}`}>
-              {project.status}
-            </span>
+            <div className="flex items-center gap-2 shrink-0">
+              {project.live_url && (
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.live_url!, "_blank"); }}
+                  className="flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] border px-2 py-0.5 border-[#d2ff5a]/30 text-[#d2ff5a] hover:bg-[#d2ff5a] hover:text-black transition-all"
+                  title="Open live site"
+                >
+                  <Globe size={10} />
+                  Live
+                </button>
+              )}
+              <span className={`text-[10px] uppercase tracking-[0.15em] border px-2 py-0.5 ${statusConfig.text} ${statusConfig.border}`}>
+                {project.status}
+              </span>
+            </div>
           </div>
 
           {/* Description */}
