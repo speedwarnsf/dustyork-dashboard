@@ -16,9 +16,7 @@ export default async function DashboardLayout({
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  // Dashboard is publicly viewable -- no auth redirect
 
   const { data: projectsForNav } = await supabase
     .from("projects")
@@ -52,9 +50,12 @@ export default async function DashboardLayout({
               <Header />
               <div className="flex items-center gap-4">
                 <DarkModeToggle />
+                {user && (
                 <div id="profile" className="hidden sm:block text-right">
                   <p className="text-xs text-[#555] font-mono">{user.email}</p>
                 </div>
+                )}
+                {user && (
                 <form action={signOut}>
                   <button
                     type="submit"
@@ -63,6 +64,7 @@ export default async function DashboardLayout({
                     Sign Out
                   </button>
                 </form>
+                )}
               </div>
             </div>
           </header>
