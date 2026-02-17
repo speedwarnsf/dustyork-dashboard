@@ -78,7 +78,12 @@ export default function ProjectDashboard({ projects }: Props) {
         case "priority": return ({ high: 0, medium: 1, low: 2 }[a.priority] || 1) - ({ high: 0, medium: 1, low: 2 }[b.priority] || 1);
         case "health": return (b.health?.score ?? 50) - (a.health?.score ?? 50);
         case "alerts": return (b.health?.alerts.length ?? 0) - (a.health?.alerts.length ?? 0);
-        default: return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        default: {
+          // Sort by most recent activity: github commit date or updated_at
+          const aDate = a.lastActivity || a.github?.lastCommitDate || a.updated_at;
+          const bDate = b.lastActivity || b.github?.lastCommitDate || b.updated_at;
+          return new Date(bDate).getTime() - new Date(aDate).getTime();
+        }
       }
     });
     return result;

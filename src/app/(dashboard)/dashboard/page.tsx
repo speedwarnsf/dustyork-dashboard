@@ -32,7 +32,7 @@ const CustomizableDashboardLayout = dynamic(() => import("@/components/Dashboard
 const QuickActions = dynamic(() => import("@/components/QuickActions"));
 const DataExport = dynamic(() => import("@/components/DataExport"));
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 export default async function DashboardPage() {
   let user = null;
