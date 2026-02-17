@@ -230,8 +230,8 @@ export default function LaunchChecklist({ projectId, liveUrl, initialChecks }: P
 function StatusBadge({ status }: { status: CheckStatus }) {
   const styles: Record<CheckStatus, { bg: string; text: string; label: string }> = {
     pending: { bg: "bg-[#2c2c2c]", text: "text-[#8b8b8b]", label: "Pending" },
-    passed: { bg: "bg-green-500/10", text: "text-green-400", label: "✓" },
-    failed: { bg: "bg-red-500/10", text: "text-red-400", label: "✗" },
+    passed: { bg: "bg-green-500/10", text: "text-green-400", label: "PASS" },
+    failed: { bg: "bg-red-500/10", text: "text-red-400", label: "FAIL" },
     warning: { bg: "bg-yellow-500/10", text: "text-yellow-400", label: "!" },
   };
 

@@ -122,7 +122,7 @@ ${project.live_url ? `Live: ${project.live_url}` : ""}
 Focus on quick wins that improve quality.`;
 
     await navigator.clipboard.writeText(prompt);
-    addToast("🧹 Polish agent prompt copied!", "success");
+    addToast("Polish agent prompt copied!", "success");
   };
 
   const handleAddJournal = async () => {
