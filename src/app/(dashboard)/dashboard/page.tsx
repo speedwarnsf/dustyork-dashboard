@@ -120,7 +120,7 @@ export default async function DashboardPage() {
       .map((p) =>
         supabaseSync
           .from("projects")
-          .update({ health_score: p.health.score, updated_at: new Date().toISOString() })
+          .update({ health_score: p.health.score, health_updated_at: new Date().toISOString() })
           .eq("id", p.id)
       );
     if (updates.length > 0) {

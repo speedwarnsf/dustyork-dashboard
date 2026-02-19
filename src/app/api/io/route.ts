@@ -361,7 +361,7 @@ export async function POST(request: NextRequest) {
 
         const updateData: Record<string, unknown> = {
             health_score,
-            updated_at: new Date().toISOString(),
+            health_updated_at: new Date().toISOString(),
           };
 
         const { data: project, error } = await supabase
