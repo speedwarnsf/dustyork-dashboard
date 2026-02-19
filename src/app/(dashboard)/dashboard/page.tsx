@@ -32,6 +32,11 @@ const CustomizableDashboardLayout = dynamic(() => import("@/components/Dashboard
 const QuickActions = dynamic(() => import("@/components/QuickActions"));
 const DataExport = dynamic(() => import("@/components/DataExport"));
 
+export const metadata = {
+  title: "Dashboard",
+  description: "Overview of all projects, activity, and milestones.",
+};
+
 export const revalidate = 30;
 
 export default async function DashboardPage() {

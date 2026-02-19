@@ -6,6 +6,11 @@ import Sparkline from "@/components/Sparkline";
 import ContributionHeatmap from "@/components/ContributionHeatmap";
 import Link from "next/link";
 
+export const metadata = {
+  title: "Analytics",
+  description: "Commit activity, contribution heatmaps, and project velocity.",
+};
+
 export const revalidate = 120;
 
 export default async function AnalyticsPage() {

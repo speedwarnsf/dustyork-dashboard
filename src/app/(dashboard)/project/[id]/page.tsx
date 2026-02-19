@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -27,6 +28,29 @@ import { differenceInDays } from "date-fns";
 import type { Goal } from "@/lib/types";
 
 type MilestoneWithTasks = Milestone & { tasks: Task[] };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createSupabaseServerClient();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("name, description")
+    .eq("id", id)
+    .single();
+
+  if (!project) {
+    return { title: "Project Not Found" };
+  }
+
+  return {
+    title: project.name,
+    description: project.description || `Details and activity for ${project.name}.`,
+  };
+}
 
 export default async function ProjectDetailPage({
   params,

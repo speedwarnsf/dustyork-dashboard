@@ -2,6 +2,11 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import RoadmapView from "@/components/RoadmapView";
 import type { Project, Milestone, Release, MilestoneDependency } from "@/lib/types";
 
+export const metadata = {
+  title: "Roadmap",
+  description: "Project roadmap with milestones, releases, and dependencies.",
+};
+
 export const revalidate = 60;
 
 export default async function RoadmapPage() {
