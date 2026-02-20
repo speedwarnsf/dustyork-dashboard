@@ -10,7 +10,21 @@ function getSupabaseClient() {
   });
 }
 
+function verifyAuth(request: NextRequest): boolean {
+  const apiKey = process.env.IO_API_KEY || process.env.DASHBOARD_API_KEY;
+  if (!apiKey) return false;
+  const auth = request.headers.get("authorization");
+  const token = auth
+    ? auth.replace(/^Bearer\s+/i, "").trim()
+    : request.headers.get("x-api-key")?.trim() || null;
+  return token === apiKey;
+}
+
 export async function GET(request: NextRequest) {
+  if (!verifyAuth(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = getSupabaseClient();
   if (!supabase) {
     return NextResponse.json({ error: "Database not configured" }, { status: 500 });

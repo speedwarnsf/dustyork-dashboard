@@ -61,8 +61,8 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
     commitActivity = 5;
     alerts.push("Could not fetch commit data");
   } else {
-    // No GitHub repo linked - neutral for non-code projects
-    commitActivity = 18;
+    // No GitHub repo linked - give partial credit but don't inflate
+    commitActivity = 10;
   }
 
   // 2. Enhanced Deployment Status (25 points)
@@ -111,7 +111,7 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
   } else if (project.github_repo) {
     issueHealth = 15;
   } else {
-    issueHealth = 20; // No repo = no issues
+    issueHealth = 15; // No repo = no issues to track, partial credit
   }
 
   // 4. CI Status (15 points) 

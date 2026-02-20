@@ -109,7 +109,7 @@ export default function EditableNotes({ projectId, initialNotes }: EditableNotes
           placeholder="# Project Name&#10;&#10;Write your README or project notes here...&#10;&#10;## Getting Started&#10;- Step one&#10;- Step two"
         />
       ) : (
-        <div className="prose-invert min-h-[60px] cursor-pointer" onClick={startEditing}>
+        <div className="prose-invert min-h-[60px] cursor-pointer" role="button" tabIndex={0} onClick={startEditing} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startEditing(); } }} aria-label="Click to edit notes">
           {renderNotes(savedNotes)}
         </div>
       )}

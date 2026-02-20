@@ -100,7 +100,7 @@ export default function GlobalSearch({ items }: Props) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} role="presentation" aria-hidden="true" />
         <motion.div
           className="relative w-full max-w-2xl bg-[#080808] border border-[#1a1a1a] shadow-2xl overflow-hidden"
           initial={{ scale: 0.95, y: 10 }}

@@ -35,7 +35,7 @@ function checkApiKey(request: NextRequest): boolean {
   // Accept both DASHBOARD_API_KEY and IO_API_KEY for consistency
   const apiKey = process.env.DASHBOARD_API_KEY || process.env.IO_API_KEY;
   if (!apiKey) return false;
-  if (authHeader && authHeader.replace(/^Bearer\\s+/i, "").trim() === apiKey) return true;
+  if (authHeader && authHeader.replace(/^Bearer\s+/i, "").trim() === apiKey) return true;
   if (apiHeader && apiHeader.trim() === apiKey) return true;
   return false;
 }

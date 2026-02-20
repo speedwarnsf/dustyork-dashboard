@@ -30,7 +30,7 @@ export default function HealthScore({ health, size = "md", showFactors = false }
       {/* Circular Progress */}
       <div className="flex items-center gap-4">
         <div className={`relative ${sizeClasses[size]}`}>
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" role="img" aria-label={`Health score: ${health.score} out of 100, ${label}`}>
             {/* Background circle */}
             <circle
               cx="50"

@@ -43,7 +43,7 @@ function checkApiKey(request: NextRequest): { valid: boolean; reason?: string } 
   if (!authHeader && !apiHeader) {
     return { valid: false, reason: "No authorization header" };
   }
-  const token = authHeader?.replace(/^Bearer\\s+/i, "").trim() || apiHeader?.trim();
+  const token = authHeader?.replace(/^Bearer\s+/i, "").trim() || apiHeader?.trim();
   if (token !== apiKey) {
     return { valid: false, reason: "Invalid API key" };
   }
