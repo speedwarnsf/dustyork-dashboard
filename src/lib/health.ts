@@ -69,8 +69,15 @@ export function calculateProjectHealth(project: ProjectWithGithub): ProjectHealt
   if (project.live_url) {
     let baseDeployScore = 15;
     
-    // Bonus for custom domain
-    if (project.domain) {
+    // Bonus for custom domain (check explicit field or infer from live_url)
+    const hasCustomDomain = project.domain || (
+      project.live_url &&
+      !project.live_url.includes('.vercel.app') &&
+      !project.live_url.includes('.netlify.app') &&
+      !project.live_url.includes('.pages.dev') &&
+      !project.live_url.includes('localhost')
+    );
+    if (hasCustomDomain) {
       baseDeployScore += 5;
     }
     
