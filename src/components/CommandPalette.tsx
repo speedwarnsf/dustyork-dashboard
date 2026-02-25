@@ -450,8 +450,16 @@ export default function CommandPalette() {
           {/* Results */}
           <div className="max-h-[440px] overflow-y-auto">
             {isLoading ? (
-              <div className="px-6 py-16 text-center">
-                <p className="text-[#444] text-sm">Loading...</p>
+              <div className="px-6 py-8 space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="shimmer w-6 h-6 shrink-0" />
+                    <div className="flex-1 space-y-1.5">
+                      <div className="shimmer h-4 w-32" />
+                      <div className="shimmer h-3 w-48" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : fetchError ? (
               <div className="px-6 py-16 text-center">

@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import type { Project, ProjectHealth } from "@/lib/types";
 import type { GithubActivity } from "@/lib/github";
 import ProjectCard from "@/components/ProjectCard";
-import { AlertTriangle, Activity, CheckCircle } from "lucide-react";
+// lucide-react icons removed (unused)
 
 type ProjectGridProps = {
   projects: Array<Project & { 
@@ -56,25 +56,6 @@ export default function ProjectGrid({ projects }: ProjectGridProps) {
     });
   }, [projects]);
 
-  // Group projects by status for better visual organization
-  const groupedProjects = useMemo(() => {
-    const groups = {
-      needsAttention: sortedProjects.filter(p => 
-        p.status === "active" && 
-        ((p.health?.alerts.length || 0) > 0 || (p.health?.score || 50) < 50)
-      ),
-      active: sortedProjects.filter(p => 
-        p.status === "active" && 
-        (p.health?.alerts.length || 0) === 0 && 
-        (p.health?.score || 50) >= 50
-      ),
-      completed: sortedProjects.filter(p => p.status === "completed"),
-      other: sortedProjects.filter(p => !["active", "completed"].includes(p.status))
-    };
-    
-    return groups;
-  }, [sortedProjects]);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -96,42 +77,6 @@ export default function ProjectGrid({ projects }: ProjectGridProps) {
 
     return () => observer.disconnect();
   }, [sortedProjects]);
-
-  const renderProjectGroup = (
-    title: string, 
-    projects: typeof sortedProjects, 
-    icon: React.ReactNode,
-    className?: string
-  ) => {
-    if (projects.length === 0) return null;
-
-    return (
-      <div className={`mb-8 ${className || ""}`}>
-        <div className="flex items-center gap-2 mb-4">
-          {icon}
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-[#555]">
-            {title}
-            <span className="ml-2 text-[#333] font-mono">{projects.length}</span>
-          </h3>
-        </div>
-        <div className="grid gap-px bg-[#1a1a1a] sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <div 
-              key={project.id} 
-              id={`project-${project.id}`}
-              data-project-id={project.id}
-              className="bg-black"
-            >
-              <LazyProjectCard 
-                project={project} 
-                isVisible={visibleItems.has(`project-${project.id}`)} 
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div>
